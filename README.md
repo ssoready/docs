@@ -19,7 +19,7 @@ fern check
 To update your SDKs, simply run the `Release Go SDK` GitHub Action with the desired version
 for the release. Under the hood, this leverages the Fern CLI:
 
-````sh
+```sh
 npm install -g fern-api # only required once
 fern generate --group go-sdk
 ```
