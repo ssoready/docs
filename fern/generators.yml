@@ -4,7 +4,7 @@ groups:
   go-sdk:
     generators:
       - name: fernapi/fern-go-sdk
-        version: 0.21.3
+        version: 0.22.0
         config:
           union: v1
           packageName: ssoready
@@ -15,7 +15,7 @@ groups:
   local:
     generators:
       - name: fernapi/fern-go-sdk
-        version: 0.21.3
+        version: 0.22.0
         config:
           union: v1
           packageName: ssoready
