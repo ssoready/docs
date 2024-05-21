@@ -70,19 +70,23 @@ components:
           description: The SAML connection to log in with.
         organizationId:
           type: string
-          description: The organization to log in with, identified by ID. This will use the organization's primary SAML connection.
+          description: |
+            The organization to log in with, identified by ID.
+            This will use the organization's primary SAML connection.
         organizationExternalId:
           type: string
-          description: |-
-            The organization to log in with, identified by external ID. This will use the organization's primary SAML
-             connection.
+          description: |
+            The organization to log in with, identified by external ID.
+            This will use the organization's primary SAML connection.
         state:
           type: string
-          description: An arbitrary string that will be returned back in the SAML login's corresponding RedeemSAMLAccessCode call.
-      description: |-
+          description: |
+            An arbitrary string that will be returned back in the SAML
+            login's corresponding RedeemSAMLAccessCode call.
+      description: |
         Parameters for getting a SAML redirect URL.
 
-         One of saml_connection_id, organization_id, or organization_external_id must be provided.
+        One of saml_connection_id, organization_id, or organization_external_id must be provided.
     GetSAMLRedirectURLResponse:
       type: object
       properties:
@@ -96,7 +100,9 @@ components:
           type: string
           description: The type of the serialized message.
       additionalProperties: true
-      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+      description: |
+        Contains an arbitrary serialized message along with a @type that describes the
+        type of the serialized message.
     RedeemSAMLAccessCodeRequest:
       type: object
       properties:
@@ -135,12 +141,21 @@ components:
           format: int32
         message:
           type: string
-          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+          description: |
+            A developer-facing error message, which should be in English.
+
+            Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details]
+            field, or localized by the client.
         details:
           type: array
           items:
             $ref: '#/components/schemas/GoogleProtobufAny'
           description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+      description: |
+        The `Status` type defines a logical error model that is suitable for different programming environments,
+        including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message
+        contains three pieces of data: error code, error message, and error details.
+
+        You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).
 tags:
   - name: SSOReadyService
