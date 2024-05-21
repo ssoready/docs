@@ -1,0 +1,14 @@
+api:
+  path: openapi.yml
+groups:
+  go-sdk:
+    generators:
+      - name: fernapi/fern-go-sdk
+        version: 0.21.3
+        config:
+          union: v1
+          packageName: ssoready
+        smart-casing: true
+        github:
+          repository: fern-demo/ssoready-go
+          mode: pull-request
