@@ -1,5 +1,6 @@
 api:
   path: openapi.yml
+  overrides: openapi-overrides.yml
 groups:
   go-sdk:
     generators:

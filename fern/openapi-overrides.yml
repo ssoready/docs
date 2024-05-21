@@ -1,0 +1,16 @@
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+paths:
+  /v1/saml/redeem:
+    post:
+      x-fern-sdk-group-name: saml
+      x-fern-sdk-method-name: redeemAccessCode
+
+  /v1/saml/redirect:
+    post:
+      x-fern-sdk-group-name: saml
+      x-fern-sdk-method-name: getRedirectUrl
