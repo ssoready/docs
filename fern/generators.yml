@@ -12,3 +12,16 @@ groups:
         github:
           repository: fern-demo/ssoready-go
           mode: pull-request
+  local:
+    generators:
+      - name: fernapi/fern-go-sdk
+        version: 0.21.3
+        config:
+          union: v1
+          packageName: ssoready
+          module:
+            path: github.com/fern-demo/ssoready-go
+        smart-casing: true
+        output:
+          location: local-file-system
+          path: ../generated/ssoready-go
