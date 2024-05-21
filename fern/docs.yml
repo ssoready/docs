@@ -1,0 +1,18 @@
+instances:
+  - url: ssoready.docs.dev.buildwithfern.com
+
+title: SSOReady Docs
+
+navigation:
+  - api: API Reference
+    snippets:
+      go: https://github.com/fern-demo/ssoready-go
+
+colors:
+  accentPrimary: '#6366F1'
+  background: '#0F1117'
+
+logo:
+  dark: ./docs/assets/logo.png
+  height: 27
+  href: https://ssoready.com
