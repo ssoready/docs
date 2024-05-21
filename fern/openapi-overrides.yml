@@ -3,6 +3,9 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+      x-fern-bearer:
+        name: apiKey
+        env: SSOREADY_API_KEY
 
 paths:
   /v1/saml/redeem:
