@@ -1,5 +1,6 @@
 instances:
   - url: ssoready.docs.buildwithfern.com
+    custom-domain: ssoready.com/docs
 
 title: SSOReady Docs
 

@@ -9,31 +9,25 @@ groups:
         config:
           client_class_name: SSOReady
           package_name: ssoready
-        # TODO: When you're ready to publish your SDK to pypi, make a pypi account, set the
-        # PYPI_TOKEN secret in this repository, wire it up in CI, and uncomment the following block:
-        # output:
-        #   location: pypi
-        #   package-name: ssoready
-        #   token: ${ PYPI_TOKEN }
+        output:
+          location: pypi
+          package-name: ssoready
+          token: ${ PYPI_TOKEN }
         smart-casing: true
         github:
-          # TODO: After the repository has been moved, edit the organization name.
-          repository: fern-demo/ssoready-python
+          repository: ssoready/ssoready-python
           mode: pull-request
 
   ts-sdk:
     generators:
       - name: fernapi/fern-typescript-node-sdk
         version: 0.19.0
-        # TODO: When you're ready to publish your SDK to npm, make an npm account, set the
-        # NPM_TOKEN secret in this repository, wire it up in CI, and uncomment the following block:
-        # output:
-        #   location: npm
-        #   package-name: ssoready
-        #   token: ${NPM_TOKEN}
+        output:
+          location: npm
+          package-name: ssoready
+          token: ${NPM_TOKEN}
         github:
-          # TODO: After the repository has been moved, edit the organization name.
-          repository: fern-demo/ssoready-typescript
+          repository: ssoready/ssoready-typescript
           mode: pull-request
         config:
           namespaceExport: SSOReady
