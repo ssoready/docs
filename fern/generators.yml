@@ -12,7 +12,7 @@ groups:
         output:
           location: pypi
           package-name: ssoready
-          token: ${ PYPI_TOKEN }
+          token: ${PYPI_TOKEN}
         smart-casing: true
         github:
           repository: ssoready/ssoready-python
