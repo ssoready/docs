@@ -2,27 +2,30 @@ api:
   path: openapi.yml
   overrides: openapi-overrides.yml
 groups:
-  go-sdk:
+  python-sdk:
     generators:
-      - name: fernapi/fern-go-sdk
-        version: 0.22.0
+      - name: fernapi/fern-python-sdk
+        version: 2.5.2
         config:
-          union: v1
-          packageName: ssoready
+          client_class_name: SSOReady
+          package_name: ssoready
+        # TODO: When you're ready to publish your SDK to pypi, make a pypi account, set the
+        # PYPI_TOKEN secret in this repository, wire it up in CI, and uncomment the following block:
+        # output:
+        #   location: pypi
+        #   package-name: ssoready
+        #   token: ${ PYPI_TOKEN }
         smart-casing: true
         github:
-          repository: fern-demo/ssoready-go
+          repository: fern-demo/ssoready-python
           mode: pull-request
   local:
     generators:
-      - name: fernapi/fern-go-sdk
-        version: 0.22.0
+      - name: fernapi/fern-python-sdk
+        version: 2.5.2
         config:
-          union: v1
-          packageName: ssoready
-          module:
-            path: github.com/fern-demo/ssoready-go
-        smart-casing: true
+          client_class_name: SSOReady
+          package_name: ssoready
         output:
           location: local-file-system
-          path: ../generated/ssoready-go
+          path: ../generated/ssoready-python

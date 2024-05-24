@@ -6,7 +6,7 @@ title: SSOReady Docs
 navigation:
   - api: API Reference
     snippets:
-      go: https://github.com/fern-demo/ssoready-go
+      python: ssoready
 
 colors:
   accentPrimary: '#6366F1'
