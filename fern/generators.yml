@@ -17,8 +17,31 @@ groups:
         #   token: ${ PYPI_TOKEN }
         smart-casing: true
         github:
+          # TODO: After the repository has been moved, edit the organization name.
           repository: fern-demo/ssoready-python
           mode: pull-request
+
+  ts-sdk:
+    generators:
+      - name: fernapi/fern-typescript-node-sdk
+        version: 0.19.0
+        # TODO: When you're ready to publish your SDK to npm, make an npm account, set the
+        # NPM_TOKEN secret in this repository, wire it up in CI, and uncomment the following block:
+        # output:
+        #   location: npm
+        #   package-name: ssoready
+        #   token: ${NPM_TOKEN}
+        github:
+          # TODO: After the repository has been moved, edit the organization name.
+          repository: fern-demo/ssoready-typescript
+          mode: pull-request
+        config:
+          namespaceExport: SSOReady
+          allowCustomFetcher: true
+          skipResponseValidation: true
+          includeApiReference: true
+        smart-casing: true
+
   local:
     generators:
       - name: fernapi/fern-python-sdk
@@ -29,3 +52,15 @@ groups:
         output:
           location: local-file-system
           path: ../generated/ssoready-python
+      - name: fernapi/fern-typescript-node-sdk
+        version: 0.19.0
+        config:
+          namespaceExport: SSOReady
+          allowCustomFetcher: true
+          skipResponseValidation: true
+          includeApiReference: true
+          outputSourceFiles: true
+        smart-casing: true
+        output:
+          location: local-file-system
+          path: ../generated/ssoready-typescript
