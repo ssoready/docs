@@ -1,8 +1,6 @@
 instances:
-  - url: ssoready.docs.buildwithfern.com
-    custom-domain:
-    - fern.ssoready.com/docs # host    
-    - ssoready.com/docs # rewrite
+  - url: ssoready.docs.buildwithfern.com/docs
+    custom-domain: ssoready.com/docs
 
 title: SSOReady Docs
 
