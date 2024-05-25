@@ -30,3 +30,6 @@ logo:
   light: ./docs/assets/logo.png
   height: 27
   href: https://ssoready.com
+
+layout:
+  searchbar-placement: header
