@@ -7,16 +7,29 @@ instances:
 title: SSOReady Docs
 
 navigation:
+  - section: Introduction
+    contents:
+      - page: Quickstart
+        path: ./pages/quickstart.mdx
   - api: API Reference
     snippets:
       python: ssoready
       typescript: ssoready
 
+navbar-links:
+  - type: primary
+    text: Login
+    url: https://app.ssoready.com
+
 colors:
   accentPrimary: '#6366F1'
-  background: '#0F1117'
+  background:
+    light: '#ffffff'
 
 logo:
-  dark: ./docs/assets/logo.png
+  light: ./docs/assets/logo.png
   height: 27
   href: https://ssoready.com
+
+layout:
+  searchbar-placement: header
