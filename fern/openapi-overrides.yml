@@ -11,24 +11,23 @@ paths:
   /v1/saml/redeem:
     post:
       x-fern-sdk-group-name: saml
-      x-fern-sdk-method-name: redeemAccessCode
+      x-fern-sdk-method-name: redeemSAMLAccessCode
       x-fern-examples:
         - request:
-            samlAccessCode: saml_access_code_94d90b43a2027a9084bfc792
+            samlAccessCode: saml_access_code_...
           response:
             body:
-              email: john.doe@gmail.com
+              email: john.doe@acme.com
               organizationId: org_7cu5hsy9vrbi5d2k1qvbh19lj
               organizationExternalId: my_custom_external_id
 
   /v1/saml/redirect:
     post:
       x-fern-sdk-group-name: saml
-      x-fern-sdk-method-name: getRedirectUrl
+      x-fern-sdk-method-name: getSAMLRedirectUrl
       x-fern-examples:
         - request:
-            samlConnectionId: saml_conn_ac3bzzoqhaa88ozk29hhv12l
-            organizationId: org_7cu5hsy9vrbi5d2k1qvbh19lj
+            organizationExternalId: my_custom_external_id
           response:
             body:
               redirectUrl: https://your.redirect.url
