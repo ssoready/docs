@@ -45,13 +45,7 @@ logins, and handling SAML logins. Here's how you do each.
 
 ## Initiating SAML logins
 
-```mermaid
-sequenceDiagram
-    User->>Your App: Click "Log in with SSO"
-    Your App->>SSOReady: Request redirect URL
-    SSOReady->>Your App: Redirect URL
-    Your App->>User: Redirect user
-```
+![](quickstart-initiate.png)
 
 Under the hood, initiating SAML logins requires you to get your user's browser to perform an HTTP POST against their
 corporate Okta/Google/Microsoft with a specific XML message. SSOReady abstracts all this work away into you just needing
@@ -72,13 +66,7 @@ in [Setting up SSOReady](#setting-up-ssoready) later on this page.
 
 ## Handling SAML logins
 
-```mermaid
-sequenceDiagram
-    User->>Your App: SAML access code
-    Your App->>SSOReady: Redeem access code
-    SSOReady->>Your App: User details
-    Your App->>User: Log in
-```
+![](quickstart-handle.png)
 
 Under the hood, SAML login details are sent to you in the form of your user's web browser POST-ing you an XML message.
 You would then need to [authenticate that message](https://www.w3.org/TR/xmldsig-core1/) before logging your user in.
