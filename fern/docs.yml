@@ -29,5 +29,7 @@ logo:
   height: 27
   href: https://ssoready.com
 
+favicon: ./docs/assets/favicon.ico
+
 layout:
   searchbar-placement: header
