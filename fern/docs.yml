@@ -13,6 +13,18 @@ navigation:
     snippets:
       python: ssoready
       typescript: ssoready
+  - section: IDP configuration
+    contents:
+      - page: Entra (formerly Azure AD)
+        path: ./pages/idp-config-tutorials/entra.mdx
+      - page: Okta
+        path: ./pages/idp-config-tutorials/okta.mdx
+      - page: Google
+        path: ./pages/idp-config-tutorials/google.mdx
+      - page: JumpCloud
+        path: ./pages/idp-config-tutorials/jumpcloud.mdx
+      - page: PingOne
+        path: ./pages/idp-config-tutorials/ping.mdx
 
 navbar-links:
   - type: primary

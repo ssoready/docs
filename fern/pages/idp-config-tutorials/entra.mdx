@@ -1,0 +1,124 @@
+---
+title: 'SSO with Entra'
+description: 'How to set up SSOReady connections with Entra (formerly Azure Active Directory)'
+---
+
+{/* ==================================================== */}
+{/*                      Entra                           */}
+{/* ==================================================== */}
+
+
+
+Entra -- formerly Azure Active Directory -- ranks among the more common IDPs. Like many Microsoft products, it can appear complicated. Hopefully it feels a little bit easier with this guide. 
+
+<Steps>
+### Create an application in Entra
+
+Entra needs to associate a SAML connection with an *Application*, so our first step will require us to create an application. From any page in Entra, we can find *Applications* > *Enterprise applications* in the left navigation bar. We'll want to click here to navigate to the next page.
+
+<Frame caption="In the left sidebar, navigate to Applications > Enterprise applications">
+  <img src="/docs/assets/idp-assets/entra/entra1.png" />
+</Frame>
+
+We'll reach a page that says **Enterprise applications** in bold typeface. We simply need to press the *New application* button right under this header.  
+
+<Frame caption="Select 'New application'">
+  <img src="/docs/assets/idp-assets/entra/entra2.png" />
+</Frame>
+
+On the next page, we'll see a header: **Browse Microsoft Entra Gallery.** We'll also see a few prominent cards with major cloud providers. Ignore all this; we won't use the gallery. Simply click *Create your own application*, which triggers a slideover from the right. 
+
+<Frame caption="Select 'Create your own application'">
+  <img src="/docs/assets/idp-assets/entra/entra3.png" />
+</Frame>
+
+Entra requires a display name for the application. The name we choose doesn't matter much. In most cases, you'll want your product's name to go here.
+<Info>As we type a display name for the application, Entra will try to find matching apps from the Entra Gallery and suggest them as alternatives. In most cases, we should ignore this.</Info>
+<Frame caption="Assign a display name to the Entra application">
+  <img src="/docs/assets/idp-assets/entra/entra4.png" />
+</Frame>
+
+Under the display name, Entra offers three radio button options. We want to select the last one, which reads *Integrate any other application you don't find in the gallery (Non-gallery)*. 
+
+<Frame caption="Tell Entra we're creating a non-gallery application">
+  <img src="/docs/assets/idp-assets/entra/entra5.png" />
+</Frame>
+
+Then we hit *Create* in the lower left of the slideover, and we're free to configure our Application.
+
+<Frame caption="Create the application">
+  <img src="/docs/assets/idp-assets/entra/entra5b.png" />
+</Frame>
+
+Entra may require a few seconds to create the Application. Once it has finished, you will land on a page detailing the application we've just created. 
+
+
+<Frame caption="When you see this page, you have created your Entra Application">
+  <img src="/docs/assets/idp-assets/entra/entra5c.png" />
+</Frame>
+
+For now, we'll skip assigning users to your Application, but an Entra admin will need to assign them before long.
+
+<Warning>Users cannot sign in until assigned to your Application by an Entra admin.</Warning>
+
+
+
+### Configure SAML Connection | Enter SSOReady details in Entra
+
+Now that we have a SAML Connection created in SSOReady and an Application in Entra, we can configure each of them to communicate with the other. We'll start by entering details about our SSOReady SAML Connection into our Entra Application. Select the *Set up single sign on* card.
+
+<Frame caption="Choose to set up single sign-on">
+  <img src="/docs/assets/idp-assets/entra/entra6.png" />
+</Frame>
+
+Entra will then present a few options. We need to select the *SAML* card marked with a puzzle piece icon.
+
+<Frame caption="Select SAML as the single sign-on method">
+  <img src="/docs/assets/idp-assets/entra/entra6b.png" />
+</Frame>
+
+Entra will route us to its *SAML-based Sign-on* configuration page, where we'll direct our attention first to the *Basic SAML Configuration* card. It has two required values. SSOReady supplies both.
+
+Click the *Edit* button in the top right corner of the *Basic SAML Configuration* card; we'll see a slideover triggered on the right.
+
+<Frame caption="Select SAML as the single sign-on method">
+  <img src="/docs/assets/idp-assets/entra/entra7.png" />
+</Frame>
+
+In the slideover, Entra requires us to enter two values: an *Identifier (Entity ID)* and a *Reply URL (Assertion Consumer Service URL)*.
+
+1. Let's start with the *Identifier (Entity ID)* field. In SSOReady, we call this the *SP Entity ID*, which you can find by navigating to your SAML Connection in the SSOReady app. Paste the URL from SSOReady into Entra.   
+
+2. Next we'll do the *Reply URL (Assertion Consumer Service URL)* field. In SSOReady, we call this the *Assertion Consumer Service (ACS) URL*. It should look just like the *SP Entity ID* field, only it ends with `/acs`. Paste the URL from SSOReady into Entra.
+<Frame caption="Enter details from SSOReady into Entra">
+  <img src="/docs/assets/idp-assets/entra/entra8.png" />
+</Frame>
+
+Make sure to hit *Save* toward the top of the page.
+
+<Frame caption="Save changes">
+  <img src="/docs/assets/idp-assets/entra/entra9.png" />
+</Frame>
+
+Once we've completed this step, Entra knows everything it needs about the SSOReady Connection. Next, we need to supply the SSOReady app with information about Entra.
+
+
+### Configure SAML Connection | Enter Entra details in SSOReady
+
+Having set up Entra with information about SSOReady, we then supply SSOReady with information about the Entra Application. SSOReady needs three pieces of information from the Entra Application: an *IDP Entity ID*, a *Redirect URL*, and a *Certificate*.
+
+For convenience, we'll actually start with the last of these, the *Certificate*. In Entra, you'll find this on the third card, closer to the bottom of the page. Next to the *Certificate (Base64)* heading, Entra shows a blue download link. Click this link. It will download a file named for your application. For example, if we've named the application `new_application`, Entra will share a `new_application.cer` file. Upload this file to SSOReady on the page detailing the SAML Connection.
+
+<Frame caption="Download the Certificate (Base64) from Entra and upload it to SSOReady">
+  <img src="/docs/assets/idp-assets/entra/entra10.png" />
+</Frame>
+
+For the final two pieces of information, we'll need to scroll down to the fourth card. Copy the *Microsoft Entra Identifier* field from Entra and paste it into SSOReady's *IDP Entity ID* field. Then copy the *Login URL* field from Entra and paste it into SSOReady's *Redirect URL* field.
+<Frame caption="Save changes">
+  <img src="/docs/assets/idp-assets/entra/entra11.png" />
+</Frame>
+
+
+</Steps>
+
+Once you've entered that data in SSOReady, you're finished with Entra configuration!
