@@ -1,0 +1,145 @@
+---
+title: 'SSO with JumpCloud'
+description: 'How to set up SSOReady connections with JumpCloud'
+--- 
+
+{/* ==================================================== */}
+{/*                       JumpCloud                           */}
+{/* ==================================================== */}
+
+
+<Steps>
+### Creating a JumpCloud application
+We'll start our JumpCloud set-up by creating an *Application*. From JumpCloud's admin console, we want to click *SSO Applications* in the left navigation pane. This will take us to a new page -- the precise page we see depends on how many existing connections the JumpCloud instance has. 
+
+<Frame caption="Navigating to 'SSO Applications' in JumpCloud">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud0.png" />
+</Frame>
+
+{/*
+<Frame caption="xxxxx">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud1.png" />
+</Frame>
+*/}
+
+After clicking *SSO Applications*, we'll see a *Configured Applications* page listing any configured SSO apps. On this page, we'll click the green *Add New Application* button toward the top left; it will route us to another new page.
+
+<Note>
+If your customer has no pre-existing SSO applications in JumpCloud, you'll see a page with a *Get Started* button instead. In this case, we'll just click *Get Started*.
+</Note>
+
+<Frame caption="Adding a new application in JumpCloud">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud1b.png" />
+</Frame>
+
+By this point, we will have arrived at a page reading *Create New Application Integration* in the top left with several cards featuring the logos of common SaaS applications. We'll direct attention to the *Custom Application* card in the lower right and click where it says *Select*. This will send us to a new page.
+
+<Frame caption="Choosing to create a 'custom application'">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud2.png" />
+</Frame>
+
+Upon arriving on this next page, we'll simply click *Next* in the lower right to move on and see the next page.
+
+<Frame caption="Selecting 'Next' to move on">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud3.png" />
+</Frame>
+
+Here, we'll see a few checkboxes. We'll want to check the first of these, labeled *Manage Single Sign-On (SSO)*. Checking this box will trigger two radio buttons to expand. We'll select the first option: *Configure SSO with SAML*. 
+
+<Frame caption="Choosing to configure the application with SAML SSO">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud4.png" />
+</Frame>
+
+Next, simply click *Next* in the lower right corner.
+
+<Frame caption="Selecting 'Next' to move on">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud4b.png" />
+</Frame>
+
+JumpCloud wants us to assign a *Display Label*. We should fill this field with the name of your product.
+
+<Frame caption="Setting a 'Display Label' in JumpCloud">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud5.png" />
+</Frame>
+
+Having entered a *Display Label*, we'll simply click *Save Application* in the lower right corner. This will send us to a new page. 
+
+<Frame caption="Saving the application to move on">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud5b.png" />
+</Frame>
+
+On this page, we just need to press *Configure Application*.
+
+<Frame caption="Selecting 'Configure Application' to move on">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud6.png" />
+</Frame>
+
+We've now completed the first step of JumpCloud configuration and can move to the next step, entering details about SSOReady into JumpCloud.
+
+
+### Configure SAML Connection | Enter SSOReady details in JumpCloud
+
+JumpCloud needs two important pieces of information from SSOReady.
+
+We'll start with the first of these, a field JumpCloud calls the *SP Entity ID*. As it turns out, SSOReady assigns this data the same name. In the SSOReady web application, we'll navigate to the detail page for the relevant SAML connection. From this page, we'll simply copy the URL labeled *SP Entity ID* and paste it into JumpCloud's *SP Entity ID* field.
+
+<Frame caption="Inputting an 'SP Entity ID' in JumpCloud">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud7.png" />
+</Frame>
+
+After addressing the *SP Entity ID*, we'll progress to the next step.
+
+JumpCloud asks for *ACS URLs*. SSOReady provides exactly one for you. 
+
+Navigating back to the SSOReady web application, we'll find a URL marked *Assertion Consumer Service (ACS) URL* associated with your SAML Connection. As it turns out, this your URL looks nearly identital to the *SP Entity ID* from the previous step. Moreover, it looks nearly identical to the *SP Entity ID*, only affixed with `/acs` at the end of the URL. 
+
+We simply need to copy the *Assertion Consumer Service (ACS) URL* from SSOReady and paste it into JumpCloud as an *ACS URL*. 
+
+
+<Frame caption="Pasting the ACS URL into JumpCloud">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud7b.png" />
+</Frame>
+
+Once we've pasted in the *ACS URL*, JumpCloud has all the information it needs about SSOReady. 
+
+
+### Configure SAML Connection | Enter JumpCloud details in SSOReady
+
+Our next step requires us to copy a few details from JumpCloud into SSOReady.
+
+First, we'll scroll down to a URL that JumpCloud calls the *IDP URL*. In SSOReady, we call this the *Redirect URL*. Copy JumpCloud's *IDP URL* and paste it into SSOReady as the *Redirect URL*. 
+
+<Frame caption="Copying the JumpCloud 'IDP URL,' which will become the 'Redirect URL' in SSOReady">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud8.png" />
+</Frame>
+
+SSOReady also needs an *IDP Entity ID*. It turns out that JumpCloud doesn't provide one, but it's fine for our purposes if we just enter two matching strings in both JumpCloud and SSOReady.
+
+We'll simply write "JumpCloud" in SSOReady. We then need JumpCloud to match, so we'll identically write "JumpCloud" in the field that JumpCloud calls *IDP Entity ID*. 
+
+<Frame caption="Setting the 'IDP Entity ID' in JumpCloud">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud8b.png" />
+</Frame>
+
+Next, we need to upload a *Certificate* in SSOReady. We'll find the file we need on the left side of the overlay we've been working in. We'll need to press *Download Certificate* > *Upload new Certificate*. JumpCloud creates a file called `certificate.pem`. We then upload this file to SSOReady as the *IDP Certificate*.
+
+<Frame caption="Finding the certificate.pem file in JumpCloud">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud8c.png" />
+</Frame>
+
+We need to adjust one very important setting in JumpCloud before we finish up. Where JumpCloud writes *Sign* we need to change the radio button setting to *Assertion and Response*. JumpCloud's default setting will not work properly with SSOReady. 
+
+
+<Frame caption="Instructing JumpCloud to sign both SAML assertions and responses">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud9.png" />
+</Frame>
+
+Then we need to hit *Save* in the bottom right corner.
+
+<Frame caption="Hitting 'Save' to finish our set-up">
+  <img src="/docs/assets/idp-assets/jumpcloud/jumpcloud8d.png" />
+</Frame>
+
+We've now finished connecting SSOReady to JumpCloud. Please note, however, that your customer's JumpCloud admin will need to assign users to your application before they can successfully sign in.
+
+</Steps>

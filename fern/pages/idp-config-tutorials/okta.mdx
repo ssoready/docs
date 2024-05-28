@@ -1,0 +1,127 @@
+---
+title: 'SSO with Okta'
+description: 'How to set up SSOReady connections with Okta'
+--- 
+
+{/* ==================================================== */}
+{/*                       Okta                           */}
+{/* ==================================================== */}
+
+As a first step, we need to create an *Application* in Okta. The Okta *Application* will mediate all login interactions with SSOReady. Once we've finished setting it up, your users may see it as a tile in their Okta accounts.
+
+Once we've successfully created an *Application*, we'll swap details between SSOReady and Okta to enable single sign-on.
+<Steps>
+### Create an application in Okta
+
+To create an *Application* in Okta, we'll need your customer's Okta administrator to select *Applications* > *Applications* in the left nav panel.
+
+<Frame caption="Selecting Applications > Applications from the left navigation panel">
+  <img src="/docs/assets/idp-assets/okta/okta0.png" />
+</Frame>
+
+We'll land on a page with a bold **Applications** header. Right under the header, we'll select the dark blue button that reads *Create App Integration*. 
+<Frame caption="Instructing Okta to create an app integration">
+  <img src="/docs/assets/idp-assets/okta/okta1.png" />
+
+Okta will flash a model offering you several radio button choices. Of these, we want to select *SAML 2.0* and then simply press *Next* in the lower right corner.  
+</Frame>
+
+<Frame caption="Telling Okta we want our integration to use SAML 2.0">
+  <img src="/docs/assets/idp-assets/okta/okta2.png" />
+</Frame>
+
+Once we've selected *SAML 2.0*, Okta will change the header to read *Create SAML Integration* as below. Okta requires a display name. We can write mostly anything here, but it's probably best simply to write your product's name. 
+
+<Frame caption="Assigning your application a display name in Okta">
+  <img src="/docs/assets/idp-assets/okta/okta3.png" />
+</Frame>
+
+The remaining options on this page aren't especially important; we can simply select *Next* here, which finalizes our creation of an Okta *Application*. We can now move on and connect Okta to SSOReady.
+
+<Frame caption="Selecting Next to move on and adjust the SAML settings to match SSOReady">
+  <img src="/docs/assets/idp-assets/okta/okta4.png" />
+</Frame>
+
+
+### Configure SAML Connection | Enter SSOReady details in Okta
+
+Hitting *Next* on the prior page will have nudged us into a new tab, marked *Configure SAML*. Here, we'll start by copying two pieces of data from SSOReady into Okta. 
+
+At the top of the page, Okta asks for a *Single sign-on URL*. You will find this URL in SSOReady on the detail page for your SAML Connection; we call it the *Assertion Consumer Service (ACS) URL*. It typically ends in `/acs`. Copy this *Assertion Consumer Service (ACS) URL* and paste it where Okta has written *Single sign-on URL*.
+
+<Frame caption="Pasting the  ACS URL from SSOReady into Okta's Single sign-on URL field">
+  <img src="/docs/assets/idp-assets/okta/okta5.png" />
+</Frame>
+
+From here, we'll proceed to the next field on the same page. It reads *Audience URI (SP Entity ID)*. In SSOReady, we call this the *SP Entity ID*. You'll find it directly under the *Assertion Consumer Service (ACS) URL* in the SSOReady app. It usually looks just like the ACS URL, except it does not end in `/acs`. 
+
+Paste the *SP Entity ID* URL from SSOReady into Okta's *Audience URI (SP Entity ID)* field.
+
+
+<Frame caption="Pasting the  SP Entity ID from SSOReady into Okta's Audience URI (SP Entity ID) field">
+  <img src="/docs/assets/idp-assets/okta/okta6.png" />
+</Frame>
+
+Once we've filled the *Audience URI (SP Entity ID)* field (and scrolled down to hit *Next* in the lower right corner), we've completed all the necessary data entry from SSOReady into Okta.
+
+
+### Configure SAML Connection | Enter Okta details in SSOReady
+
+Having entered the necessary SSOReady data into Okta, we'll move on.  
+
+Okta requires one brief detour wherein we supply feedback to their team. 
+
+We'll want to select *I'm an Okta customer adding an internal app*, skip the remaining questions, scroll down, and press *Finish* in the lower right corner. 
+
+{/* ==================================================== 
+
+<Frame caption="placeholder caption">
+  <img src="/docs/assets/idp-assets/okta/okta7.png" />
+</Frame>
+
+*/}
+
+<Frame caption="This is mildly annoying, but oh well">
+  <img src="/docs/assets/idp-assets/okta/okta8.png" />
+</Frame>
+
+Okay, **now** we can enter Okta data into SSOReady. The previous step will have routed us to a page with your application's name at the top. 
+
+From here, we need to scroll down a bit and hit *More details*. It's not always easy to see. 
+
+<Frame caption="Scrolling down to find the 'More details' option for the SAML application">
+  <img src="/docs/assets/idp-assets/okta/okta9b.png" />
+</Frame>
+
+Once we've expanded the details for the SAML application, we'll see a bunch of data. 
+
+Directly under the *More details* button, we'll see a URL marked *Sign on URL* with a light purple *Copy* button. In SSOReady, we call this the *Redirect URL*. Simply copy this URL and paste it into SSOReady as the *Redirect URL*.
+
+{/* ====================================================
+<Frame caption="Placeholder caption">
+  <img src="/docs/assets/idp-assets/okta/okta9.png" />
+</Frame>
+*/}
+
+
+<Frame caption="Copying Okta's 'Sign on URL'; this will be the Redirect URL in SSOReady">
+  <img src="/docs/assets/idp-assets/okta/okta10.png" />
+</Frame>
+
+Scrolling somewhat further down, we'll see a similar line for a URL that Okta labels *Issuer*. In SSOReady, we call this the *IDP Entity ID*. Copy this *Issuer* URL and paste it in SSOReady as the *IDP Entity ID* in SSOReady.
+<Frame caption="Copying Okta's 'Issuer' URL; this will be the IDP Entity ID in SSOReady">
+  <img src="/docs/assets/idp-assets/okta/okta11.png" />
+</Frame>
+
+Finally, SSOReady requires that we upload a Certificate. We'll find this even further down on the same page. Okta labels this the *Signing Certificate.* Please be aware that Okta has several related buttons that will not give us what we need. We'll press the rectangular *Download* button, which will yield an `okta.cert` file. 
+
+We'll then upload `okta.cert` to SSOReady as the Certificate for this SAML Connection.
+
+<Frame caption="Downloading Okta.cert from Okta's SAML configuration page">
+  <img src="/docs/assets/idp-assets/okta/okta12.png" />
+</Frame>
+ 
+ Once we've uploaded the Certificate, we're all set! We've finished the SAML configuration. It's important to remember, though, that your customer's Okta administrator will still have to assign users to your application before they can sign in. 
+
+
+</Steps>

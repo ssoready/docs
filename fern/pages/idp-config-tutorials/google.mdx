@@ -1,0 +1,108 @@
+---
+title: 'SSO with Google Identity'
+description: 'How to set up SSOReady connections with Google Identity'
+--- 
+
+{/* ==================================================== */}
+{/*                       Google                           */}
+{/* ==================================================== */}
+
+Some companies will use Google Identity for SAML single sign-on. Please note that SAML single sign-on via Google Identity differs from "Sign in with Google," which uses the [OAuth protocol](https://datatracker.ietf.org/doc/html/rfc6749). If you want to offer your customers "Sign in with Google" functionality, you may wish to consult [Google's documentation](https://datatracker.ietf.org/doc/html/rfc6749) or use another authentication vendor. 
+
+<Warning>Before proceeding, please confirm that you indeed need SAML single sign-on via Google.</Warning>
+
+As a first step, we will need a Google Workspace administrator to create an *App*.  
+
+<Steps>
+### Creating a custom SAML app in Google Identity
+
+Starting from the Google Workspace admin page, i.e. [admin.google.com](admin.google.com), we'll need to navigate to *Apps* > *Web and mobile apps* in the left navigation bar. This link will send us to a new page.
+
+<Frame caption="Selecting Apps > Web and mobile apps in the Google Workspace admin console">
+  <img src="/docs/assets/idp-assets/google/google0.png" />
+</Frame>
+
+We'll land on a page with the header *Apps* > *Web and mobile apps*. Right under the header, we'll see a few tabs. We want to click *Add app* > *Add custom SAML app*. This link will send us to another new page.
+
+<Frame caption="Navigating to Add app > Add custom SAML app">
+  <img src="/docs/assets/idp-assets/google/google1.png" />
+</Frame>
+
+We'll land on a page with a large blue header reading *Add custom SAML app*. This page requires us to assign the application an *App name*. The *App name* matters solely for display purposes, so you'll typically want the *App name* to match your product's name.
+
+After typing the *App name*, we'll hit the blue *CONTINUE* button in the lower right.
+
+<Frame caption="Naming the application after your product">
+  <img src="/docs/assets/idp-assets/google/google2.png" />
+</Frame>
+
+
+### Configure SAML Connection | Enter Google details in SSOReady
+Clicking *CONTINUE* in the previous step will direct us to a new page, again with the same blue header. 
+
+<Info>The previous page enumerated a few steps directly below its header. It's totally normal for those to have disappeared. We're likely still on the right track. Scroll up on this page to display the steps again. </Info>
+
+Here, we'll find a few important details about the new Google Identity app that SSOReady needs to know about. We'll copy each of these from Google into SSOReady.
+
+First, let's scroll down to the field marked *SSO URL*. SSOReady calls this the *Redirect URL* on the *Identity Provider Configuration* card for your SAML Connection. Copy this URL from Google and paste it into the SSOReady web application. 
+
+<Frame caption="Copying Google's 'SSO URL' and pasting into SSOReady as the 'Redirect URL'">
+  <img src="/docs/assets/idp-assets/google/google3.png" />
+</Frame>
+
+From here, we'll direct our attention to Google's *Entity ID* field. It sits directly under the *SSO URL* from the previous step. 
+
+Copy this *Entity ID* URL and paste it into SSOReady as the *IDP Entity ID*. You'll find the input field for the *IDP Entity ID* adjacent to the *Redirect URL* input field from the previous step.
+
+<Frame caption="Copying Google's 'Entity ID' and pasting into SSOReady as the 'IDP Entity ID'">
+  <img src="/docs/assets/idp-assets/google/google3b.png" />
+</Frame>
+
+We need just one more detail from Google. 
+
+Navigate to the next field marked *Certificate*. Then, toward the top right corner of this *Certificate* field, we'll see a download icon. We want to press the download icon; doing so downloads a `.pem` file. Its name will match the header you see here, something starting with `Google` and ending in `SAML2_0`.   
+
+We need to upload this `.pem` file to SSOReady as the *Certificate* in SSOReady's web application.
+
+<Frame caption="Downloading a .pem certificate from Google and uploading it to SSOReady">
+  <img src="/docs/assets/idp-assets/google/google3b-1.png" />
+</Frame>
+
+Once we're done with this step, SSOReady has all the information it needs. Now we simply need to supply Google with the relevant information about SSOReady.
+
+A blue *CONTINUE* button sits toward the bottom right of the page. It may not be visible until you scroll down. Press this *CONTINUE* button.
+
+
+### Configure SAML Connection | Enter SSOReady details in Google
+
+Once SSOReady knows about the Google app we've created, we need to tell Google about SSOReady. Google needs two pieces of information.
+
+First, Google asks for an *ACS URL*. In SSOReady, we call this an *Assertion Consumer Service (ACS) URL*. You'll find it on the *Service Provider Configuration* card for your SAML Connection. It ends in `/acs`.
+
+Copy this *Assertion Consumer Service (ACS) URL* and paste it into Google's *ACS URL* input field. 
+
+<Frame caption="SSOReady's 'Assertion Consumer Service (ACS) URL' equates to Google's 'ACS URL'">
+  <img src="/docs/assets/idp-assets/google/google4.png" />
+</Frame>
+
+We'll walk through a similar pattern for an additional set of fields. 
+
+Directly below its *ACS URL* field, Google asks for an *Entity ID*. In SSOReady, we call this the *SP Entity ID*. You'll find this URL right next to the *Assertion Consumer Service (ACS) URL* in SSOReady's web application. As it turns out, the *SP Entity ID* looks exactly like the *Assertion Consumer Service (ACS) URL*, only it lacks the `/acs` ending. 
+
+Copy the *SP Entity ID* from SSOReady and enter it as the *Entity ID* in Google. 
+
+<Frame caption="SSOReady's 'SP Entity ID' equates to Google's 'Entity ID'">
+  <img src="/docs/assets/idp-assets/google/google4b.png" />
+</Frame>
+
+Click the blue *CONTINUE* button in the lower right corner.
+
+<Frame caption="Press 'CONTINUE' to complete the SAML app configuration">
+  <img src="/docs/assets/idp-assets/google/google5.png" />
+</Frame>
+
+Once we've completed this step, we're done! You now have your product hooked up to your customer's Google Identity instance.
+
+Please note that your users can not successfully log in until your customer's Google Identity administrator assigns them to the application we created. This, however, requires no input from you. 
+
+</Steps>
