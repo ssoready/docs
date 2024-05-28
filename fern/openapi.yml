@@ -6,7 +6,7 @@ info:
   title: SSOReadyService API
   version: 0.0.1
 servers:
-  - url: https://api.dev-ucarion.ssoready-nonprod.com
+  - url: https://api.ssoready.com
 paths:
   /v1/saml/redeem:
     post:
