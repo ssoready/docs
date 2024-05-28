@@ -1,6 +1,6 @@
 ---
 title: 'SSO with Ping Identity'
-description: 'How to set up SSOReady connections with Ping Identity'
+description: 'How to set up SSOReady connections with PingOne'
 --- 
 
 {/* ==================================================== */}
@@ -8,9 +8,9 @@ description: 'How to set up SSOReady connections with Ping Identity'
 {/* ==================================================== */}
 
 <Steps>
-### Creating an application in Ping Identity
+### Creating an application in PingOne
 
-We'll start our Ping Identity setup from your customer's administrator home page. Exactly how this looks will vary. Our example uses a newly provisioned account and therefore shows an onboarding guide; your customers' admin pages will look different in most cases.
+We'll start our PingOne setup from your customer's administrator home page. Exactly how this looks will vary. Our example uses a newly provisioned account and therefore shows an onboarding guide; your customers' admin pages will look different in most cases.
 
 Nonetheless, we'll always start by hitting *Applications* > *Applications* in the left navigation bar. This will take us to a new page.
 
@@ -32,7 +32,7 @@ Ping wants us to assign the Application an *Application Name*. Our choice of nam
 
 Then we need to tell Ping that our Application uses SAML. Click the card that reads *SAML Application*. You may notice that this changes the text on the blue button below from *Save* to *Configure*.
 
-<Frame caption="Hitting 'Telling Ping we want a SAML Application">
+<Frame caption="Telling Ping we want a SAML Application">
   <img src="/docs/assets/idp-assets/ping/ping3.png" />
 </Frame>
 
@@ -94,7 +94,7 @@ SSOReady requires a *Certificate* from Ping. You'll find the appropriate uploade
 
 We'll find this by clicking the *Download Signing Certificate* button and selecting *X509 PEM (.crt)* from the menu. 
 
-We'll see a `.crt` file begin to download. If the file has a long and non-descriptive name, that is normal. 
+We'll see a `.crt` file begin to download. The file may have a long and non-descriptive name; that is normal. 
 
 We'll then upload the file to SSOReady as-is, which allows us to move to the next step.
 
@@ -135,7 +135,7 @@ Here, we'll see three headers: *Attributes*, *PingOne Mappings*, and *Required*.
   <img src="/docs/assets/idp-assets/ping/ping14.png" />
 </Frame>
 
-Finally, we'll hit *Save* and the bottom. 
+Finally, we'll hit *Save* at the bottom of the page. 
 
 <Frame caption="Hitting 'Save' to finish our set-up">
   <img src="/docs/assets/idp-assets/ping/ping15.png" />
