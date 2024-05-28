@@ -17,6 +17,7 @@ groups:
         github:
           repository: ssoready/ssoready-python
           mode: pull-request
+          license: MIT
 
   ts-sdk:
     generators:
@@ -29,6 +30,7 @@ groups:
         github:
           repository: ssoready/ssoready-typescript
           mode: pull-request
+          license: MIT
         config:
           namespaceExport: SSOReady
           allowCustomFetcher: true
