@@ -10,45 +10,45 @@ description: 'How to set up SSOReady connections with PingOne'
 <Steps>
 ### Creating an application in PingOne
 
-We'll start our PingOne setup from your customer's administrator home page. Exactly how this looks will vary. Our example uses a newly provisioned account and therefore shows an onboarding guide; your customers' admin pages will look different in most cases.
+PingOne setup starts from your customer's administrator home page. Exactly how this looks will vary. This example uses a newly provisioned account and therefore shows an onboarding guide; your customers' admin pages will look different in most cases.
 
-Nonetheless, we'll always start by hitting *Applications* > *Applications* in the left navigation bar. This will take us to a new page.
+Nonetheless, you'll always start by hitting *Applications* > *Applications* in the left navigation bar. This will take you to a new page.
 
 <Frame caption="Navigating to Applications > Applications in the left nav bar">
   <img src="/docs/assets/idp-assets/ping/ping0.png" />
 </Frame>
 
-Once we've navigated to Ping's *Applications* page, we'll want to press the circular blue button with a plus icon toward the top left. This will trigger a slideover.
+Once you've navigated to Ping's *Applications* page, you'll press the circular blue button with a plus icon toward the top left. This will trigger a slideover.
 
 <Frame caption="Pressing the plus icon to trigger Application creation in Ping">
   <img src="/docs/assets/idp-assets/ping/ping1.png" />
 </Frame>
 
-Ping wants us to assign the Application an *Application Name*. Our choice of name has no impact on Ping's integration with SSOReady, but Ping will use the *Application Name* as your product's display name. We'll likely want the *Application Name* to match your product's name exactly.
+Ping wants you to assign the Application an *Application Name*. The name has no impact on Ping's integration with SSOReady, but Ping will use the *Application Name* as your product's display name. Write your product's name as the *Application Name*.
 
 <Frame caption="Entering an Application Name in Ping">
   <img src="/docs/assets/idp-assets/ping/ping2.png" />
 </Frame>
 
-Then we need to tell Ping that our Application uses SAML. Click the card that reads *SAML Application*. You may notice that this changes the text on the blue button below from *Save* to *Configure*.
+Then you need to tell Ping that our Application uses SAML. Click the card that reads *SAML Application*. You may notice that this changes the text on the blue button below from *Save* to *Configure*.
 
 <Frame caption="Telling Ping we want a SAML Application">
   <img src="/docs/assets/idp-assets/ping/ping3.png" />
 </Frame>
 
-Here, simply select *Configure*. This finalizes creation of our SAML application and progresses us to the next step.
+Here, select *Configure*. This finalizes creation of the SAML application and progresses you to the next step.
 
 <Frame caption="Selecting 'Configure'" in Ping>
   <img src="/docs/assets/idp-assets/ping/ping4.png" />
 </Frame>
 
-Next, we'll have to enter some details about SSOReady into Ping. 
+Next, you'll have to enter some details about SSOReady into Ping. 
 
 
 
 ### Configuring a SAML Connection | Entering SSOReady data in Ping Identity
 
-We'll now wee a page with a *SAML Configuration* header. It will present three radio button options; of these, we'll select *Manually Enter*. Doing so will trigger two input forms below the radio buttons.
+You'll now wee a page with a *SAML Configuration* header. It will present three radio button options; of these, select *Manually Enter*. Doing so will trigger two input forms below the radio buttons.
 
 
 
@@ -56,9 +56,9 @@ We'll now wee a page with a *SAML Configuration* header. It will present three r
   <img src="/docs/assets/idp-assets/ping/ping5.png" />
 </Frame>
 
-Ping Identity requires two pieces of information about the SAML Connection we'll establish with SSOReady. Let's start with the first one.
+Ping Identity requires two pieces of information about the SAML Connection. 
 
-Ping first asks for *ACS URLs*. SSOReady provides exactly one of these. You'll find it on the detail page for your SAML Connection in the SSOReady web application. We've labeled it *Assertion Consumer Service (ACS) URL*. It always ends in `/acs`.
+Ping first asks for *ACS URLs*. SSOReady provides exactly one of these. You'll find it on the detail page for your SAML Connection in the SSOReady web application. SSOReady has labeled it *Assertion Consumer Service (ACS) URL*. It always ends in `/acs`.
 
 Copy the URL from SSOReady and paste it into Ping here.
 
@@ -66,13 +66,13 @@ Copy the URL from SSOReady and paste it into Ping here.
   <img src="/docs/assets/idp-assets/ping/ping6.png" />
 </Frame>
 
-We'll do something similar again for a field Ping calls *Entity ID*. In SSOReady, we call this an *SP Entity ID*. We can find it adjacent to the *Assertion Consumer Service (ACS) URL* in the SSOReady web application. One might notice it matches the *Assertion Consumer Service (URL)* exactly, except it lacks the `/acs` suffix. 
+You'll do something similar again for a field Ping calls *Entity ID*. SSOReady calls this an *SP Entity ID*. You can find it adjacent to the *Assertion Consumer Service (ACS) URL* in the SSOReady web application. One might notice it matches the *Assertion Consumer Service (URL)* exactly, except it lacks the `/acs` suffix. 
 
 <Frame caption="Pasting SSOReady's 'SP Entity ID' in Ping as the 'Entity ID'">
   <img src="/docs/assets/idp-assets/ping/ping7.png" />
 </Frame>
 
-We'll then simply hit *Save* toward the bottom of the page, concluding our entry of information about SSOReady into Ping. 
+Hit *Save* toward the bottom of the page.
 
 <Frame caption="Hitting 'Save' to finish our set-up">
   <img src="/docs/assets/idp-assets/ping/ping8.png" />
@@ -82,45 +82,47 @@ We'll then simply hit *Save* toward the bottom of the page, concluding our entry
 
 ### Configuring a SAML Connection | Entering Ping Identity data into SSOReady
 
-Just as we entered information about SSOReady into Ping, so too will we need to enter information about Ping into SSOReady. 
+Now you'll need to enter information about Ping into SSOReady. 
 
-To start, let's make sure we find ourselves on the *Configure* tab. In a moment, we'll pull three pieces of information from this tab.
+To start, make sure you're on the *Configure* tab. In a moment, you'll pull three pieces of information from this tab.
 
-<Frame caption="Confirming that we're on the 'Configure' tab in Ping">
+<Frame caption="Confirming that you're on the 'Configure' tab in Ping">
   <img src="/docs/assets/idp-assets/ping/ping9.png" />
 </Frame>
 
 SSOReady requires a *Certificate* from Ping. You'll find the appropriate uploader on the SAML Connection detail page in your SSOReady web application. 
 
-We'll find this by clicking the *Download Signing Certificate* button and selecting *X509 PEM (.crt)* from the menu. 
+To get the file from Ping, click the *Download Signing Certificate* button. Select *X509 PEM (.crt)* from the menu. 
 
-We'll see a `.crt` file begin to download. The file may have a long and non-descriptive name; that is normal. 
+You'll see a `.crt` file begin to download. The file may have a long and non-descriptive name; that is normal. 
 
-We'll then upload the file to SSOReady as-is, which allows us to move to the next step.
+Upload the file to SSOReady.
 
 <Frame caption="Finding the 'Certificate' in Ping">
   <img src="/docs/assets/idp-assets/ping/ping10.png" />
 </Frame>
 
-After we've taken care of the Certificate, we'll need a field that SSOReady calls an *IDP Entity ID*. It's an input field on the same card as the Certificate uploader.
+After you've taken care of the Certificate, you'll need a field that SSOReady calls an *IDP Entity ID*. It's an input field on the same card as the Certificate uploader.
 
-Ping calls this information an *Issuer ID* and places it directly under the *Download Signing Certificate* from our previous step. 
+Ping calls this information an *Issuer ID* and places it directly under *Download Signing Certificate* from our previous step. 
 
-We'll simply copy this URL from Ping and paste it into SSOReady as the *IDP Entity ID*.
+Copy this URL from Ping and paste it into SSOReady as the *IDP Entity ID*.
 
 <Frame caption="Copying the 'Issuer ID' from Ping Identity">
   <img src="/docs/assets/idp-assets/ping/ping11.png" />
 </Frame>
 
-Finally, we'll find a field that Ping calls the *Single Signon Service*. In SSOReady, we call this a *Redirect URL*. Just as we did before, we'll copy the *Single Sign On Service* URL and paste it into SSOReady as the *Redirect URL*.
+Finally, look for a field that Ping calls the *Single Signon Service*. SSOReady calls this a *Redirect URL*. 
+
+Copy the *Single Sign On Service* URL and paste it into SSOReady as the *Redirect URL*.
 
 <Frame caption="Copying the 'Single Signon Service URL from Ping Identity">
   <img src="/docs/assets/idp-assets/ping/ping12.png" />
 </Frame>
 
-Once we've copied over the *Single Signon Service* URL, we're done swapping information between SSOReady and Ping Identity, which means we're almost finished with set-up altogether. 
+Once you've copied over the *Single Signon Service* URL, you're done swapping information between SSOReady and Ping Identity.
 
-We'll now navigate to the *Attribute Mappings* tab to adjust one final setting in Ping. 
+Now navigate to the *Attribute Mappings* tab to adjust one final setting in Ping. 
 
 <Frame caption="Navigating to the 'Attribute Mappings' tab'">
   <img src="/docs/assets/idp-assets/ping/ping13.png" />
@@ -129,21 +131,21 @@ We'll now navigate to the *Attribute Mappings* tab to adjust one final setting i
 
 ### Configuring a SAML Connection | Adjusting Ping attribute mappings
 
-Here, we'll see three headers: *Attributes*, *PingOne Mappings*, and *Required*. Where we see *saml_subject* under *Attributes*, change the corresponding *PingOne Mappings* field. This will trigger a dropdown selector. We want this field set to *Email Address*. 
+Here, you'll see three headers: *Attributes*, *PingOne Mappings*, and *Required*. Where you see *saml_subject* under *Attributes*, change the corresponding *PingOne Mappings* field. This will trigger a dropdown selector. Make sure you've set this field to *Email Address*. 
 
 <Frame caption="Adjusting the 'saml_subject' in Ping">
   <img src="/docs/assets/idp-assets/ping/ping14.png" />
 </Frame>
 
-Finally, we'll hit *Save* at the bottom of the page. 
+Hit *Save* at the bottom of the page. 
 
 <Frame caption="Hitting 'Save' to finish our set-up">
   <img src="/docs/assets/idp-assets/ping/ping15.png" />
 </Frame>
 
-In the top right, we'll change the toggle from *off* to *on*. 
+In the top right, hange the toggle from *off* to *on*. 
 
-We're all done! 
+You're all done! 
 
 <Frame caption="Turning the application on">
   <img src="/docs/assets/idp-assets/ping/ping16.png" />
