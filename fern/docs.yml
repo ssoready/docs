@@ -18,7 +18,7 @@ navigation:
       - page: Organizations
         path: ./pages/ssoready-concepts/organizations.mdx
       - page: SAML Connections
-        path: ./pages/ssoready-concepts/SAML-connections.mdx
+        path: ./pages/ssoready-concepts/saml-connections.mdx
       - page: Login flows
         path: ./pages/ssoready-concepts/login-flows.mdx
   - api: API Reference
