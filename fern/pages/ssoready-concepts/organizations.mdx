@@ -1,0 +1,44 @@
+---
+title: 'SSOReady concepts: Organizations'
+description: 'Understanding Organizations in SSOReady'
+---
+
+In SSOReady, each [Environment](environments) has some number of *Organizations*. 
+
+Each Organization should represent exactly one of your customer accounts. Your customer accounts should not have more than one corresponding Organization. 
+
+You must create an Organization for a customer before you can create any [SAML Connections](#organizations-and-saml-connections) for that customer. 
+
+<Note> We recognize that some companies will find it messy to assign unique identifiers to customers. For example, you might need to decide whether Salesforce and Slack represent distinct entities. We **strongly** recommend that you maintain whatever convention your production application uses. </Note>
+
+### Descriptive properties of Organizations
+
+SSOReady provides two ways to identify Organizations: *Organization ID* and *External ID*. 
+
+SSOReady will automatically generate an Organization ID for you. You cannot change the Organization ID. The Organization ID always begins with an `org_` prefix, and it looks something like this: `org_0pu0u1j3xxxaejsn90wbjdy7h`. 
+
+The External ID allows you to describe SSOReady Organizations using any identifier that suits your needs. Most commonly, you would enter the unique identifier that you use in your own application. 
+
+For example, you might have some `customer_id` field that increments by one for every new customer (i.e. `1` then `2` and so on). You could use those values as the External ID for Organizations in SSOReady.
+
+Why does this matter? You can use this External ID in API calls to SSOReady, using the `organizationExternalID` field as documented [here](/docs/api-reference/saml/get-saml-redirect-url). You don't need to use SSOReady's Organization ID anywhere in your code.
+
+
+### Organizations and their domains
+
+Every time you create an Organization, SSOReady will ask you to supply *Domains*. You must provide at least one such domain before SSOReady can successfully process SAML logins for you. 
+
+SSOReady follows a common convention for identifying your users; it uses the email addresses it receives from IDPs. From the email address, SSOReady extracts a domain name. 
+
+As a security precaution, SSOReady allows logins for the Organization if and **only if** the domain it pulls from a users' email address exists among the domains you listed for that Organization. 
+
+Here's an example. Let's say you have a customer called AcmeCorp with the domain name `acmecorp.com`. You would include `acmecorp.com` on AcmeCorp's list of domains. If a user `john.doe@acmecorp-alternate-domain.com` then attempted a SAML login, SSOReady would not grant that user access to your application. Adding `acmecorp-alternate-domain.com` to your list of domains would cause SSOReady to allow access.
+
+### Organizations and SAML Connections
+
+Each Organization you set up in SSOReady can have one or more SAML Connections. SAML Connections in SSOReady store the configuration settings that SSOReady needs to exchange with your customers' identity providers. You can read more about SAML Connections [here](saml-connections). 
+
+
+### Bulk updates
+
+SSOReady does not currently support bulk updates (e.g. CSV uploads) to Organizations. Similarly, SSOReady does not currently surface an public endpoint for creating Organizations. You will need to create Organizations from the web application. If you have a large volume of data to process, please get in touch at contact@ssoready.com, and we can help. 

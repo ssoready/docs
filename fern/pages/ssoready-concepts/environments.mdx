@@ -1,0 +1,59 @@
+---
+title: 'SSOReady concepts: Environments'
+description: 'Understanding Environments in SSOReady'
+---
+
+### Structuring SSOReady Environments
+
+SSOReady *Environments* help you use our services in different applications or with different settings -- without requiring you to switch accounts.
+
+You should map SSOReady Environments onto your own deployment environments. More concretely, we recommend that you maintain three Environments in SSOReady:
+<ul>
+<li>Local development</li>
+<li>Staging</li>
+<li>Production</li>
+</ul>
+
+You can deviate from this structure if doing so suits your needs.
+
+If you're unsure how you want to use SSOReady Environments, feel welcome to reach out at contact@ssoready.com, and we'll be happy to help. 
+
+### Properties of SSOReady environments
+
+#### Descriptive properties
+
+Each Environment has a unique identifier. We call this an *Environment ID*. Environment IDs always begin with the same `env_` prefix. They look like this: `env_dwsxxx0cav2ku5j0uvlazwois`.
+
+For each Environment that you create, you will also choose a *Display Name*, which is just a text field. We recommend that you name each SSOReady Environment for its associated deployment environment (e.g. calling the production environment in SSOReady "Production.")
+
+#### Environments' redirect URLs
+
+When you create an Environment in SSOReady, we'll ask you to provide a *Redirect URL*. The placeholder text will look something like `http://localhost:8080/ssoready/callback`.
+
+For the purposes of understanding this Redirect URL, it's helpful to back up a bit. 
+
+You will need two endpoints to process SAML logins with SSOReady:
+<ul>
+<li>One to send your user to an IDP like Okta, Entra, OneLogin, etc.</li>
+<li>Another to receive data and execute the logic for a successful login.</li>
+</ul>
+
+The Redirect URL is the **second** of these endpoints. When SSOReady learns that one of your users is trying to log in with SAML, it needs to know where in your application to send the user. 
+
+You should set up a distinct callback endpoint for each Environment. Your local development application should likely use something like `http://localhost:8080/ssoready/callback`. Your production application might have a Redirect URL that looks like `https://app.yourapp.com/ssoready/callback`.
+
+You can change this later.
+
+#### API keys and environments
+
+SSOReady scopes each API key to a specific Environment.
+
+You will need to create at least one API key for each Environment that you use. If you maintain local development, staging, and production Environments in SSOReady, you will need a local development API key, a staging API key, and a production API key. 
+
+#### Organizations and environments
+
+You will create *Organizations* within Environments. Each Organization will belong to exactly one Environment. You can read more about Organizations [here](organizations).
+
+#### Using Environments in the SDKs
+
+When you call our APIs, you don't need to use an Environment ID. We scope API keys to Environments, so if you're using a valid key, we'll know what Environment to use.
