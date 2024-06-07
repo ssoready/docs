@@ -1,0 +1,18 @@
+---
+title: 'SSOReady concepts: Login Flows'
+description: 'Understanding Login Flows in SSOReady'
+---
+
+Each time one of your users attempts to log in via SAML, SSOReady will create a *Login Flow*. Login Flows store data related to your user's login attempt. Reviewing this data can help you audit and debug your [SAML Connections](saml-connections). 
+
+Every Login Flow will track the following:
+<ul>
+<li>**Started**: a timestamp for first user interaction in the Login Flow</li>
+<li>**Last Activity**: a timestamp for the most recent user interaction in the Login Flow</li>
+<li>**Status**: shows whether the login succeeded, failed, or otherwise remains in progress</li>
+<li>**State**: tracks the [RelayState](https://stackoverflow.com/questions/34350160/what-is-exactly-relaystate-parameter-used-in-sso-ex-saml) for the SAML Login</li>
+<li>**User Email**: the email address associated with the user who attempted to log in</li>
+<li>**User Attributes**: any additional attributes supplied by your user's identity provider</li>
+</ul>
+
+Moreover, each Login Flow will also show all of the XML and JSON exchanged in the course of your user's SAML login.

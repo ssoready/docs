@@ -9,6 +9,18 @@ navigation:
     contents:
       - page: Quickstart
         path: ./pages/quickstart.mdx
+  - section: SSOReady concepts
+    contents:
+      - page: Overview
+        path: ./pages/ssoready-concepts/overview.mdx
+      - page: Environments
+        path: ./pages/ssoready-concepts/environments.mdx
+      - page: Organizations
+        path: ./pages/ssoready-concepts/organizations.mdx
+      - page: SAML Connections
+        path: ./pages/ssoready-concepts/SAML-connections.mdx
+      - page: Login flows
+        path: ./pages/ssoready-concepts/login-flows.mdx
   - api: API Reference
     snippets:
       python: ssoready
