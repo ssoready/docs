@@ -9,7 +9,21 @@ Each Organization should represent exactly one of your customer accounts. Your c
 
 You must create an Organization for a customer before you can create any [SAML Connections](#organizations-and-saml-connections) for that customer. 
 
-<Note> We recognize that some companies will find it messy to assign unique identifiers to customers. For example, you might need to decide whether Salesforce and Slack represent distinct entities. We **strongly** recommend that you maintain whatever convention your production application uses. </Note>
+<Note> We recognize that some companies will find it messy to assign unique identifiers to customers. We **strongly** recommend that you maintain whatever convention your production application uses. If you feel unsure about your company's convention, we recommend spending the time to investigate.</Note>
+
+### What SSOReady Organizations look like
+
+Below, you'll find a GIF that shows a common flow users will follow:
+<ol>
+<li>Within an Environment, users press *Create organization*</li>
+<li>Users assign an *External ID* to the Organization</li>
+<li>Users assign any relevant *Domains* to the Organization</li>
+</ol>
+
+<figure>
+<img src="/docs/assets/ssoready-concepts-assets/organizationconfig.gif" style="border-radius: 10px"/>
+<figcaption style = "text-align:center"> [Click image to enlarge] Creating an Organization in SSOReady </figcaption>
+</figure>
 
 ### Descriptive properties of Organizations
 
@@ -30,7 +44,7 @@ Every time you create an Organization, SSOReady will ask you to supply *Domains*
 
 SSOReady follows a common convention for identifying your users; it uses the email addresses it receives from IDPs. From the email address, SSOReady extracts a domain name. 
 
-As a security precaution, SSOReady allows logins for the Organization if and **only if** the domain it pulls from a users' email address exists among the domains you listed for that Organization. 
+SSOReady allows users to log in only when the domain on their email addresses have been added to the Organization's domains in SSOReady. This serves as an additional security precaution.
 
 Here's an example. Let's say you have a customer called AcmeCorp with the domain name `acmecorp.com`. You would include `acmecorp.com` on AcmeCorp's list of domains. If a user `john.doe@acmecorp-alternate-domain.com` then attempted a SAML login, SSOReady would not grant that user access to your application. Adding `acmecorp-alternate-domain.com` to your list of domains would cause SSOReady to allow access.
 
