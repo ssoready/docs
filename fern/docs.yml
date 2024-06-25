@@ -9,6 +9,11 @@ navigation:
     contents:
       - page: Quickstart
         path: ./pages/quickstart.mdx
+  - section: OAuth / NextAuth.js
+    slug: oauth-nextauth
+    contents:
+      - page: SAML over OAuth (SAML NextAuth.js integration)
+        path: ./pages/saml-oauth.mdx
   - section: SSOReady concepts
     contents:
       - page: Overview
