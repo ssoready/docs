@@ -218,7 +218,7 @@ From there, whenever you want to log a user in, you run:
 ```typescript
 import { signIn } from "next-auth/react"
 
-signIn("ssoready", undefined, { organizationExternalId: "..." })
+signIn("ssoready-saml", undefined, { organizationExternalId: "..." })
 ```
 
 The SSOReady OAuth provider will give you profiles containing an `email`, `organizationId`, and
