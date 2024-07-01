@@ -137,14 +137,20 @@ How you tell us about your desired "SSOReady OAuth Redirect URI", as well as wha
 
 ## Code implementation for NextAuth.js
 
-If you're using NextAuth.js, you'll need to make the following change to your NextAuth setup:
+If you're using NextAuth.js, you'll need to add a new `provider` to your `NextAuth` initialization. How you do this
+depends on whether you're using `next-auth@v4` (the more common option today) or `next-auth@beta` (also known as
+"Auth.js"):
+
+<Tabs>
+<Tab title="next-auth@v4 (more common)">
+Add the following to wherever you construct your `NextAuth` instance:
 
 ```typescript
 const handler = NextAuth({
   providers: [
     // add the following provider:
     {
-      id: "ssoready",
+      id: "ssoready-saml",
       name: "SSOReady SAML",
       type: "oauth",
       wellKnown: "https://auth.ssoready.com/v1/oauth/.well-known/openid-configuration",
@@ -162,13 +168,57 @@ const handler = NextAuth({
   ],
 })
 ```
+</Tab>
+<Tab title="next-auth@beta (aka Auth.js)">
+Add the following to wherever you construct your `NextAuth` instance:
+
+```typescript
+import NextAuth from "next-auth"
+import type { OAuthConfig, OAuthUserConfig } from "next-auth/providers"
+
+export interface SSOReadySAMLProfile extends Record<string, any> {
+  id: string
+  email: string
+  organizationId: string
+  organizationExternalId: string
+}
+
+function SSOReadySAML<P extends SSOReadySAMLProfile>(
+  options: OAuthUserConfig<P>
+): OAuthConfig<P> {
+  return {
+    id: "ssoready-saml",
+    name: "SSOReady SAML",
+    type: "oidc",
+    issuer: "https://auth.ssoready.com/v1/oauth",
+    profile(profile) {
+      return {
+        id: profile.sub,
+        email: profile.sub,
+        organizationId: profile.organizationId,
+        organizationExternalId: profile.organizationExternalId,
+      }
+    },
+    client: {
+      token_endpoint_auth_method: "client_secret_post",
+    }
+  }
+}
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  // add the following provider to the list:
+  providers: [SSOReadySAML]
+})
+```
+</Tab>
+</Tabs>
 
 From there, whenever you want to log a user in, you run:
 
 ```typescript
 import { signIn } from "next-auth/react"
 
-signIn("ssoready", undefined, { organizationExternalId: "..." })
+signIn("ssoready-saml", undefined, { organizationExternalId: "..." })
 ```
 
 The SSOReady OAuth provider will give you profiles containing an `email`, `organizationId`, and
@@ -180,6 +230,25 @@ will not work with SSOReady, because that UI does not provide any `organizationE
 constraint of SAML. You must always log in
 via SAML *to a particular customer's SAML instance*. That's just how
 SAML works. That's why `organizationExternalId` is required.
+
+Finally, you'll also need to add to your `.env` file these values:
+
+<Tabs>
+<Tab title="next-auth@v4 (more common)">
+```text
+SSOREADY_CLIENT_ID=saml_oauth_client_...
+SSOREADY_CLIENT_SECRET=ssoready_oauth_client_secret_...
+```
+</Tab>
+<Tab title="next-auth@beta (aka Auth.js)">
+```text
+AUTH_SSOREADY_SAML_ID=saml_oauth_client_...
+AUTH_SSOREADY_SAML_SECRET=ssoready_oauth_client_secret_...
+```
+</Tab>
+</Tabs>
+
+You'll get these environment variable values in ["Creating SAML OAuth clients"](#creating-saml-oauth-clients) below.
 
 # Setting up SSOReady
 
@@ -204,13 +273,13 @@ logins"](#handling-saml-logins).
 NextAuth.js calls the SSOReady OAuth Redirect URI a "redirect URI" or "callback URL". Its value should be something like:
 
 ```text
-http://localhost:3000/api/auth/callback/ssoready
+http://localhost:3000/api/auth/callback/ssoready-saml
 ```
 
 or
 
 ```text
-https://yourapp.com/api/auth/callback/ssoready
+https://yourapp.com/api/auth/callback/ssoready-saml
 ```
 
 (See [Step 2 of NextAuth.js's OAuth "How-to"](https://next-auth.js.org/configuration/providers/oauth#how-to). The
@@ -222,11 +291,11 @@ SAML OAuth Clients are scoped to an environment. When viewing an environment in 
 navbar. Then click "Create SAML OAuth Client". A popup will show you your new SAML OAuth client's secret (it starts with
 `ssoready_oauth_client_secret_...`). That's
 the `client_secret` you'll
-use in ["Handling SAML Logins"](#handling-saml-logins).
+use in ["Handling SAML Logins"](#handling-saml-logins) or [in your NextAuth.js config](#code-implementation-for-nextauthjs).
 
 After clicking "View SAML OAuth Client" on that popup, you'll
 also see the client's ID (it starts with `saml_oauth_client_...`). That's the `client_id` you'll use in ["Initiating SAML
-Logins"](#initiating-saml-logins) and in ["Handling SAML Logins"](#handling-saml-logins).
+Logins"](#initiating-saml-logins) and in ["Handling SAML Logins"](#handling-saml-logins), or [in your NextAuth.js config](#code-implementation-for-nextauthjs).
 
 ## Creating organizations
 
