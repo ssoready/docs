@@ -26,6 +26,10 @@ navigation:
         path: ./pages/ssoready-concepts/saml-connections.mdx
       - page: Login Flows
         path: ./pages/ssoready-concepts/login-flows.mdx
+  - section: Self-Hosting
+    contents:
+      - page: Self-Hosting SSOReady
+        path: ./pages/self-hosting.mdx
   - api: API Reference
     snippets:
       python: ssoready

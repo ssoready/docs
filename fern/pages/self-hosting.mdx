@@ -1,0 +1,278 @@
+---
+title: "Self-Hosting SSOReady"
+subtitle: "How to manage SAML entirely in your cloud or your customer's cloud"
+---
+
+SSOReady is a free, MIT-licensed way to add SAML support to your app. A free hosted version of SSOReady is available
+online at [app.ssoready.com](https://app.ssoready.com). This article explains how to run SSOReady on your own machines,
+instead of using the public, free version of SSOReady at [app.ssoready.com](https://app.ssoready.com).
+
+<Tip>
+This article focuses on running SSOReady in your own cloud. You can also run SSOReady in your customer's cloud, so that
+SSOReady becomes a component of your larger on-premises offering to your customers; the only difference is that you'll
+need to follow these instructions for each customer.
+</Tip>
+
+# SSOReady Components
+
+<Frame caption="Diagram of components involved in an SSOReady deployment">
+    <img src="self-hosting-diagram.png" />
+</Frame>
+
+SSOReady requires four essential components:
+
+* `ssoready-app` is the webapp for SSOReady. In the free hosted version, this lives at https://app.ssoready.com.
+* `ssoready-api` is what `ssoready-app` and your code (either directly, or using the SSOReady SDKs) talks to. In the free hosted version, this lives at https://api.ssoready.com.
+* `ssoready-auth` is proxy for SAML interactions. In the free hosted version, this lives at https://auth.ssoready.com.
+* `ssoready-db` is a PostgreSQL database that `ssoready-api` and `ssoready-auth` talk to. This is where SSOReady keeps state.
+
+To that end, SSOReady maintains four Docker containers you can use to self-host:
+
+* `ssoready/ssoready-app` runs the webapp
+* `ssoready/ssoready-api` runs the SSOReady API
+* `ssoready/ssoready-auth` runs the public-facing SSOReady SAML proxy
+* `ssoready/ssoready-migrate` runs SSOReady's database migrations against a Postgres database
+
+# Example docker-compose setup
+
+Here's an example of how you can self-host SSOReady using `docker compose`. You can copy-paste this into
+`docker-compose.yml` and run `docker compose up` to test it yourself right now.
+
+```yaml docker-compose.yml
+version: "2.4"
+services:
+  # this is an example postgres-in-docker setup, but any postgres (even outside of docker) will work
+  postgres:
+    image: postgres:15.3
+    environment:
+      POSTGRES_PASSWORD: "password"
+    ports:
+      - "5432:5432"
+
+  ssoready-auth:
+    image: ssoready/ssoready-auth:main
+    environment:
+      AUTH_SERVE_ADDR: ":80"
+
+      # Have this point at ssoready-db. In this example, that's the `postgres` docker-compose service above.
+      AUTH_DB: "postgres://postgres:password@postgres/postgres"
+
+      # Have this point at where this service will be accessible from the public internet.
+      AUTH_BASE_URL: "http://localhost:8080"
+
+      # See "SAML State Signing Key" below. For initial testing, this default value is fine.
+      AUTH_SAML_STATE_SIGNING_KEY: "0000000000000000000000000000000000000000000000000000000000000000"
+    ports:
+      - "8080:80"
+
+  ssoready-api:
+    image: ssoready/ssoready-api:main
+    environment:
+      API_SERVE_ADDR: ":80"
+
+      # Have this point at ssoready-db. In this example, that's the `postgres` docker-compose service above.
+      API_DB: "postgres://postgres:password@postgres/postgres"
+
+      # Have this point at where the ssoready-auth service will be accessible from the public internet.
+      API_DEFAULT_AUTH_URL: "http://localhost:8080"
+
+      # See "Supporting Login Methods" below.
+      API_GOOGLE_OAUTH_CLIENT_ID: "171906208332-m8dg2p6av2f0aa7lliaj6oo0grct57p1.apps.googleusercontent.com"
+
+      # See "SAML State Signing Key" below. For initial testing, this default value is fine.
+      API_SAML_STATE_SIGNING_KEY: "0000000000000000000000000000000000000000000000000000000000000000"
+    ports:
+      - "8081:80"
+
+  ssoready-app:
+    image: ssoready/ssoready-app:main
+    environment:
+      APP_SERVE_PORT: "80"
+
+      # Have this point at where the ssoready-app service will be accessible from the public internet.
+      APP_APP_URL: "http://localhost:8082"
+
+      # Have this point at where the ssoready-api service will be accessible from the public internet,
+      APP_PUBLIC_API_URL: "http://localhost:8081"
+
+      # Have this point at APP_PUBLIC_API_URL, followed by "/internal/connect".
+      APP_API_URL: "http://localhost:8081/internal/connect"
+
+      # See "Supporting Login Methods" below.
+      APP_GOOGLE_OAUTH_CLIENT_ID: "171906208332-m8dg2p6av2f0aa7lliaj6oo0grct57p1.apps.googleusercontent.com"
+    ports:
+      - "8082:80"
+```
+
+(The example above requires localhost ports 5432, 8080, 8081, and 8082.)
+
+Now, you'll need to set up the database tables that SSOReady requires. Do so by running:
+
+```bash
+docker run --network=host ssoready/ssoready-migrate:main -d 'postgres://postgres:password@localhost/postgres?sslmode=disable' up
+```
+
+From here, you can visit `localhost:8082`, log in via Google, and then start using SSOReady as usual. To use the
+SSOReady SDKs with your locally-running instance of SSOReady, see ["Configuring SDKs to talk to self-hosted SSOReady
+instances"](#configuring-sdks-to-talk-to-self-hosted-ssoready-instances) below.
+
+# Putting it in production
+
+The example setup above is meant for use in `localhost`. There are a few things you need to do to make it work in
+production:
+
+1. Configure a "SAML State Signing Key"
+2. (Only required if you use [SAML-over-OAuth](/docs/saml-over-oauth-saml-nextauth-integration)) Configure an `id_token` signing key
+3. Configure ways to log into `ssoready-app`
+
+The sections below detail how you'll do this.
+
+## SAML State Signing Key
+
+In the example configuration above, `ssoready-auth` and `ssoready-api` both have a "SAML State Signing Key" set to all
+zeroes. That's a value that's adequate for development, but in production you **must** use a random value. Generate this
+random value by running:
+
+```bash
+openssl rand -hex 32
+```
+
+`ssoready-auth` and `ssoready-api` must use the same value for this secret. It is safe to rotate this value at any time
+by using a new random, 64-digit hex number.
+
+## `id_token` Signing Key
+
+<Note>
+This section is only required if you use [SAML-over-OAuth](/docs/saml-over-oauth-saml-nextauth-integration).
+</Note>
+
+SSOReady's SAML-over-OAuth integration has `ssoready-auth` act as an OIDC-compliant server. Such servers need to issue
+`id_token` values, which are RSA-signed JSON Web Tokens. `ssoready-auth` by default generates a new, random RSA keypair
+to sign these `id_token` values. This default doesn't work well if you're running multiple `ssoready-auth` instances
+behind a load balancer, or if `ssoready-auth` instances are frequently being recreated.
+
+To configure an `id_token` signing key, generate a new base64-encoded RSA private key like so:
+
+```bash
+openssl genrsa 2048 | base64
+```
+
+And then update `ssoready-auth`'s `AUTH_OAUTH_ID_TOKEN_PRIVATE_KEY` to be that value.
+
+## Supporting Login Methods
+
+To log into `ssoready-app`, you need to configure at least one of the following login methods:
+
+* Log in with Google
+* Email (aka "magic links")
+* Log in with Microsoft
+
+If you don't configure any of these, then there's no way to log into SSOReady. The simplest login method to add is
+Google, followed by email, followed by Microsoft.
+
+### Configuring log in with Google
+
+To configure Google-based social logins into `ssoready-app`, you need to populate the following env vars:
+
+* `APP_GOOGLE_OAUTH_CLIENT_ID` in `ssoready-app`
+* `API_GOOGLE_OAUTH_CLIENT_ID` in `ssoready-api`
+
+To do so, you need to create a Google OAuth client. Follow [Google's docs for creating an OAuth
+client](https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow). You'll want to configure the
+same "Authorized Javascript origin" as the value you chose for `APP_APP_URL`. From there, the client ID (ending in
+`apps.googleusercontent.com`) is the value you'll want to put in the two env vars.
+
+### Configuring email-based logins
+
+<Note>
+    Configuring log in with email is optional. Most users only set up Google.
+</Note>
+
+To configure email-based logins into `ssoready-app`, you need to populate the following env vars:
+
+* `API_RESEND_API_KEY` in `ssoready-api`
+* `API_EMAIL_CHALLENGE_FROM` in `ssoready-api`
+* `API_EMAIL_VERIFICATION_ENDPOINT` in `ssoready-api`
+
+SSOReady uses [Resend](https://resend.com) to send transactional emails. Resend's free tier is more than enough here;
+you will not need to pay for Resend. To get an API key, you will:
+
+1. Sign up for Resend for free
+2. [Configure a domain to send emails from](https://resend.com/docs/dashboard/domains/introduction)
+3. [Create an API key](https://resend.com/docs/dashboard/api-keys/introduction). Make sure the API key has sending
+privileges for your domain.
+
+From there, configure:
+
+* `API_RESEND_API_KEY` to be your Resend API key. It starts with `re_...`.
+* `API_EMAIL_CHALLENGE_FROM` to be `noreply@DOMAIN`, where `DOMAIN` is the domain you configured in step (2) above.
+* `API_EMAIL_VERIFICATION_ENDPOINT` to be the same value you chose for `APP_APP_URL` in `ssoready-app`, but followed by `/verify-email`.
+
+### Configuring log in with Microsoft
+
+<Note>
+    Configuring log in with Microsoft is optional. Most users only set up Google.
+</Note>
+
+To configure Microsoft-based logins into `ssoready-app`, you need to populate the following env vars:
+
+* `API_MICROSOFT_OAUTH_CLIENT_ID` in `ssoready-api`
+* `API_MICROSOFT_OAUTH_CLIENT_SECRET` in `ssoready-api`
+* `API_MICROSOFT_OAUTH_REDIRECT_URI` in `ssoready-api`
+* `APP_MICROSOFT_OAUTH_CLIENT_ID` in `ssoready-app`
+* `APP_MICROSOFT_OAUTH_REDIRECT_URI` in `ssoready-app`
+
+Set `API_MICROSOFT_OAUTH_REDIRECT_URI` and `APP_MICROSOFT_OAUTH_REDIRECT_URI` to be the same value as `APP_APP_URL` in
+`ssoready-app`, but followed by `/internal/microsoft-callback`.
+
+To get the `CLIENT_ID` and `CLIENT_SECRET` vars, you need to create a Microsoft OAuth client. Follow [Microsoft's docs
+for creating an OAuth app](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app?tabs=certificate).
+
+* Choose "Accounts in any organizational directory and personal Microsoft accounts" for supported account types.
+* Choose the "Web" platform type, and the redirect URL will be the same as the `REDIRECT_URI` env vars above.
+* The app's "Application (Client) ID", a UUID, is what you use for `API_MICROSOFT_OAUTH_CLIENT_ID` and `APP_MICROSOFT_OAUTH_CLIENT_ID`.
+* Create a "client secret" credential (Microsoft documents this [here](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app?tabs=client-secret#add-credentials) under the "Add a client secret" tab). The secret's value is what you put in `API_MICROSOFT_OAUTH_CLIENT_SECRET`.
+
+# Configuring SDKs to talk to self-hosted SSOReady instances
+
+By default, the SSOReady SDKs expect to talk to `https://api.ssoready.com`. When you're running SSOReady self-hosted,
+you need to point it to your own instance of `ssoready-api`. Here's how you do that, supposing your `ssoready-api` lives
+at `localhost:8081` like in the example above:
+
+<CodeBlocks>
+```typescript title="TypeScript"
+import { SSOReadyClient } from "ssoready";
+
+const ssoready = new SSOReadyClient({
+    // add this new `environment` parameter
+    environment: "http://localhost:8081",
+    apiKey: "ssoready_sk_...",
+});
+```
+
+```python title="Python"
+from ssoready.client import SSOReady
+
+client = SSOReady(
+    # add this new `base_url` parameter
+    base_url="http://localhost:8081",
+    api_key="ssoready_sk_..."
+)
+```
+</CodeBlocks>
+
+# Running migrations on `ssoready-db`
+
+SSOReady requires `ssoready-db` to be a Postgres database. The `ssoready/ssoready-migrate` docker image can take any
+Postgres database, and set it up to have the database tables SSOReady requires. `ssoready-migrate` is idempotent; it is
+safe to run it multiple times or at any time.
+
+```bash
+docker run --network=host ssoready/ssoready-migrate:main -d 'postgres://...' up
+```
+
+The `-d` (`--database-url`) parameter requires a `postgres://` URI, of the form:
+
+```text
+postgres://username:password@host:port/db_name
+```
