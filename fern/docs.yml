@@ -36,8 +36,6 @@ navigation:
       typescript: ssoready
   - section: IDP configuration
     contents:
-      - page: Setting up an IDP test account
-        path: ./pages/idp-config-tutorials/test-account.mdx
       - page: Enabling self-service configuration for your customers
         path: ./pages/self-service-admin/self-service-admin.mdx
       - section: Guides for common identity providers
