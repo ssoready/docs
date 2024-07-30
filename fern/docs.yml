@@ -36,16 +36,22 @@ navigation:
       typescript: ssoready
   - section: IDP configuration
     contents:
-      - page: Entra (formerly Azure AD)
-        path: ./pages/idp-config-tutorials/entra.mdx
-      - page: Okta
-        path: ./pages/idp-config-tutorials/okta.mdx
-      - page: Google
-        path: ./pages/idp-config-tutorials/google.mdx
-      - page: JumpCloud
-        path: ./pages/idp-config-tutorials/jumpcloud.mdx
-      - page: PingOne
-        path: ./pages/idp-config-tutorials/ping.mdx
+      - page: Setting up an IDP test account
+        path: ./pages/idp-config-tutorials/test-account.mdx
+      - page: Enabling self-service configuration for your customers
+        path: ./pages/self-service-admin/self-service-admin.mdx
+      - section: Guides for common identity providers
+        contents:
+        - page: Entra (formerly Azure AD)
+          path: ./pages/idp-config-tutorials/entra.mdx
+        - page: Okta
+          path: ./pages/idp-config-tutorials/okta.mdx
+        - page: Google
+          path: ./pages/idp-config-tutorials/google.mdx
+        - page: JumpCloud
+          path: ./pages/idp-config-tutorials/jumpcloud.mdx
+        - page: PingOne
+          path: ./pages/idp-config-tutorials/ping.mdx
 
 navbar-links:
   - type: primary
