@@ -70,3 +70,6 @@ favicon: ./docs/assets/favicon.ico
 
 layout:
   searchbar-placement: header
+
+js: ./custom.js
+
