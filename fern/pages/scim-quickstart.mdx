@@ -1,0 +1,481 @@
+---
+title: "SCIM Quickstart"
+slug: "scim-quickstart"
+subtitle: "Add SCIM support to your product this afternoon"
+---
+
+# Getting started with SSOReady SCIM
+
+# Basic concepts
+
+"Enterprise Directory Sync" is mostly a synonym for a protocol called
+[SCIM](https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management).
+It's a way for a company to sync their list of employees into a list of users
+inside all their software products, including your product.
+
+At smaller companies, it's typical to have someone use your product's equivalent
+of "invite a teammate" to add users, and to manually kick them out when their
+teammates leave the company. At larger companies, employees instead expect to
+use a service like Okta or Microsoft Entra (formerly "Azure AD") to manage
+adding and removing users. That user management happens using the SCIM protocol.
+SSOReady makes it way easier to implement SCIM.
+
+To implement SCIM, you need to run an HTTP server implementing the SCIM
+protocol. When you use SSOReady, SSOReady runs that SCIM HTTP server for you.
+Your only job then becomes to use SSOReady's SDKs or HTTP API to periodically
+fetch a list of users to provision or deprovision in your product. Here's how
+you do that.
+
+# Code implementation
+
+As covered in [Basic concepts](#basic-concepts), there's just one required step
+in implementing SCIM: syncing users from SSOReady into your product. You can
+optionally do the same with user groups. Here's how you do each.
+
+## Syncing Users
+
+Under the hood, SSOReady's SCIM server is basically just a database of users
+that your customer populates. To sync users, you'll:
+
+1. Paginate through a list of users
+2. Either provision (create) or deprovision (delete or soft-delete, up to you)
+   users based on their `deleted` attribute
+
+### Listing users
+
+To list SCIM users out of SSOReady, run:
+
+```bash
+curl 'https://api.ssoready.com/v1/scim/users?organization_external_id=...' \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ssoready_sk_..."
+```
+
+That code sample requires an API Key (`ssoready_sk_...`) and an
+`organization_external_id`. How you get those is covered in [Setting up
+SSOReady](#setting-up-ssoready) later on this page.
+
+You'll get back a response that looks like this:
+
+```json
+{
+  "users": [
+    {
+      "id": "scim_user_...",
+      "email": "alice@example.com",
+      "deleted": false,
+      "attributes": {}
+    },
+    {
+      "id": "scim_user_...",
+      "email": "bob@example.com",
+      "deleted": true,
+      "attributes": {}
+    }
+  ],
+  "nextPageToken": "..."
+}
+```
+
+If the response contains a `nextPageToken` whose value is empty (i.e. the empty
+string, `""`), then you have reached the end of the list.
+
+If `nextPageToken` is non-empty, there is more data to fetch. You can fetch the
+next page of data by re-running your previous request, but setting the parameter
+`pageToken` to the value of `nextPageToken` you just got back:
+
+```bash
+curl 'https://api.ssoready.com/v1/scim/users?organization_external_id=...&page_token=...' \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ssoready_sk_..."
+```
+
+### Provisioning (creating) users
+
+Every user you get back from SSOReady will look something like this:
+
+```json
+{
+  "id": "scim_user_...",
+  "scimDirectoryId": "scim_directory_...",
+  "email": "alice@example.com",
+  "deleted": false, // if "true", go to "Deprovisioning (deleting) users" below
+  "attributes": {
+    // A JSON object of properties about this user. Exact schema depends on Identity Provider and your customer's setup.
+  }
+}
+```
+
+For every user you get back whose `deleted` value is `false`, you should create
+a user in your system if one doesn't exist. You have two options for determining
+if a SCIM user corresponds to an existing user in your system:
+
+1. Do an `email`-based match.
+
+   If you already uniquely identify users by their email, then you _must_ choose
+   this option. Look up users by the `email` on the SCIM user. If you don't find
+   any, create a new one with that email.
+
+   Email-based matching is the option most folks go with.
+
+2. Do a `scim_user_...` `id`-based match.
+
+   SSOReady sets a unique identifier on every SCIM user. That ID is a UUID under
+   the hood, and is guaranteed to be unique across all SCIM directories,
+   organizations, environments, etc. It always starts with `scim_user_...`.
+
+   If emails aren't a unique identifier in your product, then add a new
+   attribute or database column on users in your system called
+   `ssoready_scim_user_id`. When syncing in users for an organization, look for
+   a user in that organization whose `ssoready_scim_user_id` equals the `id` of
+   the SCIM user from SSOReady. If you can't find one, then create a new user
+   whose `ssoready_scim_user_id` is the new SSOReady SCIM user's `id`.
+
+Once you've created a new user from a SCIM sync, you can look at that user's
+`attributes` to sync some further details about that user beyond their `email`.
+
+#### User `attributes`
+
+Identity providers can optionally include additional details about a user as
+part of a SCIM sync. SSOReady recommends you ignore these additional details
+unless you really need them.
+
+A typical use-case for `attributes` is when applications have a hard requirement
+on knowing a user's full name or first/last name. In that case, you will find
+those properties, when they're available, within `attributes`. For example,
+here's a typical set of attributes on a user synced from Okta:
+
+```json
+{
+  "id": "scim_user_...",
+  "scimDirectoryId": "scim_directory_...",
+  "email": "ulysse.carion@ssoready.com",
+  "deleted": false,
+  "attributes": {
+    "active": true,
+    "displayName": "Ulysse Carion",
+    "emails": [
+      {
+        "primary": true,
+        "type": "work",
+        "value": "ulysse.carion@ssoready.com"
+      }
+    ],
+    "externalId": "00uhcdk08jtvkgwD95d7",
+    "groups": [],
+    "id": "scim_user_...",
+    "locale": "en-US",
+    "name": {
+      "familyName": "Carion",
+      "givenName": "Ulysse"
+    },
+    "userName": "ulysse.carion@ssoready.com"
+  }
+}
+```
+
+You can't guarantee that all identity providers will provide the same set of
+attributes, or that they will all follow the same schema.
+
+### Deprovisioning (deleting or soft-deleting) users
+
+If a SCIM user you get back from SSOReady has `deleted` set to `true`, then that
+user should no longer have access to your product. It's up to you whether you
+want to "soft-delete" or "hard-delete" that user from your system. You should
+determine which user in your system to delete using the same logic you use for
+provisioning.
+
+If you're not certain whether to soft- or hard-delete, the safer option is to
+soft-delete.
+
+Many products have to soft-delete for technical reasons; if you have database
+foreign keys that point to users, you may find yourself unable to hard-delete
+users without also deleting important business objects that other teammates may
+need.
+
+Whether you opt to soft- or hard-delete, SSOReady will retain the `deleted` copy
+of the SCIM user indefinitely. You do not need to worry about SSOReady "expiring"
+long-deleted SCIM users.
+
+## Groups
+
+<Note>
+Unless you have a specific need for SCIM groups, you should defer implementing
+them. Most of the time, syncing a [SCIM user attribute](#user-attributes) is a simpler solution.
+
+SCIM groups are implemented inconsistently between different Identity Providers.
+Some popular Identity Providers like Okta make them awkward for your customers
+to use. You're typically better off waiting for a customer to come to you with a
+specific use-case or requirement.
+
+</Note>
+
+SCIM natively has the concept of _groups_ of users. SSOReady lets you sync user
+groups just like how you can sync users, as described above.
+
+To sync groups, you'll:
+
+1. Paginate through a list of groups
+2. Either provision (create) or deprovision (delete or soft-delete, up to you)
+   groups based on their `deleted` attribute
+3. For each group, paginate through a list of users in that group
+4. Add or remove users from that group based on whether they appear in the
+   paginated list
+
+Steps (1) and (2) are essentially identical to the logic for syncing users.
+Steps (3) and (4) are about syncing group _memberships_, which is a
+group-specific concept.
+
+### Listing groups
+
+To list SCIM groups out of SSOReady, run:
+
+```bash
+curl 'https://api.ssoready.com/v1/scim/groups?organization_external_id=...' \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ssoready_sk_..."
+```
+
+You'll get back a response that looks like this:
+
+```json
+{
+  "scimGroups": [
+    {
+      "id": "scim_group_...",
+      "scimDirectoryId": "scim_directory_...",
+      "displayName": "Engineering",
+      "deleted": false,
+      "attributes": {
+        "displayName": "Engineering"
+      }
+    },
+    {
+      "id": "scim_group_...",
+      "scimDirectoryId": "scim_directory_...",
+      "displayName": "Marketing",
+      "deleted": true,
+      "attributes": {
+        "displayName": "Marketing"
+      }
+    }
+  ],
+  "nextPageToken": "..."
+}
+```
+
+If the response contains a `nextPageToken` whose value is empty (i.e. the empty
+string, `""`), then you have reached the end of the list.
+
+If `nextPageToken` is non-empty, there is more data to fetch. You can fetch the
+next page of data by re-running your previous request, but setting the parameter
+`page_token` to the value of `nextPageToken` you just got back:
+
+```bash
+curl 'https://api.ssoready.com/v1/scim/groups?organization_external_id=...&page_token=...' \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ssoready_sk_..."
+```
+
+### Provisioning (creating) groups
+
+Every group you get back from SSOReady will look something like this:
+
+```json
+{
+  "id": "scim_group_...",
+  "scimDirectoryId": "scim_directory_...",
+  "displayName": "Engineering",
+  "deleted": false, // if "true", go to "Deprovisioning (deleting) users" below
+  "attributes": {
+    // A JSON object of properties about this group. Exact schema depends on Identity Provider and your customer's setup.
+  }
+}
+```
+
+SSOReady sets a unique identifier on every SCIM group. That `id` is a UUID under
+the hood, and is guaranteed to be unique across all SCIM directories,
+organizations, environments, etc. It always starts with `scim_group_...`.
+
+For every user you get back whose `deleted` value is `false`, you should create
+a user in your system if one doesn't exist. You must match a SCIM group to a
+group within your system using a new attribute or database column (e.g.
+`ssoready_scim_group_id`) on your product's equivalent of a SCIM group.
+
+When syncing in groups for an organization, look for a group in that organization
+whose `ssoready_scim_group_id` equals the `id` of the SCIM group from SSOReady.
+If you can't find one, then create a new group whose `ssoready_scim_group_id`
+is the new SSOReady SCIM group's `id`.
+
+As with users, SCIM groups may have additional optional attributes. The same set
+of caveats applies to group attributes as to [user
+attributes](#user-attributes): they aren't guaranteed to always be present or to
+have the same schema across customers. In practice, most identity providers
+don't put any interesting attributes on a group, and most SCIM implementations
+don't care about SCIM group attributes at all.
+
+### Deprovisioning (deleting or soft-deleting) groups
+
+Deprovisioning groups is less important than [deprovisioning
+users](#deprovisioning-deleting-or-soft-deleting-users). Not all identity
+providers even support deprovisioning/deleting groups.
+
+For that reason, SSOReady does not recommend you implement group deprovisioning
+unless you have a specific use-case.
+
+If you do need to implement it, group deprovisioning works a lot like user
+deprovisioning. Match a SCIM group to your product's corresponding resource
+using the same logic you use when provisioning groups. Then either soft- or
+hard-delete the group.
+
+Deprovisioning a group should not deprovision the users within that group. Users
+may be part of multiple groups, and just because one of the groups they're a
+part of has been deleted doesn't mean that user should be deleted too. If a user
+needs to be deprovisioned in your system, their `deleted` property on the SCIM
+user will always reflect that.
+
+### Listing users in a group
+
+To list users that are members of a group, you can provide a `scim_group_id`
+parameter when listing SCIM users, using the same method as documented in
+[Listing users](#listing-users) above:
+
+```bash
+curl 'https://api.ssoready.com/v1/scim/users?organization_external_id=...&scim_group_id=scim_group_...' \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ssoready_sk_..."
+```
+
+You need to provide the SSOReady-assigned `id` for the SCIM Group, beginning
+with `scim_group_...`, as the `scim_group_id`.
+
+This will return a list of users in the same format as when listing users
+without `scim_group_id` provided. Pagination works the same way as documented in
+that section.
+
+## Sync cadence
+
+When you sync users (and optionally groups) from SSOReady into your product, you
+have to decide on a frequency with which you will do so. SSOReady recommends two
+options:
+
+1. **Put your syncing code in a periodic background job, and run it every
+   hour.**
+
+   This is the preferred option. Write a cron job that goes through every
+   organization in your product that may have SCIM enabled. Do a sync on each of
+   those organizations. Run the cron job every hour.
+
+   There's not much point in running the cron job faster than on an hourly
+   basis; users and groups don't change _that_ often. Moreover, there's inherent
+   limitations from the popular Identity Providers. Microsoft Entra, for
+   example, only updates SCIM directories every 40 minutes.
+
+2. **Give your users a "Force SCIM Sync" button in your app, and do a sync
+   sychronously whenever they click that button.**
+
+   Periodic background syncing is the way your customers will typically expect
+   your SCIM implementation to work. But if setting up a periodic background job
+   poses technical challenges, you can often get away with a more manual "force
+   SCIM sync" approach to start.
+
+   Give your users a button that, when clicked, does a sync for their
+   organization. Typically, a SCIM directory only has few (less than a hundred)
+   users, and so it's entirely feasible to sync all users within an HTTP request
+   without timing out.
+
+# Setting up SSOReady
+
+Typically, most people implement SCIM after having set up SAML previously. If
+that applies to you, and you implemented SAML using SSOReady, then jump straight
+to [Creating SCIM directories](#creating-scim-directories).
+
+In [Code implementation](#code-implementation), there were two missing pieces that you'd need to implement SSOReady:
+
+1. **Where do I get an API key?** You create [an API key](#creating-api-keys) scoped to an environment.
+2. **How do I get `organizationExternalId`?** You create [an organization](#creating-organizations) in an environment,
+   where you can choose an external ID convenient for you.
+
+This section will step you through how you'll do all of this setup in SSOReady's webapp. As a prerequisite step, you'll
+need to [sign up to SSOReady](https://app.ssoready.com/login). It's free and anyone can sign up, even with a personal
+email.
+
+## Creating environments
+
+To create an environment, go [here](https://app.ssoready.com/environments/new).
+You'll typically create one environment per deployment environment, e.g. one
+each for "production", "staging", and "local dev". On an environment, you'll
+assign a "Redirect URL". That's a concept relevant only to SAML; if you don't
+care about SAML at this time, just put any valid URL, such as
+`http://localhost`.
+
+## Creating API keys
+
+API keys are scoped to an environment. When viewing an environment in the app,
+click "API Keys" on the left navbar. Then click "Create API Key". A popup will
+show you your new API key's secret (it starts with `ssoready_sk_...`). That's
+the API key you'll use when [listing users](#listing-users) and optionally
+[listing groups](#listing-groups).
+
+## Creating organizations
+
+An organization corresponds to a corporate customer of yours. If you sold your product to Apple, Nvidia, and Amazon,
+you'd have three organizations in SSOReady: one each for Apple, Nvidia, and Amazon.
+
+Organizations belong to an environment. When viewing an environment in the app, the "Create organization" button creates
+a new organization. Organizations have two properties worth highlighting:
+
+- An optional _external ID_, which you can assign. If you're selling
+  multi-tenant B2B software, you probably already have a concept that closely
+  matches an SSOReady organization -- usually, this is something named a "team",
+  "workspace", "company", or something similar. When creating an SSOReady
+  organization, use your product's counterpart to an organization ID as the
+  external ID.
+
+  You'll provide the external ID as the `organization_external_id` when [listing
+  users](#listing-users) or [groups](#listing-groups).
+
+- A set of _domains_. If you expect Apple's employees will log in to your
+  product from `@apple.com` and `@shazam.com` email addresses, then put
+  `apple.com` and `shazam.com` here. SSOReady will enforce that SCIM users come
+  from these domains.
+
+## Creating SCIM directories
+
+A SCIM directory holds onto SCIM-related settings, and acts as a database of
+users and groups synced from your customer's identity provider. When you [list
+users](#listing-users) using SSOReady's API, you're listing out users from an
+SSOReady SCIM directory.
+
+SCIM directories belong to an organization. When viewing an organization in the
+app, the "Create SCIM directory" button creates a new SCIM directory. Beyond the
+SCIM-related settings covered in [Onboarding customers](#onboarding-customers),
+SCIM directories have one setting of note: whether they are _primary_.
+
+Each organization has up to one primary SCIM directory. In [Listing
+users](#listing-users), you provide an `organization_external_id`. SSOReady will
+use that organization's primary SCIM directory to list users from.
+
+# Onboarding customers
+
+In [Basic concepts](#basic-concepts), we mentioned that your customers need some
+details from you before SCIM syncing can begin. This process happens offline --
+there's no coding involved.
+
+Unfortunately, SCIM identity providers (e.g. Okta, Microsoft Entra, etc.) don't
+use the same terminology for these identical details. To deal with that, we've
+prepared a separate set of documentation for you to follow depending on what
+identity provider your customer uses:
+
+- [Okta](/docs/idp-configuration/guides-for-common-identity-providers/okta)
+- [Microsoft Entra](/docs/idp-configuration/guides-for-common-identity-providers/entra-formerly-azure-ad) (aka Microsoft Azure Active Directory, Microsoft Azure AD)
+
+In all cases, you're ultimately going to:
+
+1. Give your customers a "SCIM URL". SSOReady's webapp gives you this.
+2. Generate a SCIM bearer token, and give that to your customer. SSOReady's
+   webapp lets you generate these, or rotate them if your customer needs a new
+   one.
+
+Once you've given those details to your customer, you'll be ready to start
+syncing SCIM users!
