@@ -1,0 +1,25 @@
+---
+title: 'SSOReady concepts: SCIM Directories'
+description: 'Understanding SCIM Directories in SSOReady'
+noindex: false
+---
+
+SCIM directory sync allows you to communicate with your customer's identity provider (or *directory*) regarding users and their privileges in your application. Most commonly, your customers will wish to provision and deprovision users in their identity provider and subsequently have those users provisioned or deprovisioned in your application.
+
+If your customer has not asked for SCIM directory sync, you can likely ignore this section. 
+
+<Info>SSOReady supports SCIM directory sync with certain identity providers. Currently, SSOReady supports SCIM with Okta only, but support for other identity providers will arrive soon. </Info>
+
+SCIM Directories belong to [Organizations](/docs/sso-ready-concepts/saml-connections). You must create an [Environment](/docs/sso-ready-concepts/saml-connections) and an Organization before you can create a SCIM Directory.
+
+# Authentication for your SCIM Directory
+
+SSOReady needs to authenticate the identity provider each time it makes a request to SSOReady. SSOReady needs to confirm that it has received input from the right software.
+
+For this purpose, SSOReady uses [bearer tokens](https://medium.com/@arunchaitanya/wtf-is-bearer-token-an-in-depth-explanation-60695b581928). Your customer must configure the identity provider so that it includes the bearer token in the headers of each request. You should expect that all identity providers can support bearer tokens.
+
+You may generate bearer tokens from the SSOReady web application:
+
+<Frame caption="Generating bearer tokens in the SSOReady web application">
+    <img src="/docs/assets/ssoready-concepts-assets/scim-bearer.png" />
+</Frame>
