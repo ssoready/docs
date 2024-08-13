@@ -12,6 +12,8 @@ components:
 
 paths:
   /v1/saml/redeem:
+    tags:
+      - saml
     post:
       x-fern-sdk-group-name: saml
       x-fern-sdk-method-name: redeemSAMLAccessCode
@@ -25,6 +27,8 @@ paths:
               organizationExternalId: my_custom_external_id
 
   /v1/saml/redirect:
+    tags:
+      - saml
     post:
       x-fern-sdk-group-name: saml
       x-fern-sdk-method-name: getSAMLRedirectUrl
@@ -36,21 +40,29 @@ paths:
               redirectUrl: https://your.redirect.url
 
   /v1/scim/users:
+    tags:
+      - scim
     post:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMUsers
 
   /v1/scim/user:
+    tags:
+      - scim
     post:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: getSCIMUser
 
   /v1/scim/groups:
+    tags:
+      - scim
     post:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMGroups
 
   /v1/scim/group:
+    tags:
+      - scim
     post:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: getSCIMGroup
