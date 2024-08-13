@@ -62,7 +62,7 @@ paths:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMGroups
 
-  /v1/scim/group/*:
+  /v1/scim/groups/*:
     get:
       tags:
         - scim
