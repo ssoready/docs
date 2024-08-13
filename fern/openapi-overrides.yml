@@ -52,19 +52,21 @@ paths:
             organizationExternalId: my_custom_external_id
           response:
             body:
-              users:
+              scimUsers:
                 - id: scim_user_...
                   email: john.doe@acme.com
                   deleted: false
                   attributes:
                     displayName: John Doe
                     preferredLanguage: en_US
+                    key: value
                 - id: scim_user_...
                   email: jane.doe@acme.com
                   deleted: true
                   attributes:
                     displayName: Jane Doe
                     preferredLanguage: fr_FR
+                    key: value
               nextPageToken: "..."
 
   /v1/scim/users/{id}:
@@ -73,6 +75,19 @@ paths:
         - scim
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: getSCIMUser
+      x-fern-examples:
+        - request:
+            id: scim_user_...
+          response:
+            body:
+              scimUser:
+                id: scim_user_...
+                email: john.doe@acme.com
+                deleted: false
+                attributes:
+                  displayName: John Doe
+                  preferredLanguage: en_US
+                  key: value
 
   /v1/scim/groups:
     get:
@@ -80,6 +95,23 @@ paths:
         - scim
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMGroups
+      x-fern-examples:
+        - request:
+            organizationExternalId: my_custom_external_id
+          response:
+            body:
+              scimGroups:
+                - id: scim_group_...
+                  displayName: Engineering
+                  deleted: false
+                  attributes:
+                    key: value
+                - id: scim_group_...
+                  displayName: Marketing
+                  deleted: true
+                  attributes:
+                    key: value
+              nextPageToken: "..."
 
   /v1/scim/groups/{id}:
     get:
@@ -87,3 +119,14 @@ paths:
         - scim
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: getSCIMGroup
+      x-fern-examples:
+        - request:
+            id: scim_group_...
+          response:
+            body:
+              scimGroup:
+                id: scim_group_...
+                displayName: Engineering
+                deleted: false
+                attributes:
+                  key: value
