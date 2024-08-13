@@ -1,7 +1,7 @@
 servers:
   - url: https://api.ssoready.com
 
-tags: []
+tags: {}
 
 components:
   securitySchemes:
