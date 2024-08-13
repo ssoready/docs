@@ -46,7 +46,7 @@ paths:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMUsers
 
-  /v1/scim/user:
+  /v1/scim/users/*:
     get:
       tags:
         - saml
@@ -60,7 +60,7 @@ paths:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMGroups
 
-  /v1/scim/group:
+  /v1/scim/group/*:
     get:
       tags:
         - saml
