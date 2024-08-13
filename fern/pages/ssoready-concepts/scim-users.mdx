@@ -1,0 +1,81 @@
+---
+title: 'SSOReady concepts: SCIM Users'
+description: 'Understanding SCIM Users in SSOReady'
+noindex: false
+---
+
+SCIM defines *Users* as a standard concept in its [specification](https://datatracker.ietf.org/doc/html/rfc7643). SSOReady uses *SCIM Users* to homogenize varying implementations of *Users* on your behalf.  
+
+# What a SCIM User looks like
+
+You can navigate to view details associated with a SCIM User by clicking on its ID on the details page for its associated SCIM Directory in SSOReady. Please note that you will not create SCIM Users in SSOReady. SCIM Users come from your customer's identity provider.
+
+You will see three cards:
+1. **SCIM User**: lays out the basic properties of the SCIM User
+2. **User Details**: lays out a JSON representation of the User
+3. **SCIM Groups**: identifies any [SCIM Groups](/docs/sso-ready-concepts/scim-groups) to which the User has an association
+
+<Frame caption="An example of an SSOReady SCIM User">
+    <img src="/docs/assets/ssoready-concepts-assets/scim-user.png" />
+</Frame>
+
+
+# Properties of a SCIM User
+
+## SCIM User ID
+
+Each SCIM User in SSOReady has a unique identifier. SSOReady assigns this identifier, and you will not be able to change it. This identifier will always begin with the `scim_user_` prefix. Here's a concrete example: `scim_user_e6f5dxoqpr4lmwploi8yfbhiz`.
+
+## Email
+
+Each SCIM User must have an email address. SSOReady treats email addresses as unique identifiers in its communications with your customer's identity provider. Please note that this property comes from *your customer's identity provider*. You cannot change this property directly in SSOReady.
+
+## Deleted
+
+Each SCIM User will have a boolean property indicating whether it has been deleted. Please note that this property comes from *your customer's identity provider*. You cannot change this property directly. 
+
+Please further note that SSOReady does not know about your own product's user management system; this value does not necessarily indicate whether *you* have deleted a given SCIM User.
+
+Precisely how you use this property will depend on your and your customer's needs. 
+
+# Group Details
+
+Here you can find a JSON representation of the SCIM User. You may find this useful for debugging and/or initial implementation. 
+
+Here's an example:
+
+```
+{
+    "id": "scim_user_8pbdid9s5ncjbr22b3k75sql8",
+    "scimDirectoryId": "scim_directory_385v15k7ugjuakxtbjtfm4w7m",
+    "email": "ned.oleary@ssoready.com",
+    "deleted": false,
+    "attributes": {
+        "active": true,
+        "displayName": "Ned O'Leary",
+        "emails": [
+            {
+                "primary": true,
+                "type": "work",
+                "value": "ned.oleary@ssoready.com"
+            }
+        ],
+        "externalId": "00ugzyursrfN7UZKv5d7",
+        "groups": [],
+        "locale": "en-US",
+        "name": {
+            "familyName": "O'Leary",
+            "givenName": "Ned"
+        },
+        "password": "vI5224sI",
+        "userName": "ned.oleary@ssoready.com"
+    }
+}
+```
+
+Please be aware that `attributes` will frequently vary. SCIM allows a lot of customization, and you should expect that some of your customers will do unique things.
+
+
+# SCIM Groups
+
+Here you can find a list of the SCIM Groups associated with the SCIM User. You may click on their IDs to view more detail.

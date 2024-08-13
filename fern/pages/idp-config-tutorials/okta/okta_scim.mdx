@@ -1,0 +1,184 @@
+---
+title: 'SCIM with Okta'
+description: 'How to set up an SSOReady SCIM directory with Okta'
+noindex: false
+--- 
+
+{/* ==================================================== */}
+{/*                       Okta                           */}
+{/* ==================================================== */}
+
+SCIM (system for cross-domain identity management) allows your application to communicate on a recurring basis with your customer's IDP. You will receive information from your customer regarding the users that should have access to your application -- and which should not. In many cases, you will also receive useful information regarding your users' *attributes*.
+
+SSOReady helps you use SCIM without integrating your product directly with Okta. You will instead integrate with SSOReady, which will communicate with Okta on your behalf.
+
+Connecting SSOReady to your customer's Okta implementation requires that you share two pieces of information with Okta, both of which you'll find in SSOReady:
+1. A **base url** that Okta will perform operations on (e.g. via HTTP PATCH)
+2. A **bearer token** that Okta will include with its requests
+
+
+However, configuring Okta can involve a few more steps. This guide therefore starts by focusing *briefly* on SSOReady and subsequently focuses on Okta configuration.
+
+# Configuring SSOReady
+
+To create a SCIM Directory within SSOReady, you'll first need to create an [Environment](/docs/sso-ready-concepts/environments) and an [Organization](/docs/sso-ready-concepts/organizations). SCIM Directories belong to Organizations. You can create a SCIM Directory for an Organization by navigating to the Organization in SSOReady and selecting *Create SCIM directory*. 
+<Frame caption="Creating a SCIM Directory in SSOReady">
+  <img src="/docs/assets/idp-scim-assets/okta/ssor2.png" />
+</Frame>
+
+From there, you can find the *base URL* and generate the *bearer token* you'll need to give your customer. Hold onto these. 
+
+Currently, you must share both the base URL and the bearer token with your customer directly (e.g. via email). We realize this is not optimal and plan to improve this aspect of the product over time.
+
+SSOReady **does not store bearer tokens**. You will not be able to access the bearer token in SSOReady again. You may at any time, however, replace the existing bearer token with a new one. When you create a new bearer token, you simultaneously invalidate the previous bearer token.
+
+<Frame caption="Capturing the base URL and bearer token from SSOReady">
+  <img src="/docs/assets/idp-scim-assets/okta/ssor1.png" />
+</Frame>
+
+Once you have created a SCIM Directory in SSOReady and taken note of both the base URL and the bearer token, you have finished with SSOReady configuration.
+
+# Configuring Okta
+
+Once there's a SCIM Directory in SSOReady, you can connect that SCIM Directory to your customer's Okta instance.
+
+<Info>
+The following steps will be most relevant to IT administrators. However, SSOReady customers may find this section helpful either as a resource to share with their *own* customers or for development purposes.
+</Info>
+
+Start by navigating to the relevant application in Okta. If you are unsure how to create such an Application, please review [this guide](/docs/idp-configuration/guides-for-common-identity-providers/okta/sso-with-okta) for an in-depth explanation. 
+
+<Frame caption="Visiting an Application in Okta">
+  <img src="/docs/assets/idp-scim-assets/okta/0.png" />
+</Frame>
+
+Make sure you're on the *General* tab and press *Edit* on the *App Settings* card.
+
+<Frame caption="Editing app settings">
+  <img src="/docs/assets/idp-scim-assets/okta/1.png" />
+</Frame>
+
+Make sure the Provisioning box shows a checkmark. By default, Okta leaves this box unchecked.
+
+<Frame caption="Checking the `Enable SCIM provisioning` field">
+  <img src="/docs/assets/idp-scim-assets/okta/3.png" />
+</Frame>
+
+Press *Save* in the lower right corner.
+
+<Frame caption="Pressing save">
+  <img src="/docs/assets/idp-scim-assets/okta/2.png" />
+</Frame>
+
+Navigate to the *Provisioning* tab for the Application.
+
+
+
+<Frame caption = "Navigating to the Provisioning tab">
+  <img src="/docs/assets/idp-scim-assets/okta/4.png" />
+</Frame>
+
+On the *Provisioning* tab, click the *Edit* button toward the top right of the card.
+
+<Frame caption = "Clicking the Edit button">
+  <img src="/docs/assets/idp-scim-assets/okta/6.png" />
+</Frame>
+
+Look for a field marked *SCIM connector base URL*. This will be the *base URL* from the SSOReady configuration. Paste the base URL from SSOReady.
+
+<Frame caption = "Inserting the SCIM connector base URL">
+  <img src="/docs/assets/idp-scim-assets/okta/9.png" />
+</Frame>
+
+Next, look for a field marked *Unique identifier field for users*. We need this to say "email" exactly. SSOReady relies on users' emails as a unique identifier. 
+
+<Frame caption = "Entering 'email' as the unique identifier field">
+  <img src="/docs/assets/idp-scim-assets/okta/8.png" />
+</Frame>
+
+Look for a series of checkboxes labeled *Supported provisioning actions.* You will see five checkboxes. Set your configuration to match the following:
+
+- [x]  Import New Users and Profile Updates
+- [x]  Push New Users
+- [x]  Push Profile Updates
+- [x]  Push Groups
+- [ ]  Import Groups
+
+**Ensure that *Import Groups* remains unchecked.** The SCIM Connection will fail otherwise.
+
+<Frame caption = "Editing the 'Supported provisioning actions'">
+  <img src="/docs/assets/idp-scim-assets/okta/12.png" />
+</Frame>
+
+Now look for a dropdown menu labeled *Authentication Mode*. This must change from its default value to *HTTP Header*.
+
+<Frame caption = "Changing the 'Authentication Mode' to 'HTTP Header'">
+  <img src="/docs/assets/idp-scim-assets/okta/11.png" />
+</Frame>
+
+Now paste the bearer token from SSOReady in the field marked *Authorization*. 
+
+<Frame caption = "Pasting the bearer token from SSOReady">
+  <img src="/docs/assets/idp-scim-assets/okta/20.png" />
+</Frame>
+
+Then once more hit *Save* in the lower right. 
+
+<Frame caption = "Saving edits to the SCIM connection">
+  <img src="/docs/assets/idp-scim-assets/okta/10.png" />
+</Frame>
+
+Now look in the sidebar to the left and find the item marked *To App*. Click this. 
+
+<Frame caption = "Navigating to the setting for provisioning to the app">
+  <img src="/docs/assets/idp-scim-assets/okta/13.png" />
+</Frame>
+
+You'll see four checkboxes. Set them to match the following:
+- [x] Create Users
+- [x] Update User Attributes
+- [x] Deactivate Users
+- [ ] Sync Password
+
+Then press *Save* in the lower right.
+
+<Frame caption = "Saving edits to the SCIM connection">
+  <img src="/docs/assets/idp-scim-assets/okta/16.png" />
+</Frame>
+
+Now navigate to the *Assignments* tab. 
+
+<Frame caption = "Navigating to the 'Assignments' settings">
+  <img src="/docs/assets/idp-scim-assets/okta/15.png" />
+</Frame>
+
+Using the *Assign* dropdown, choose to assign the relevant People (i.e. users) or Groups. This guide uses People.
+
+<Frame caption = "Assigning People to the Application">
+  <img src="/docs/assets/idp-scim-assets/okta/14.png" />
+</Frame>
+
+You'll now see a list of People. For each that you wish to assign to the Application, press the *Assign* button to the right.
+
+<Frame caption = "Starting the assignment flow for a person">
+  <img src="/docs/assets/idp-scim-assets/okta/18.png" />
+</Frame>
+
+You'll have the opportunity to edit this person's attributes, but it's usually fine just to scroll down and press *Save and Go Back*. 
+
+<Frame caption = "Pressing 'Save and Go Back">
+  <img src="/docs/assets/idp-scim-assets/okta/17.png" />
+</Frame>
+
+Unless you wish to add other People to the Application, you can now press *Done*. 
+
+<Frame caption = "Finishing assignment to the Application">
+  <img src="/docs/assets/idp-scim-assets/okta/19.png" />
+</Frame>
+
+Within a few moments, the user will sync in SSOReady. You can see any changes by navigating back to the SCIM Directory's page in SSOReady.
+
+<Note>
+If you assigned users to the Application *before* setting up the SCIM Connection, you may need to instruct Okta to force sync. You can read more [here](https://support.okta.com/help/s/article/How-To-Use-The-Force-Sync-Option?language=en_US).
+</Note>
+

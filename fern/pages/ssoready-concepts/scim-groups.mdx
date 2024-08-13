@@ -1,0 +1,65 @@
+---
+title: 'SSOReady concepts: SCIM Groups'
+description: 'Understanding SCIM Groups in SSOReady'
+noindex: false
+---
+
+SCIM defines *Groups* as a standard concept in its [specification](https://datatracker.ietf.org/doc/html/rfc7643). SSOReady uses *SCIM Groups* to homogenize varying implementations of *Groups* on your behalf.
+
+# What a SCIM Group looks like
+
+You can navigate to view details associated with a SCIM Group by clicking on its ID on the details page for its associated SCIM Directory in SSOReady. Please note that you will not create SCIM Groups in SSOReady. SCIM Groups come from your customer's identity provider.
+
+You will see three cards:
+1. **SCIM Group**: lays out the basic properties of the SCIM Group
+2. **Group Details**: lays out a JSON representation of the Group
+3. **SCIM Users**: identifies any [SCIM Users](/docs/sso-ready-concepts/scim-groups) to which the Group has an association
+
+<Frame caption="An example of an SSOReady SCIM Group">
+    <img src="/docs/assets/ssoready-concepts-assets/scim-group.png" />
+</Frame>
+
+# Properties of a SCIM Group
+
+## SCIM Group ID
+
+Each SCIM Group in SSOReady has a unique identifier. SSOReady assigns this identifier, and you will not be able to change it. This identifier will always begin with the `scim_group_` prefix. Here's a concrete example: `scim_group_e6f3dxolfr4egjkadr8yfbhiz`.
+
+## Display Name
+
+Each SCIM Group will have a display name. For example, you might have a SCIM Group called "Admins". Please note that this property comes from *your customer's identity provider*. You cannot change this property directly in SSOReady.
+
+## Deleted
+
+Each SCIM Group will have a boolean property indicating whether it has been deleted. Please note that this property comes from *your customer's identity provider*. You cannot change this property directly. Please further note that SSOReady does not know about your own product's user management system; this value does not necessarily indicate whether *you* have deleted a given SCIM Group.
+
+Precisely how you use this property will depend on your and your customer's needs. 
+
+# Group Details
+
+Here you can find a JSON representation of the SCIM Group. You may find this useful for debugging and/or initial implementation. 
+
+Here's an example:
+
+```
+{
+    "id": "scim_group_e6f3dxolfr4egjkadr8yfbhiz",
+    "scimDirectoryId": "scim_directory_6uvahkznrenvzfck3it8a2h6c",
+    "displayName": "authentik Admins",
+    "attributes": {
+        "displayName": "authentik Admins",
+        "externalId": "94e78f00-ebf3-463b-9ad1-84e7cceb0b92"
+    },
+    "deleted": false
+}
+```
+
+Please be aware that `attributes` will frequently vary. SCIM allows a lot of customization, and you should expect that some of your customers will do unique things.
+
+
+# SCIM Users
+
+Here you can find a list of the SCIM Users associated with the SCIM Group. You may click on their IDs to view more detail.
+
+
+

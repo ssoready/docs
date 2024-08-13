@@ -30,6 +30,12 @@ navigation:
         path: ./pages/ssoready-concepts/saml-connections.mdx
       - page: Login Flows
         path: ./pages/ssoready-concepts/login-flows.mdx
+      - page: SCIM Directories
+        path: ./pages/ssoready-concepts/scim-directories.mdx
+      - page: SCIM Users
+        path: ./pages/ssoready-concepts/scim-users.mdx
+      - page: SCIM Groups
+        path: ./pages/ssoready-concepts/scim-groups.mdx
   - section: Self-Hosting
     contents:
       - page: Self-Hosting SSOReady
@@ -48,16 +54,28 @@ navigation:
         path: ./pages/self-service-admin/self-service-admin.mdx
       - section: Guides for common identity providers
         contents:
-          - page: Entra (formerly Azure AD)
-            path: ./pages/idp-config-tutorials/entra.mdx
-          - page: Okta
-            path: ./pages/idp-config-tutorials/okta.mdx
-          - page: Google
-            path: ./pages/idp-config-tutorials/google.mdx
-          - page: JumpCloud
-            path: ./pages/idp-config-tutorials/jumpcloud.mdx
-          - page: PingOne
-            path: ./pages/idp-config-tutorials/ping.mdx
+          - section: Entra (formerly Azure AD)
+            contents:
+            - page: SAML with Entra
+              path: ./pages/idp-config-tutorials/entra/entra_sso.mdx
+          - section: Okta
+            contents:
+            - page: SAML with Okta
+              path: ./pages/idp-config-tutorials/okta/okta_sso.mdx
+            - page: SCIM with Okta
+              path: ./pages/idp-config-tutorials/okta/okta_scim.mdx
+          - section: Jumpcloud
+            contents: 
+              - page: SAML with Jumpcloud
+                path: ./pages/idp-config-tutorials/jumpcloud/jumpcloud_sso.mdx
+          - section: Google
+            contents:
+              - page: SAML with Google
+                path: ./pages/idp-config-tutorials/google/google_sso.mdx
+          - section: Ping identity
+            contents:
+              - page: SAML with Ping identity
+                path: ./pages/idp-config-tutorials/ping/ping_sso.mdx
 
 navbar-links:
   - type: primary
