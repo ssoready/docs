@@ -34,6 +34,10 @@ navigation:
     snippets:
       python: ssoready
       typescript: ssoready
+    layout: 
+      - saml
+      - scim:
+          title: SCIM
   - section: IDP configuration
     contents:
       - page: Enabling self-service configuration for your customers
