@@ -14,6 +14,10 @@ navigation:
     contents:
       - page: SAML over OAuth (SAML NextAuth.js integration)
         path: ./pages/saml-oauth.mdx
+  - section: SCIM (Enterprise Directory Sync)
+    contents:
+      - page: SCIM Quickstart
+        path: ./pages/scim-quickstart.mdx
   - section: SSOReady concepts
     contents:
       - page: Overview
@@ -75,9 +79,9 @@ navbar-links:
     url: https://app.ssoready.com
 
 colors:
-  accentPrimary: '#6366F1'
+  accentPrimary: "#6366F1"
   background:
-    light: '#ffffff'
+    light: "#ffffff"
 
 logo:
   light: ./docs/assets/logo.png
@@ -90,4 +94,3 @@ layout:
   searchbar-placement: header
 
 js: ./custom.js
-
