@@ -1,3 +1,8 @@
+servers:
+  - url: https://api.ssoready.com
+
+tags: {}
+
 components:
   securitySchemes:
     bearerAuth:
@@ -10,6 +15,8 @@ components:
 paths:
   /v1/saml/redeem:
     post:
+      tags:
+        - saml
       x-fern-sdk-group-name: saml
       x-fern-sdk-method-name: redeemSAMLAccessCode
       x-fern-examples:
@@ -23,6 +30,8 @@ paths:
 
   /v1/saml/redirect:
     post:
+      tags:
+        - saml
       x-fern-sdk-group-name: saml
       x-fern-sdk-method-name: getSAMLRedirectUrl
       x-fern-examples:
@@ -31,3 +40,93 @@ paths:
           response:
             body:
               redirectUrl: https://your.redirect.url
+
+  /v1/scim/users:
+    get:
+      tags:
+        - scim
+      x-fern-sdk-group-name: scim
+      x-fern-sdk-method-name: listSCIMUsers
+      x-fern-examples:
+        - query-parameters:
+            organizationExternalId: my_custom_external_id
+          response:
+            body:
+              scimUsers:
+                - id: scim_user_...
+                  email: john.doe@acme.com
+                  deleted: false
+                  attributes:
+                    displayName: John Doe
+                    preferredLanguage: en_US
+                    key: value
+                - id: scim_user_...
+                  email: jane.doe@acme.com
+                  deleted: true
+                  attributes:
+                    displayName: Jane Doe
+                    preferredLanguage: fr_FR
+                    key: value
+              nextPageToken: "..."
+
+  /v1/scim/users/{id}:
+    get:
+      tags:
+        - scim
+      x-fern-sdk-group-name: scim
+      x-fern-sdk-method-name: getSCIMUser
+      x-fern-examples:
+        - path-parameters:
+            id: scim_user_...
+          response:
+            body:
+              scimUser:
+                id: scim_user_...
+                email: john.doe@acme.com
+                deleted: false
+                attributes:
+                  displayName: John Doe
+                  preferredLanguage: en_US
+                  key: value
+
+  /v1/scim/groups:
+    get:
+      tags:
+        - scim
+      x-fern-sdk-group-name: scim
+      x-fern-sdk-method-name: listSCIMGroups
+      x-fern-examples:
+        - query-parameters:
+            organizationExternalId: my_custom_external_id
+          response:
+            body:
+              scimGroups:
+                - id: scim_group_...
+                  displayName: Engineering
+                  deleted: false
+                  attributes:
+                    key: value
+                - id: scim_group_...
+                  displayName: Marketing
+                  deleted: true
+                  attributes:
+                    key: value
+              nextPageToken: "..."
+
+  /v1/scim/groups/{id}:
+    get:
+      tags:
+        - scim
+      x-fern-sdk-group-name: scim
+      x-fern-sdk-method-name: getSCIMGroup
+      x-fern-examples:
+        - path-parameters:
+            id: scim_group_...
+          response:
+            body:
+              scimGroup:
+                id: scim_group_...
+                displayName: Engineering
+                deleted: false
+                attributes:
+                  key: value
