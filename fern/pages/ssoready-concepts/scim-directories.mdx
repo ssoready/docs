@@ -12,14 +12,70 @@ If your customer has not asked for SCIM directory sync, you can likely ignore th
 
 SCIM Directories belong to [Organizations](/docs/sso-ready-concepts/saml-connections). You must create an [Environment](/docs/sso-ready-concepts/saml-connections) and an Organization before you can create a SCIM Directory.
 
+# What SCIM Directories look like
+
+You may create a SCIM Directory for a given  Organization by pressing the *Create SCIM Directory* button on the Organization's *SCIM Directories* card. You can view the details associated with any SCIM Directory by clicking its *SCIM Directory ID*. See the example here:
+
+<Frame caption="Finding SCIM Directories from an Organization">
+    <img src="/docs/assets/ssoready-concepts-assets/organization-to-directory.png" />
+</Frame>
+
+The detail view for a SCIM Directory will show three cards. 
+
+The first, labeled *SCIM Directory* displays properties of the SCIM Directory itself. Below it, you'll find another card called *SCIM Authentication*; this card manages authentication settings for the SCIM Directory. 
+
+Toward the bottom of the page, you'll see a third card, which will read either *SCIM Users* or *SCIM Groups* -- you may switch between these by pressing the toggle above the card. This final card will show all of the data contained within the SCIM Directory. Your SCIM Directory will hold no data until you have established a connection with a SCIM identity provider.
+
+
+<Frame caption="An example of an SSOReady SCIM Directory">
+    <img src="/docs/assets/ssoready-concepts-assets/scim-overview.png" />
+</Frame>
+
+# Properties of SCIM Directories
+
+## SCIM Directory ID
+
+Each SCIM Directory has a unique identifier in SSOReady. We call this a *SCIM Directory ID*. It will always begin with the prefix `scim_directory_`. Here's a real example: `scim_directory_6uvahkznrenvzfck3it8a2h6c`. SSOReady assigns this unique identifier automatically, and you will not be able to change it.
+
+## Primary SCIM Directory
+
+SCIM Directories belong to Organizations in SSOReady. Each Organization *may* have multiple SCIM Directories. This scenario is relatively unusual, but nonetheless possible. If you do not have any Organizations that have multiple SCIM Directories, you do not need to concern yourself with this property.
+
+The *Primary* property exists because SSOReady allows you to query a SCIM Directory indirectly -- i.e. by referencing the Organization it belongs to. When the Organization has multiple SCIM Directories, SSOReady needs a way to decide which SCIM Directory it should use. In such cases, SSOReady will use the SCIM Directory for which *Primary* is true; each Organization may have one primary SCIM Directory.
+
+SSOReady does not currently use the *Primary* property for any other purpose.
+
+If you wish to interact with a SCIM Directory other than the primary SCIM Directory, you may simply use the *SCIM Directory ID* directly. 
+
+## SCIM Base URL
+
+The *SCIM Base URL* uniquely identifies an endpoint that your customer's identity provider will use to update the SCIM Directory in SSOReady. Your customer will need this URL when configuring a connection between SSOReady and their identity provider.
+
+This URL always follows a standard format in SSOReady. You will notice that it always begins with `https://auth.ssoready.com/v1/scim/` and ends in the relevant *SCIM Directory ID*. 
+
 # Authentication for your SCIM Directory
 
 SSOReady needs to authenticate the identity provider each time it makes a request to SSOReady. SSOReady needs to confirm that it has received input from the right software.
 
-For this purpose, SSOReady uses [bearer tokens](https://medium.com/@arunchaitanya/wtf-is-bearer-token-an-in-depth-explanation-60695b581928). Your customer must configure the identity provider so that it includes the bearer token in the headers of each request. You should expect that all identity providers can support bearer tokens.
+For this purpose, SSOReady uses [bearer tokens](https://medium.com/@arunchaitanya/wtf-is-bearer-token-an-in-depth-explanation-60695b581928). Your customer must configure the identity provider so that it includes the bearer token in the headers of each request. You should expect that all identity providers can support bearer tokens. If you encounter an identity provider that cannot support bearer token authentication, please let us know at contact@ssoready.com.
 
 You may generate bearer tokens from the SSOReady web application:
 
 <Frame caption="Generating bearer tokens in the SSOReady web application">
     <img src="/docs/assets/ssoready-concepts-assets/scim-bearer.png" />
 </Frame>
+
+You will need to share this token with your customer directly. Please exercise caution in doing so. Accidentally exposing the bearer token can introduce security vulnerabilities.  
+
+Note that **SSOReady never stores bearer tokens** in cleartext. SSOReady only stores the hashed values. We cannot recover the bearer token for you. Instead, you can generate a *new* bearer token, which will simultaneously invalidate the previous bearer token. When you generate a new bearer token, therefore, you must share it with your customer, who must then reconfigure the SCIM connection in their identity provider.
+
+
+# SCIM Directories and SCIM Users
+
+Each SCIM Directory may have any number of [SCIM Users](/docs/sso-ready-concepts/scim-users). *Users* are a standardized concept in SCIM. SCIM Users belong to SCIM Directories in SSOReady and will often have associations to [SCIM Groups](/docs/sso-ready-concepts/scim-groups). 
+
+These should generally represent *Users* in your product, however you have chosen to model them. 
+
+# SCIM Directories and SCIM Groups
+
+Each SCIM Directory may have any number of [SCIM Groups](/docs/sso-ready-concepts/scim-groups). *Groups* are a standardized concept in SCIM. SCIM Groups belong to SCIM Directories. You should generally imagine these as lists of *Users*. 

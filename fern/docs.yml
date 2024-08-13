@@ -24,10 +24,14 @@ navigation:
         path: ./pages/ssoready-concepts/organizations.mdx
       - page: SAML Connections
         path: ./pages/ssoready-concepts/saml-connections.mdx
-      - page: SCIM Directories
-        path: ./pages/ssoready-concepts/scim-directories.mdx
       - page: Login Flows
         path: ./pages/ssoready-concepts/login-flows.mdx
+      - page: SCIM Directories
+        path: ./pages/ssoready-concepts/scim-directories.mdx
+      - page: SCIM Users
+        path: ./pages/ssoready-concepts/scim-users.mdx
+      - page: SCIM Groups
+        path: ./pages/ssoready-concepts/scim-groups.mdx
   - section: Self-Hosting
     contents:
       - page: Self-Hosting SSOReady
