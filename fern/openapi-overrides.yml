@@ -47,6 +47,25 @@ paths:
         - scim
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMUsers
+      x-fern-examples:
+        - request:
+            organizationExternalId: my_custom_external_id
+          response:
+            body:
+              users:
+                - id: scim_user_...
+                  email: john.doe@acme.com
+                  deleted: false
+                  attributes:
+                    displayName: John Doe
+                    preferredLanguage: en_US
+                - id: scim_user_...
+                  email: jane.doe@acme.com
+                  deleted: true
+                  attributes:
+                    displayName: Jane Doe
+                    preferredLanguage: fr_FR
+              nextPageToken: "..."
 
   /v1/scim/users/{id}:
     get:
