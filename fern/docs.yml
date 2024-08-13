@@ -14,6 +14,10 @@ navigation:
     contents:
       - page: SAML over OAuth (SAML NextAuth.js integration)
         path: ./pages/saml-oauth.mdx
+  - section: SCIM (Enterprise Directory Sync)
+    contents:
+      - page: SCIM Quickstart
+        path: ./pages/scim-quickstart.mdx
   - section: SSOReady concepts
     contents:
       - page: Overview
@@ -40,16 +44,16 @@ navigation:
         path: ./pages/self-service-admin/self-service-admin.mdx
       - section: Guides for common identity providers
         contents:
-        - page: Entra (formerly Azure AD)
-          path: ./pages/idp-config-tutorials/entra.mdx
-        - page: Okta
-          path: ./pages/idp-config-tutorials/okta.mdx
-        - page: Google
-          path: ./pages/idp-config-tutorials/google.mdx
-        - page: JumpCloud
-          path: ./pages/idp-config-tutorials/jumpcloud.mdx
-        - page: PingOne
-          path: ./pages/idp-config-tutorials/ping.mdx
+          - page: Entra (formerly Azure AD)
+            path: ./pages/idp-config-tutorials/entra.mdx
+          - page: Okta
+            path: ./pages/idp-config-tutorials/okta.mdx
+          - page: Google
+            path: ./pages/idp-config-tutorials/google.mdx
+          - page: JumpCloud
+            path: ./pages/idp-config-tutorials/jumpcloud.mdx
+          - page: PingOne
+            path: ./pages/idp-config-tutorials/ping.mdx
 
 navbar-links:
   - type: primary
@@ -57,9 +61,9 @@ navbar-links:
     url: https://app.ssoready.com
 
 colors:
-  accentPrimary: '#6366F1'
+  accentPrimary: "#6366F1"
   background:
-    light: '#ffffff'
+    light: "#ffffff"
 
 logo:
   light: ./docs/assets/logo.png
@@ -72,4 +76,3 @@ layout:
   searchbar-placement: header
 
 js: ./custom.js
-
