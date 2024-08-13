@@ -1,3 +1,6 @@
+servers:
+  - url: https://api.ssoready.com
+
 components:
   securitySchemes:
     bearerAuth:
@@ -31,3 +34,23 @@ paths:
           response:
             body:
               redirectUrl: https://your.redirect.url
+
+  /v1/scim/users:
+    post:
+      x-fern-sdk-group-name: scim
+      x-fern-sdk-method-name: listSCIMUsers
+
+  /v1/scim/user:
+    post:
+      x-fern-sdk-group-name: scim
+      x-fern-sdk-method-name: getSCIMUser
+
+  /v1/scim/groups:
+    post:
+      x-fern-sdk-group-name: scim
+      x-fern-sdk-method-name: listSCIMGroups
+
+  /v1/scim/group:
+    post:
+      x-fern-sdk-group-name: scim
+      x-fern-sdk-method-name: getSCIMGroup
