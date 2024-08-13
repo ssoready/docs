@@ -48,7 +48,7 @@ paths:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMUsers
       x-fern-examples:
-        - request:
+        - query-parameters:
             organizationExternalId: my_custom_external_id
           response:
             body:
@@ -76,7 +76,7 @@ paths:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: getSCIMUser
       x-fern-examples:
-        - request:
+        - path-parameters:
             id: scim_user_...
           response:
             body:
@@ -96,7 +96,7 @@ paths:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMGroups
       x-fern-examples:
-        - request:
+        - query-parameters:
             organizationExternalId: my_custom_external_id
           response:
             body:
@@ -120,7 +120,7 @@ paths:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: getSCIMGroup
       x-fern-examples:
-        - request:
+        - path-parameters:
             id: scim_group_...
           response:
             body:
