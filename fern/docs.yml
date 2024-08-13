@@ -52,25 +52,25 @@ navigation:
         contents:
           - section: Entra (formerly Azure AD)
             contents:
-            - page: SSO with Entra
+            - page: SAML with Entra
               path: ./pages/idp-config-tutorials/entra/entra_sso.mdx
           - section: Okta
             contents:
-            - page: SSO with Okta
+            - page: SAML with Okta
               path: ./pages/idp-config-tutorials/okta/okta_sso.mdx
             - page: SCIM with Okta
               path: ./pages/idp-config-tutorials/okta/okta_scim.mdx
           - section: Jumpcloud
             contents: 
-              - page: SSO with Jumpcloud
+              - page: SAML with Jumpcloud
                 path: ./pages/idp-config-tutorials/jumpcloud/jumpcloud_sso.mdx
           - section: Google
             contents:
-              - page: SSO with Google
+              - page: SAML with Google
                 path: ./pages/idp-config-tutorials/google/google_sso.mdx
           - section: Ping identity
             contents:
-              - page: SSO with Ping identity
+              - page: SAML with Ping identity
                 path: ./pages/idp-config-tutorials/ping/ping_sso.mdx
 
 navbar-links:
