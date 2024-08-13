@@ -89,11 +89,17 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/scim/groups/*:
+    /v1/scim/groups/{id}:
         get:
             tags:
                 - SSOReadyService
             operationId: SSOReadyService_GetSCIMGroup
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -146,11 +152,17 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/scim/users/*:
+    /v1/scim/users/{id}:
         get:
             tags:
                 - SSOReadyService
             operationId: SSOReadyService_GetSCIMUser
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
