@@ -44,27 +44,27 @@ paths:
   /v1/scim/users:
     get:
       tags:
-        - saml
+        - scim
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMUsers
 
   /v1/scim/users/*:
     get:
       tags:
-        - saml
+        - scim
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: getSCIMUser
 
   /v1/scim/groups:
     get:
       tags:
-        - saml
+        - scim
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMGroups
 
   /v1/scim/group/*:
     get:
       tags:
-        - saml
+        - scim
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: getSCIMGroup
