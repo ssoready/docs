@@ -48,7 +48,7 @@ paths:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMUsers
 
-  /v1/scim/users/*:
+  /v1/scim/users/{id}:
     get:
       tags:
         - scim
@@ -62,7 +62,7 @@ paths:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMGroups
 
-  /v1/scim/groups/*:
+  /v1/scim/groups/{id}:
     get:
       tags:
         - scim
