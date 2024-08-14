@@ -3,6 +3,9 @@ servers:
 
 tags: {}
 
+security: 
+  - bearerAuth: []
+
 components:
   securitySchemes:
     bearerAuth:
