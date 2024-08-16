@@ -133,3 +133,82 @@ paths:
                 deleted: false
                 attributes:
                   key: value
+
+  /v1/organizations:
+    get:
+      x-fern-sdk-group-name:
+        - management
+        - organizations
+      x-fern-sdk-method-name: listOrganizations
+    post:
+      x-fern-sdk-group-name:
+        - management
+        - organizations
+      x-fern-sdk-method-name: createOrganization
+
+  /v1/organizations/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - management
+        - organizations
+      x-fern-sdk-method-name: getOrganization
+    patch:
+      x-fern-sdk-group-name:
+        - management
+        - organizations
+      x-fern-sdk-method-name: updateOrganization
+
+  /v1/saml-connections:
+    get:
+      x-fern-sdk-group-name:
+        - management
+        - saml-connections
+      x-fern-sdk-method-name: listSAMLConnections
+    post:
+      x-fern-sdk-group-name:
+        - management
+        - saml-connections
+      x-fern-sdk-method-name: createSAMLConnection
+
+  /v1/saml-connections/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - management
+        - saml-connections
+      x-fern-sdk-method-name: getSAMLConnection
+    patch:
+      x-fern-sdk-group-name:
+        - management
+        - saml-connections
+      x-fern-sdk-method-name: updateSAMLConnection
+
+  /v1/scim-directories:
+    get:
+      x-fern-sdk-group-name:
+        - management
+        - scim-directories
+      x-fern-sdk-method-name: listSCIMDirectories
+    post:
+      x-fern-sdk-group-name:
+        - management
+        - scim-directories
+      x-fern-sdk-method-name: createSCIMDirectory
+
+  /v1/scim-directories/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - management
+        - scim-directories
+      x-fern-sdk-method-name: getSCIMDirectory
+    patch:
+      x-fern-sdk-group-name:
+        - management
+        - scim-directories
+      x-fern-sdk-method-name: updateSCIMDirectory
+
+  /v1/scim-directories/{id}/rotate-bearer-token:
+    post:
+      x-fern-sdk-group-name:
+        - management
+        - scim-directories
+      x-fern-sdk-method-name: rotateSCIMDirectoryBearerToken

@@ -48,6 +48,14 @@ navigation:
       - saml
       - scim:
           title: SCIM
+      - management:
+          contents:
+            - organizations:
+                title: Organizations!!!
+            - saml-connections:
+                title: AAA OOO BBB
+            - scim-directories:
+                title: SCIM Directories
   - section: IDP configuration
     contents:
       - page: Enabling self-service configuration for your customers
