@@ -48,6 +48,15 @@ navigation:
       - saml
       - scim:
           title: SCIM
+      - management:
+          title: Management API
+          contents:
+            - management.organizations
+            - management.setup-urls:
+                title: Setup URLs
+            - management.saml-connections
+            - management.scim-directories:
+                title: SCIM Directories
   - section: IDP configuration
     contents:
       - page: Enabling self-service configuration for your customers
