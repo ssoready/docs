@@ -505,6 +505,30 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/setup-urls:
+        post:
+            tags:
+                - SSOReadyService
+            operationId: SSOReadyService_CreateSetupURL
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateSetupURLRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateSetupURLResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
         CreateOrganizationResponse:
@@ -522,6 +546,20 @@ components:
             properties:
                 scimDirectory:
                     $ref: '#/components/schemas/SCIMDirectory'
+        CreateSetupURLRequest:
+            type: object
+            properties:
+                organizationId:
+                    type: string
+                canManageSaml:
+                    type: boolean
+                canManageScim:
+                    type: boolean
+        CreateSetupURLResponse:
+            type: object
+            properties:
+                url:
+                    type: string
         GetOrganizationResponse:
             type: object
             properties:

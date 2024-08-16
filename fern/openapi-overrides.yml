@@ -158,6 +158,13 @@ paths:
         - organizations
       x-fern-sdk-method-name: updateOrganization
 
+  /v1/setup-urls:
+    post:
+      x-fern-sdk-group-name:
+        - management
+        - setup-urls
+      x-fern-sdk-method-name: createSetupURL
+
   /v1/saml-connections:
     get:
       x-fern-sdk-group-name:

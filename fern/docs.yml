@@ -52,6 +52,8 @@ navigation:
           title: Management API
           contents:
             - management.organizations
+            - management.setup-urls:
+                title: Setup URLs
             - management.saml-connections
             - management.scim-directories:
                 title: SCIM Directories
