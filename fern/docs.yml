@@ -49,6 +49,7 @@ navigation:
       - scim:
           title: SCIM
       - management:
+          title: Management API
           contents:
             - management.organizations
             - management.saml-connections
