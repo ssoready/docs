@@ -48,6 +48,11 @@ navigation:
       - saml
       - scim:
           title: SCIM
+          contents:
+            - scim.listSCIMUsers
+            - scim.getSCIMUser
+            - scim.listSCIMGroups
+            - scim.getSCIMGroup
       - management:
           title: Management API
           contents:
