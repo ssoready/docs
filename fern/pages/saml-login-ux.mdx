@@ -1,0 +1,91 @@
+---
+title: "Integrating SAML with your Login UI"
+subtitle: How to add a "Log in with SAML" flow to your existing login user experience
+slug: saml/saml-login-ui
+---
+
+One of the more subtle aspects of adding SAML to your product is making it a
+seamless user experience. This guide will spell out your options, how to decide
+which one to go with, and how to implement it.
+
+# Deciding on a user flow
+
+The essential challenge with adding SAML to your product's login experience is
+that you need to figure out two things:
+
+1. Does this user need to log in over SAML, or should they use the "normal"
+   login method(s) instead?
+2. If they do need to log in over SAML, which company do they work for? Where
+   you redirect your user depends on which company they work for.
+
+Every SAML-supporting login experience ultimately is about finding the answer to
+these two questions.
+
+<Frame caption="A decision tree for which SAML login UX you should choose.">
+  <img src="./saml-login-decision-tree.png" />
+</Frame>
+
+There are three ways people deal with these two questions:
+
+1. Offer your customer if they'd like to log in with SAML. If they choose that
+   option, ask them which company they work for. Usually you ask for something
+   like a slug or subdomain that corresponds to their company.
+2. Offer your customer if they'd like to log in with SAML. If they choose that
+   option, ask them to input their email, and figure out which company they work
+   for from their email.
+3. Don't explicitly offer to log in with SAML by default. Instead, spy on the
+   email address they typed into the "Email" field in your login flow. Look up
+   that email's domain name in your backend, and if it matches a company that
+   uses SAML, then remove/disable the "Password" field and make the "Log In"
+   button become a "Log in with SAML" button for that company.
+
+# Option 1: Explicitly ask for SAML and Organization
+
+This is the easiest flow to implement, at the cost of being a bit clunkier for
+your customers. Your users will need to know some sort of unique identifier for
+their organization inside your product, and you'll use that identifier as the
+`organizationExternalId` to initiate a SAML login.
+
+<Steps>
+### Start with your login page
+
+<Frame caption="Your initial login page, before SAML, looks something like this.">
+  <img src="./saml-ux-0.png" />
+</Frame>
+
+Identify the page you'll want to modify, and in particular figure out where
+you'd like to add a new button for "Sign in with SAML". Typically, this goes
+next to any other login providers you may use, e.g. "Log in with Google".
+
+### Add a "Log in with SAML" button
+
+<Frame caption='Your login page, now with a "Sign in with SAML" button.'>
+  <img src="./saml-ux-1.png" />
+</Frame>
+
+Add a new button that takes the user to the next step of the SAML login process
+in step (3). Typically, you'll do this by making the "Sign in with SAML" button
+a link to a new `/login-saml` page.
+
+### Add a SAML login page asking for an organization ID
+
+<Frame caption="Your new SAML-specific login page, which asks for an organization ID.">
+  <img src="./saml-ux-2.png" />
+</Frame>
+
+On this new page, you'll ask your user to input their organization ID.
+
+### Redirect the user when they click "Log in with SAML"
+
+Create a new endpoint (or GraphQL resolver, RPC method, whatever is easiest for
+you) on your backend. That endpoint will:
+
+1. Take the organization ID the user inputted in the above UI,
+2. Call SSOReady's [Get SAML Redirect
+   URL](http://localhost:3000/api-reference/saml/get-saml-redirect-url) with the
+   given organization ID as the `organizationExternalId` argument to SSOReady.
+3. Redirect the user to the URL SSOReady returns to you.
+
+</Steps>
+
+# IdP-initiated flows as an escape hatch

@@ -11,6 +11,8 @@ navigation:
     contents:
       - page: SAML Quickstart
         path: ./pages/saml-quickstart.mdx
+      - page: Integrating SAML with your Login UX
+        path: ./pages/saml-login-ux.mdx
   - section: SCIM (Enterprise Directory Sync)
     contents:
       - page: SCIM Quickstart
