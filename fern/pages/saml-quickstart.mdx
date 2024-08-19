@@ -1,17 +1,17 @@
 ---
-title: "Quickstart"
-description: "Start accepting SAML logins this afternoon"
-noindex: false
+title: "SAML Quickstart"
+subtitle: "Start accepting SAML logins this afternoon"
+slug: "saml/saml-quickstart"
 ---
 
-# Getting started with SSOReady
+# Getting started with SSOReady SAML
 
 Welcome to the SSOReady quickstart guide! This guide will take you through:
 
 1. [**Basic concepts.**](#basic-concepts) How Enterprise SSO / SAML works at a high level, and how SSOReady will help you implement it.
 2. [**Code implementation.**](#code-implementation) What you'll need to build, and how to use SSOReady's SDK.
 3. [**Onboarding customers.**](#onboarding-customers) SAML requires both you and your customer do setup. SSOReady automates your end of the equation,
-and this section describes what instructions you'll give to your customers.
+   and this section describes what instructions you'll give to your customers.
 
 SSOReady is just an authentication middleware layer. SSOReady doesn't "own" your users, and it doesn't require you to use any
 particular tech stack. That's on purpose -- it makes onboarding easier for you, and it forces us to keep earning your business in the long run, because churning is easier.
@@ -100,7 +100,7 @@ In [Code implementation](#code-implementation), there were three missing pieces 
 1. **Where does the SSOReady callback page get configured?** That information lives on [environments](#creating-environments).
 2. **Where do I get an API key?** You create [an API key](#creating-api-keys) scoped to an environment.
 3. **How do I get `organizationExternalId`?** You create [an organization](#creating-organizations) in an environment,
-where you can choose an external ID convenient for you.
+   where you can choose an external ID convenient for you.
 
 This section will step you through how you'll do all of this setup in SSOReady's webapp. As a prerequisite step, you'll
 need to [sign up to SSOReady](https://app.ssoready.com/login). It's free and anyone can sign up, even with a personal
@@ -126,17 +126,18 @@ you'd have three organizations in SSOReady: one each for Apple, Nvidia, and Amaz
 Organizations belong to an environment. When viewing an environment in the app, the "Create organization" button creates
 a new organization. Organizations have two properties worth highlighting:
 
-* An optional *external ID*, which you can assign. If you're selling multi-tenant B2B software, you probably already
-have a concept that closely matches an SSOReady organization -- usually, this is something named a "team", "workspace",
-"company", or something similar. When creating an SSOReady organization, use your product's counterpart to an
-organization ID as the external ID.
+- An optional _external ID_, which you can assign. If you're selling multi-tenant B2B software, you probably already
+  have a concept that closely matches an SSOReady organization -- usually, this is something named a "team", "workspace",
+  "company", or something similar. When creating an SSOReady organization, use your product's counterpart to an
+  organization ID as the external ID.
 
 You'll provide the external ID as the `organizationExternalId` in ["Initiating SAML
 logins"](#initiating-saml-logins). The external ID is returned to you when ["Redeeming SAML
 logins"](#redeeming-saml-logins).
-* A set of *domains*. If you expect Apple's employees will log in to your product from `@apple.com` and `@shazam.com`
-email addresses, then put `apple.com` and `shazam.com` here. SSOReady will enforce that users' SAML logins come from
-these domains.
+
+- A set of _domains_. If you expect Apple's employees will log in to your product from `@apple.com` and `@shazam.com`
+  email addresses, then put `apple.com` and `shazam.com` here. SSOReady will enforce that users' SAML logins come from
+  these domains.
 
 ## Creating SAML connections
 
@@ -145,7 +146,7 @@ providing and asking for settings. Those settings all live on an SSOReady SAML c
 
 SAML connections belong to an organization. When viewing an organization in the app, the "Create SAML connection" button
 creates a new SAML connection. Beyond the SAML-related settings covered in ["Onboarding
-customers"](#onboarding-customers), SAML connections have one setting of note: whether they are *primary*.
+customers"](#onboarding-customers), SAML connections have one setting of note: whether they are _primary_.
 
 Each organization has up to one primary SAML connection. In ["Initiating SAML logins"](#initiating-saml-logins), you
 provide an `organizationExternalId`. SSOReady will use that organization's primary SAML connection to initiate the
@@ -160,9 +161,9 @@ Unfortunately, SAML identity providers (e.g. Okta, Microsoft Entra, Google Works
 terminology for these identical details. To deal with that, we've prepared a separate set of documentation for you to
 follow depending on what identity provider your customer uses:
 
-* [Okta](/docs/idp-configuration/guides-for-common-identity-providers/okta/saml-with-okta)
-* [Google Workspace](/docs/idp-configuration/guides-for-common-identity-providers/google/saml-with-google)
-* [Microsoft Entra](/docs/idp-configuration/guides-for-common-identity-providers/entra-formerly-azure-ad/saml-with-entra) (aka Microsoft Azure Active Directory, Microsoft Azure AD)
+- [Okta](/docs/idp-configuration/guides-for-common-identity-providers/okta/saml-with-okta)
+- [Google Workspace](/docs/idp-configuration/guides-for-common-identity-providers/google/saml-with-google)
+- [Microsoft Entra](/docs/idp-configuration/guides-for-common-identity-providers/entra-formerly-azure-ad/saml-with-entra) (aka Microsoft Azure Active Directory, Microsoft Azure AD)
 
 In all cases, you're ultimately going to:
 

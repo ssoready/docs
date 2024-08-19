@@ -5,19 +5,21 @@ instances:
 title: SSOReady Docs
 
 navigation:
-  - section: Introduction
+  - page: Introduction
+    path: ./pages/introduction.mdx
+  - section: SAML (Enterprise SSO)
     contents:
-      - page: Quickstart
-        path: ./pages/quickstart.mdx
+      - page: SAML Quickstart
+        path: ./pages/saml-quickstart.mdx
+  - section: SCIM (Enterprise Directory Sync)
+    contents:
+      - page: SCIM Quickstart
+        path: ./pages/scim-quickstart.mdx
   - section: OAuth / NextAuth.js
     slug: oauth-nextauth
     contents:
       - page: SAML over OAuth (SAML NextAuth.js integration)
         path: ./pages/saml-oauth.mdx
-  - section: SCIM (Enterprise Directory Sync)
-    contents:
-      - page: SCIM Quickstart
-        path: ./pages/scim-quickstart.mdx
   - section: SSOReady concepts
     contents:
       - page: Overview
@@ -44,7 +46,7 @@ navigation:
     snippets:
       python: ssoready
       typescript: ssoready
-    layout: 
+    layout:
       - saml
       - scim:
           title: SCIM
@@ -70,16 +72,16 @@ navigation:
         contents:
           - section: Entra (formerly Azure AD)
             contents:
-            - page: SAML with Entra
-              path: ./pages/idp-config-tutorials/entra/entra_sso.mdx
+              - page: SAML with Entra
+                path: ./pages/idp-config-tutorials/entra/entra_sso.mdx
           - section: Okta
             contents:
-            - page: SAML with Okta
-              path: ./pages/idp-config-tutorials/okta/okta_sso.mdx
-            - page: SCIM with Okta
-              path: ./pages/idp-config-tutorials/okta/okta_scim.mdx
+              - page: SAML with Okta
+                path: ./pages/idp-config-tutorials/okta/okta_sso.mdx
+              - page: SCIM with Okta
+                path: ./pages/idp-config-tutorials/okta/okta_scim.mdx
           - section: Jumpcloud
-            contents: 
+            contents:
               - page: SAML with Jumpcloud
                 path: ./pages/idp-config-tutorials/jumpcloud/jumpcloud_sso.mdx
           - section: Google
@@ -112,3 +114,9 @@ layout:
   searchbar-placement: header
 
 js: ./custom.js
+
+redirects:
+  - source: "/introduction/quickstart"
+    destination: "/saml/saml-quickstart"
+  - source: "/scim-quickstart"
+    destination: "/scim/scim-quickstart"
