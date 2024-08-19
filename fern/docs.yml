@@ -116,7 +116,7 @@ layout:
 js: ./custom.js
 
 redirects:
-  - source: "/introduction/quickstart"
-    destination: "/saml/saml-quickstart"
-  - source: "/scim-quickstart"
-    destination: "/scim/scim-quickstart"
+  - source: "/docs/introduction/quickstart"
+    destination: "/docs/saml/saml-quickstart"
+  - source: "/docs/scim-quickstart"
+    destination: "/docs/scim/scim-quickstart"
