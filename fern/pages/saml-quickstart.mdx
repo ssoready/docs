@@ -55,15 +55,41 @@ to redirect your user to a URL.
 SSOReady's SDKs generate a URL for you, and then you simply forward your user to that URL using any mechanism that suits
 your tech stack.
 
-```bash cURL
+<CodeBlocks>
+
+```bash title="cURL"
 curl https://api.ssoready.com/v1/saml/redirect \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer ssoready_sk_..." \
   -d '{ "organizationExternalId": "..." }'
 ```
 
+```typescript title="TypeScript"
+const ssoready = new SSOReadyClient();
+await ssoready.saml.getSamlRedirectUrl({
+  organizationExternalId: "...",
+});
+```
+
+```python title="Python"
+client = SSOReady()
+client.saml.get_saml_redirect_url(
+    organization_external_id="...",
+)
+```
+
+</CodeBlocks>
+
 That code sample requires an API Key (`ssoready_sk_...`) and an `organizationExternalId`. How you get those is covered
 in [Setting up SSOReady](#setting-up-ssoready) later on this page.
+
+<Tip>
+
+For recommendations on how to incorporate a "Log in with SAML" button into your
+login user experience, check out our docs on [Integrating SAML with your Login
+UI](/docs/saml/integrating-saml-into-your-login-ui).
+
+</Tip>
 
 ## Handling SAML logins
 
@@ -79,6 +105,8 @@ So what you'll need to do is create a new "SSOReady callback page" (typically so
 `https://app.yourcompany.com/ssoready-callback`), where you'll expect a `?saml_access_code=saml_access_code_...` query parameter in the URL.
 From your backend, you'll exchange that access code for a user's details:
 
+<CodeBlocks>
+
 ```bash cURL
 curl https://api.ssoready.com/v1/saml/redeem \
   -H "Content-Type: application/json" \
@@ -86,12 +114,36 @@ curl https://api.ssoready.com/v1/saml/redeem \
   -d '{ "samlAccessCode": "saml_access_code_..." }'
 ```
 
+```typescript title="TypeScript"
+const ssoready = new SSOReadyClient();
+await ssoready.saml.redeemSamlAccessCode({
+  samlAccessCode: "saml_access_code_...",
+});
+```
+
+```python title="Python"
+client = SSOReady()
+client.saml.redeem_saml_access_code(
+    saml_access_code="saml_access_code_...",
+)
+```
+
+</CodeBlocks>
+
 The response will include the user's `email` as well as the SSOReady `organizationId` and `organizationExternalId`
 they belong to. It's your responsibility to then log the user in with that given email and organization using whatever
 mechanism your tech stack uses.
 
 How you tell us about your desired "SSOReady callback page", as well as what `organizationId` and
 `organizationExternalId` mean, is covered in [Setting up SSOReady](#setting-up-ssoready) below.
+
+<Tip>
+
+For recommendations on how your SAML handling logic should work, check out our
+docs on [Handling SAML Logins and Just-in-Time
+Provisioning](/docs/saml/handling-saml-logins-jit-provisioning).
+
+</Tip>
 
 # Setting up SSOReady
 
