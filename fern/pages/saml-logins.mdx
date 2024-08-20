@@ -1,0 +1,232 @@
+---
+title: "Handling SAML Logins and Just-in-Time Provisioning"
+slug: "saml/handling-saml-logins-jit-provisioning"
+subtitle: "How to handle SAML logins and implement Just-in-Time (JIT) Provisioning"
+---
+
+<Note>
+
+This document contains best practices for SAML. You should start with the
+[quickstart](/docs/saml/saml-quickstart) first.
+
+</Note>
+
+Implementing SAML has two major steps: starting a SAML login, and then handling
+a SAML login. SSOReady documents best practices for starting SAML logins
+[here](/docs/saml/integrating-saml-into-your-login-ui). This document is about
+best practices for handling a SAML login.
+
+Handling a SAML login is about doing two things:
+
+1. SSOReady gives you the email and organization of the person logging in. You
+   need to determine which user that corresponds to. This is called [_matching_ a
+   user](#matching-users).
+2. If no matching user exists, you need to decide what to do about that. This is
+   called [_provisioning_ a user](#provisioning-users).
+
+To frame this conversaion, let's start with a recap of SSOReady callback URLs,
+which is where you'll implement all of this logic.
+
+# Implementing your SSOReady callback URL
+
+Handling a SAML login happens from your [SSOReady callback
+URL](/docs/sso-ready-concepts/environments#environments-redirect-urls). This is
+something you configured when you [implemented
+SSOReady](/docs/saml/saml-quickstart). It's typically a URL like:
+
+```
+https://yourcompany.com/ssoready-callback
+```
+
+When one of your users has successfully logged in via SAML, SSOReady redirects
+their browser to your SSOReady callback URL with a SAML access code, so you get
+a request like this:
+
+```
+https://yourcompany.com/ssoready-callback?saml_access_code=saml_access_code_...
+```
+
+Your backend then exchanges that SAML access code for details about the user
+logging in:
+
+<CodeBlocks>
+
+```bash title="cURL"
+curl https://api.ssoready.com/v1/saml/redeem \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ssoready_sk_..." \
+  -d '{ "samlAccessCode": "saml_access_code_..." }'
+```
+
+```typescript title="TypeScript"
+const ssoready = new SSOReadyClient();
+await ssoready.saml.redeemSamlAccessCode({
+  samlAccessCode: "saml_access_code_...",
+});
+```
+
+```python title="Python"
+client = SSOReady()
+client.saml.redeem_saml_access_code(
+    saml_access_code="saml_access_code_...",
+)
+```
+
+</CodeBlocks>
+
+You'll get back details about user that look like this:
+
+```json
+{
+  "email": "john.doe@acme.com",
+  "organizationId": "org_7cu5hsy9vrbi5d2k1qvbh19lj",
+  "organizationExternalId": "my_custom_external_id"
+}
+```
+
+The rest of this document is about where you go from here.
+
+# Matching users
+
+Ultimately, handling a SAML login is just a question of giving back to the
+browser a login session. You do this using whatever library you use for managing
+user sessions.
+
+To do that, you need to figure out which user to log the browser into. You need
+to go from the details you got from SSOReady -- an `email` and an organization
+-- to a user in your system. That's called _user matching_.
+
+Usually, this just consists of finding a user by running a query like:
+
+```sql
+-- $1 is the `email` from SSOReady
+-- $2 is the `organizationExternalId` from SSOReady
+
+select id from users where email = $1 and organization_id = $2;
+-- or, if you don't have organization_id on users
+select id from users where email = $1;
+```
+
+From a security standpoint, you can rely on the fact that SSOReady has
+authenticated that a SAML assertion with the given `email` came from one of the
+[SAML connections](/docs/sso-ready-concepts/saml-connections) that the
+[organization](/docs/sso-ready-concepts/organizations) trusts. You can also
+count on the `email` coming from a domain that's in [the list of allowed
+domains](/docs/sso-ready-concepts/organizations#organizations-and-their-domains)
+for that organization.
+
+# Provisioning users
+
+The previous section was concerned with finding a user given their email and
+organization. But sometimes, no matching user is found. In that case, you need
+to think about whether/how you want to create, or _provision_, a user on the
+spot.
+
+The typical stages of maturity for implementing user provisioning with SAML are:
+
+1. [No provisioning at all](#no-provisioning-at-all). If you can't find a
+   matching user, you tell the user they need to first sign up by hand.
+2. [Just-in-Time (JIT) Provisioning](#just-in-time-jit-provisioning). Create a
+   brand new user and then immediately log them into that user.
+3. [SCIM-based Provisioning](#scim-based-provisioning). You don't really worry
+   about not finding a matching user, because you sync them into your system
+   behind the scenes on a frequent periodic basis.
+
+Most companies implementing SAML start at (1) or go straight to (2). You often
+can't stay with option (1) for very long; it has some annoying downsides for
+your customers. When your customers start asking for SCIM, you eventually go to
+option (3) for those customers.
+
+## No provisioning at all
+
+The easiest way to implement SAML user provisioning is to not do it at all.
+
+With this approach, you tell your customer that they can't log in with SAML
+without first signing up with their email using a non-SAML-based signup method.
+
+The problem with this approach is that it defeats a big part of the reason
+customers want SAML to begin with. The main reason your customers want SAML is
+that:
+
+1. They want their employees to avoid having passwords for various products,
+   including your product.
+2. They want to easily enable access to your product for dozens of employees at
+   a time, without having to do a bunch of training of their employees.
+
+When you don't support provisioning, that means your customer's employees need
+to all sign up manually. You'll find that:
+
+1. You need to make sure you have some non-password-based login method
+   supported. Usually the only workable option is here is an email
+   magic-link-based login method. You'll find many companies consider these
+   "insecure" or are just unfamiliar with them.
+2. Many employees will be confused by this process, and will sign up with a
+   password-based method anyway. Your customer's IT admin may want to do audits
+   to make sure nobody did that, and will want those users' passwords
+   deprovisioning.
+
+Overall, this approach saves you a bit of initial implementation time, but it
+doesn't tend to last for long.
+
+For this reason, we recommend you strongly consider jumping straight to
+[Just-in-Time (JIT) Provisioning](#just-in-time-jit-provisioning) when initially
+implementing SAML. You can probably only get away with no provisioning at all
+for your first, most patient, customers.
+
+## Just-in-Time (JIT) Provisioning
+
+Just-in-time provisioning refers to the idea of creating a brand-new user on the
+spot when you don't find a matching user.
+
+You implement JIT provisioning by:
+
+1. Creating a new user in your database with the `email` you got from SSOReady
+2. Making the user belong to the organization in `organizationExternalId` you
+   got from SSOReady. This might be some `organization_id` column on your
+   `users` table, some `users` list on organizations, an association table, etc.
+   Just do whatever you normally do to tie users and organizations.
+
+   If you decide which organization a user belongs to based on the domain of
+   their email address, then you don't need to do anything here. [SSOReady
+   enforces organization domains on your
+   behalf](/docs/sso-ready-concepts/organizations#organizations-and-their-domains).
+
+3. Create a new login session token/JWT/etc for that user however you normally
+   do that.
+4. Give that login session to the web browser, again using whatever method is
+   normal or convenient for you.
+
+Don't assign a password for this new user. Generally speaking, your customers
+will prefer it if you can prevent JIT-provisioned users from supporting any
+login method other than SAML. Your customers want to be able to shut off access
+to your product by shutting off the relevant SAML user on their end.
+
+Make sure that that your JIT provisioning logic is consistent with your matching
+logic. You only want to create a new user the _first_ time they log in via SAML.
+On all subsequent logins, your user matching logic should match with the user
+you JIT-provisioned the first time.
+
+## SCIM-based Provisioning
+
+[SCIM](https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management)
+("System for Cross-domain Identity Management") is a standardized way for your
+customers to provision and deprovision users in your product offline.
+[SSOReady's SCIM product](/docs/scim/scim-quickstart) gives you an easy, free,
+and open-source way to add SCIM support to your product.
+
+Usually, customers want SAML first, and later on start asking for SCIM. Since
+SCIM is all about provisioning, you often find that SAML-based provisioning
+stops being so important.
+
+Typically, by the time you implement SCIM you've already implemented JIT SAML
+provisioning. You can usually copy the code you wrote for SAML JIT provisioning
+to implement SAML based provisioning.
+
+But you'll usually find that many customers want and pay for your SAML support,
+but don't need SCIM support. So you likely won't be able to immediately turn off
+SAML user provisioning once you implement SCIM.
+
+As a result, the typical path here is to just do nothing. Even once you've
+shipped SCIM-based provisioning, just leave your SAML-based provisioning logic
+as-is, since other customers still need it and it doesn't do any harm to your
+SCIM-based customers.
