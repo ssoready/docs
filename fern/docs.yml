@@ -112,7 +112,7 @@ logo:
   height: 27
   href: https://ssoready.com
 
-favicon: ./docs/assets/favicon.ico
+favicon: ./docs/assets/apple-touch-icon.png
 
 layout:
   searchbar-placement: header
