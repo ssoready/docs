@@ -8,6 +8,9 @@ A SAML login flow is an audit log of a single time one of your users attempted
 to log in via SAML. SAML login flows track the timestamp and details of every
 step in the SAML protocol.
 
+A SAML login flow belongs to exactly one [SAML
+connection](/docs/ssoready-concepts/saml-connections).
+
 # Properties
 
 ## SAML Login Flow ID
@@ -77,7 +80,7 @@ Successful SAML login flows keep track of the end user's email address.
 
 SSOReady always validates these email addresses against the appropriate
 organization's [domains](/docs/ssoready-concepts/organizations#domains). If the
-identity provider sends an email address outside of the list of allowed domains,
+identity provider sends an email address outside the list of allowed domains,
 the SAML login flow have an [email outside organization
 domains](#email-outside-organization-domains) error.
 
