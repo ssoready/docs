@@ -11,7 +11,7 @@ Every SAML connection belongs to exactly one
 [organization](/docs/ssoready-concepts/organizations). Organizations in turn
 belong to exactly one [environment](/docs/ssoready-concepts/environments). You
 can have any number of SAML connections within an organization. Up to one SAML
-connection can be [primary](#primary).
+connection per organization can be [primary](#primary).
 
 The SAML protocol is designed such that your customer needs to put a SAML
 connection's [service provider configuration](#service-provider-configuration)
@@ -41,18 +41,18 @@ Up to one SAML connection within an
 [organization](/docs/ssoready-concepts/organizations) can be marked as
 "primary".
 
-A primary organization works exactly like any other SAML connection,
+A primary SAML connection works exactly like any other SAML connection,
 but with one special behavior for your convenience: when you [initiate a SAML
 login](/docs/saml/saml-quickstart#initiating-saml-logins), you can provide an
 [`organizationExternalId`](/docs/api-reference/saml/get-saml-redirect-url#request.body.organizationExternalId)
 or
-[`organizationId`](/docs/api-reference/saml/get-saml-redirect-url#request.body.organizationId),
-the primary SAML connection of
-that organization gets used to do the SAML login.
+[`organizationId`](/docs/api-reference/saml/get-saml-redirect-url#request.body.organizationId).
+When you do so, the primary SAML connection of that organization gets used to do
+the SAML login.
 
 If none of the SAML connections in an organization are marked as primary, SAML
 initiations using `organizationExternalId` or `organizationId` for that
-organization will return an error when you call SSOReady's API or SDK. The
+organization will return an error from SSOReady's API. The
 solution is to mark one of the SAML connections as primary, or to pass a
 [`samlConnectionId`](/docs/api-reference/saml/get-saml-redirect-url#request.body.samlConnectionId)
 instead.
@@ -105,7 +105,7 @@ https://auth.ssoready.com/v1/saml/saml_conn_.../acs
 ```
 
 If you use a custom domain for `auth.ssoready.com`, then the ACS URL will
-instead looks like:
+instead look like:
 
 ```
 https://auth.yourcompany.com/v1/saml/saml_conn_.../acs
@@ -130,7 +130,7 @@ https://auth.ssoready.com/v1/saml/saml_conn_...
 ```
 
 If you use a custom domain for `auth.ssoready.com`, then the ACS URL will
-instead looks like:
+instead look like:
 
 ```
 https://auth.yourcompany.com/v1/saml/saml_conn_...
