@@ -51,8 +51,31 @@ paths:
       x-fern-sdk-group-name: scim
       x-fern-sdk-method-name: listSCIMUsers
       x-fern-examples:
-        - query-parameters:
+        - name: List Users
+          query-parameters:
             organizationExternalId: my_custom_external_id
+          response:
+            body:
+              scimUsers:
+                - id: scim_user_...
+                  email: john.doe@acme.com
+                  deleted: false
+                  attributes:
+                    displayName: John Doe
+                    preferredLanguage: en_US
+                    key: value
+                - id: scim_user_...
+                  email: jane.doe@acme.com
+                  deleted: true
+                  attributes:
+                    displayName: Jane Doe
+                    preferredLanguage: fr_FR
+                    key: value
+              nextPageToken: "..."
+        - name: Filter Users by Group ID
+          query-parameters:
+            organizationExternalId: my_custom_external_id
+            scimGroupId: scim_group_...
           response:
             body:
               scimUsers:

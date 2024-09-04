@@ -55,30 +55,8 @@ to redirect your user to a URL.
 SSOReady's SDKs generate a URL for you, and then you simply forward your user to that URL using any mechanism that suits
 your tech stack.
 
-<CodeBlocks>
-
-```bash title="cURL"
-curl https://api.ssoready.com/v1/saml/redirect \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ssoready_sk_..." \
-  -d '{ "organizationExternalId": "..." }'
-```
-
-```typescript title="TypeScript"
-const ssoready = new SSOReadyClient();
-await ssoready.saml.getSamlRedirectUrl({
-  organizationExternalId: "...",
-});
-```
-
-```python title="Python"
-client = SSOReady()
-client.saml.get_saml_redirect_url(
-    organization_external_id="...",
-)
-```
-
-</CodeBlocks>
+<EndpointRequestSnippet endpoint="POST /v1/saml/redirect" />
+<EndpointResponseSnippet endpoint="POST /v1/saml/redirect" />
 
 That code sample requires an API Key (`ssoready_sk_...`) and an `organizationExternalId`. How you get those is covered
 in [Setting up SSOReady](#setting-up-ssoready) later on this page.
@@ -105,30 +83,9 @@ So what you'll need to do is create a new "SSOReady callback page" (typically so
 `https://app.yourcompany.com/ssoready-callback`), where you'll expect a `?saml_access_code=saml_access_code_...` query parameter in the URL.
 From your backend, you'll exchange that access code for a user's details:
 
-<CodeBlocks>
+<EndpointRequestSnippet endpoint="POST /v1/saml/redeem" />
+<EndpointResponseSnippet endpoint="POST /v1/saml/redeem" />
 
-```bash cURL
-curl https://api.ssoready.com/v1/saml/redeem \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ssoready_sk_..." \
-  -d '{ "samlAccessCode": "saml_access_code_..." }'
-```
-
-```typescript title="TypeScript"
-const ssoready = new SSOReadyClient();
-await ssoready.saml.redeemSamlAccessCode({
-  samlAccessCode: "saml_access_code_...",
-});
-```
-
-```python title="Python"
-client = SSOReady()
-client.saml.redeem_saml_access_code(
-    saml_access_code="saml_access_code_...",
-)
-```
-
-</CodeBlocks>
 
 The response will include the user's `email` as well as the SSOReady `organizationId` and `organizationExternalId`
 they belong to. It's your responsibility to then log the user in with that given email and organization using whatever

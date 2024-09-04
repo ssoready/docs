@@ -55,11 +55,7 @@ that your customer populates. To sync users, you'll:
 
 To list SCIM users out of SSOReady, run:
 
-```bash
-curl 'https://api.ssoready.com/v1/scim/users?organization_external_id=...' \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ssoready_sk_..."
-```
+<EndpointRequestSnippet endpoint="GET /v1/scim/users" />
 
 That code sample requires an API Key (`ssoready_sk_...`) and an
 `organization_external_id`. How you get those is covered in [Setting up
@@ -67,38 +63,14 @@ SSOReady](#setting-up-ssoready) later on this page.
 
 You'll get back a response that looks like this:
 
-```json
-{
-  "users": [
-    {
-      "id": "scim_user_...",
-      "email": "alice@example.com",
-      "deleted": false,
-      "attributes": {}
-    },
-    {
-      "id": "scim_user_...",
-      "email": "bob@example.com",
-      "deleted": true,
-      "attributes": {}
-    }
-  ],
-  "nextPageToken": "..."
-}
-```
+<EndpointResponseSnippet endpoint="GET /v1/scim/users" />
 
 If the response contains a `nextPageToken` whose value is empty (i.e. the empty
 string, `""`), then you have reached the end of the list.
 
 If `nextPageToken` is non-empty, there is more data to fetch. You can fetch the
 next page of data by re-running your previous request, but setting the parameter
-`pageToken` to the value of `nextPageToken` you just got back:
-
-```bash
-curl 'https://api.ssoready.com/v1/scim/users?organization_external_id=...&page_token=...' \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ssoready_sk_..."
-```
+`pageToken` to the value of `nextPageToken` you just got back.
 
 ### Provisioning (creating) users
 
@@ -240,52 +212,18 @@ group-specific concept.
 
 To list SCIM groups out of SSOReady, run:
 
-```bash
-curl 'https://api.ssoready.com/v1/scim/groups?organization_external_id=...' \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ssoready_sk_..."
-```
+<EndpointRequestSnippet endpoint="GET /v1/scim/groups" />
 
 You'll get back a response that looks like this:
 
-```json
-{
-  "scimGroups": [
-    {
-      "id": "scim_group_...",
-      "scimDirectoryId": "scim_directory_...",
-      "displayName": "Engineering",
-      "deleted": false,
-      "attributes": {
-        "displayName": "Engineering"
-      }
-    },
-    {
-      "id": "scim_group_...",
-      "scimDirectoryId": "scim_directory_...",
-      "displayName": "Marketing",
-      "deleted": true,
-      "attributes": {
-        "displayName": "Marketing"
-      }
-    }
-  ],
-  "nextPageToken": "..."
-}
-```
+<EndpointResponseSnippet endpoint="GET /v1/scim/groups" />
 
 If the response contains a `nextPageToken` whose value is empty (i.e. the empty
 string, `""`), then you have reached the end of the list.
 
 If `nextPageToken` is non-empty, there is more data to fetch. You can fetch the
 next page of data by re-running your previous request, but setting the parameter
-`page_token` to the value of `nextPageToken` you just got back:
-
-```bash
-curl 'https://api.ssoready.com/v1/scim/groups?organization_external_id=...&page_token=...' \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ssoready_sk_..."
-```
+`page_token` to the value of `nextPageToken` you just got back.
 
 ### Provisioning (creating) groups
 
@@ -350,11 +288,7 @@ To list users that are members of a group, you can provide a `scim_group_id`
 parameter when listing SCIM users, using the same method as documented in
 [Listing users](#listing-users) above:
 
-```bash
-curl 'https://api.ssoready.com/v1/scim/users?organization_external_id=...&scim_group_id=scim_group_...' \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ssoready_sk_..."
-```
+<EndpointRequestSnippet endpoint="GET /v1/scim/users" example="Filter Users by Group ID" />
 
 You need to provide the SSOReady-assigned `id` for the SCIM Group, beginning
 with `scim_group_...`, as the `scim_group_id`.
