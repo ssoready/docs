@@ -1,76 +1,185 @@
 ---
 title: 'SSOReady concepts: Environments'
-description: 'Understanding Environments in SSOReady'
+subtitle: 'Understanding Environments in SSOReady'
 slug: ssoready-concepts/environments
 ---
 
-### Structuring SSOReady Environments
+SSOReady environments hold onto top-level settings about your application, such
+as [your app's URL](#redirect-url). They also serve as the parent resource for
+[organizations](/docs/ssoready-concepts/organizations), which in turn hold onto
+[SAML connections](/docs/ssoready-concepts/saml-connections) and [SCIM
+directories](/docs/ssoready-concepts/scim-directories).
 
-SSOReady *Environments* help you use our services in different applications or with different settings -- without requiring you to switch accounts.
+You should create one SSOReady environment per "deployment environment" your
+application uses, e.g. one each for "production", "staging", and "local dev".
 
-You should map SSOReady Environments onto your own deployment environments. More concretely, we recommend that you maintain three Environments in SSOReady:
-<ul>
-<li>Local development</li>
-<li>Staging</li>
-<li>Production</li>
-</ul>
+# Properties
 
-You can deviate from this structure if doing so suits your needs.
+## Environment ID
 
-If you're unsure how you want to use SSOReady Environments, feel welcome to reach out at contact@ssoready.com, and we'll be happy to help. 
+Every environment has an ID starting with `env_...`, for example:
 
-### What SSOReady Environments look like
+```
+env_579r04bhgwhl0zq7f3ynj8hh0
+```
 
-Below, you'll find a GIF that shows a common flow users will follow:
-<ol>
-<li>Users see active Environments at [app.ssoready.com](https://app.ssoready.com/)</li>
-<li>Users create new Environments by pressing *Create environment*</li>
-<li>Users enter a *Display name* and a *Redirect URL* for the environment</li>
-</ol>
+Environment IDs are universally unique.
 
-<figure>
-<img src="/docs/assets/ssoready-concepts-assets/environmentconfig.gif" style="border-radius: 10px"/>
-<figcaption style = "text-align:center"> [Click image to enlarge] Creating an Environment in SSOReady </figcaption>
-</figure>
+## Display Name
 
+You can assign your environments a human-friendly display name. SSOReady does
+not show this to your customers. It is internal-only.
 
+## Redirect URL
 
-### Properties of SSOReady environments
+The redirect URL for an environment is where SSOReady will redirect your users
+after they log in via SAML. This URL is also often called the "SSOReady callback
+page".
 
-#### Descriptive properties
+For more details on what you should run on this page, see ["Handling SAML
+Logins"](/docs/saml/saml-quickstart#handling-saml-logins) in the SAML
+quickstart.
 
-Each Environment has a unique identifier. We call this an *Environment ID*. Environment IDs always begin with the same `env_` prefix. They look like this: `env_dwsxxx0cav2ku5j0uvlazwois`.
+## OAuth Redirect URI
 
-For each Environment that you create, you will also choose a *Display Name*, which is just a text field. We recommend that you name each SSOReady Environment for its associated deployment environment (e.g. calling the production environment in SSOReady "Production.")
+Optional. When using [SAML-over-OAuth (SAML NextAuth.js
+integration)](/docs/saml-over-oauth-saml-nextauth-integration), this is the URL
+SSOReady will redirect your users to.
 
-#### Environments' redirect URLs
+If you aren't using SAML-over-OAuth, disregard this field.
 
-When you create an Environment in SSOReady, we'll ask you to provide a *Redirect URL*. The placeholder text will look something like `http://localhost:8080/ssoready/callback`.
+## Custom SSOReady Auth URL
 
-For the purposes of understanding this Redirect URL, it's helpful to back up a bit. 
+If you've enabled [Custom Domains](#custom-domains) on this environment, this is
+the URL that your customers will see instead of `auth.ssoready.com`.
 
-You will need two endpoints to process SAML logins with SSOReady:
-<ul>
-<li>One to send your user to an IDP like Okta, Entra, OneLogin, etc.</li>
-<li>Another to receive data and execute the logic for a successful login.</li>
-</ul>
+# Organizations
 
-The Redirect URL is the **second** of these endpoints. When SSOReady learns that one of your users is trying to log in with SAML, it needs to know where in your application to send the user. 
+Environments contain any number of
+[organizations](/docs/ssoready-concepts/organizations). You can create
+organizations in one of two ways:
 
-You should set up a distinct callback endpoint for each Environment. Your local development application should likely use something like `http://localhost:8080/ssoready/callback`. Your production application might have a Redirect URL that looks like `https://app.yourapp.com/ssoready/callback`.
+1. By hand, using the SSOReady web application
+2. Programmatically, using the [Management API](/docs/api-reference/management)
 
-You can change this later.
+# API Keys
 
-#### API keys and environments
+To implement SAML or SCIM, you need to call SSOReady's API from your application
+using our SDKs or our HTTP API. To do that, you'll need an SSOReady API key.
 
-SSOReady scopes each API key to a specific Environment.
+SSOReady API keys are scoped to within an environment; you cannot create an API
+key that can access multiple environments.
 
-You will need to create at least one API key for each Environment that you use. If you maintain local development, staging, and production Environments in SSOReady, you will need a local development API key, a staging API key, and a production API key. 
+You can create API keys by going to "API Keys" on the side navigation, and
+clicking the "Create API Key" button.
 
-#### Organizations and environments
+API Keys have two properties of note:
 
-You will create *Organizations* within Environments. Each Organization will belong to exactly one Environment. You can read more about Organizations [here](organizations).
+* An **API Key ID**, starting with `api_key_...`, is a non-sensitive identifier
+that uniquely identifies an API key. It is not a secret.
+* An **API Key Secret**, starting with `ssoready_sk_...`, is a secret. Do not
+share it with others.
 
-#### Using Environments in the SDKs
+    When using SSOReady's SDKs, use the
+`ssoready_sk_...` API key secret as the `SSOREADY_API_KEY` environment
+variable.
 
-When you call our APIs, you don't need to use an Environment ID. We scope API keys to Environments, so if you're using a valid key, we'll know what Environment to use.
+    When using SSOReady's HTTP API, use the `ssoready_sk_...` API key secret as
+    in an `Authorization: Bearer ssoready_sk_...` HTTP header.
+
+Once you create an API key, you can only view the API key secret once. SSOReady
+only stores the hash of the API key secret. If you've lost the API key secret,
+or accidentally published it publicly, delete the API key and create a new one.
+
+Deleting an API key also revokes the API key secret.
+
+## Management API
+
+<Note>
+The management API is only available on the [Pro
+tier](https://ssoready.com/pricing) or above when using the SSOReady's
+cloud-hosted offering.
+
+If you're [self-hosting SSOReady](/docs/self-hosting/self-hosting-sso-ready),
+you can use the management API for free.
+</Note>
+
+All SSOReady API keys allow you to use the [SAML](/docs/saml/saml-quickstart)
+and [SCIM](/docs/scim/scim-quickstart) APIs. This will allow you to implement
+enterprise single sign-on and enterprise directory sync.
+
+If you have so many enterprise customers that using SSOReady's web application
+is unacceptable, SSOReady also supports a Management API.
+
+API keys with Management API access enabled can programmatically manage (i.e.
+create, list, get, and update)
+[organizations](/docs/ssoready-concepts/organizations), [SAML
+connections](/docs/ssoready-concepts/saml-connections), [SCIM
+directories](/docs/ssoready-concepts/scim-directories), and [customer self-serve
+links](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers)
+within an organization.
+
+For more details, see the [Management API reference
+documentation](/docs/api-reference/management).
+
+# Custom Domains
+
+[SAML connections](/docs/ssoready-concepts/saml-connections) and [SCIM
+directories](/docs/ssoready-concepts/scim-directories) both require that your
+customers configure certain URLs that point at your application. Those URLs need
+to be endpoints implementing the SAML and SCIM protocols.
+
+When you use SSOReady, SSOReady runs those endpoints on your behalf. By default,
+those endpoints have `auth.ssoready.com` in their names, because that's the
+hostname where SSOReady runs endpoints on your behalf. For example, [SAML ACS
+URLs](/docs/ssoready-concepts/saml-connections#assertion-consumer-service-acs-url)
+and [SCIM Base URLs](/docs/ssoready-concepts/scim-directories#scim-base-url)
+both contain `auth.ssoready.com` by default.
+
+You can also run your SSOReady instance on a custom domain you control, such as
+`auth.yourcompany.com`. When
+running SSOReady on a custom domain, your customers see your custom domain
+instead of `auth.ssoready.com` in their setup instructions.
+
+To set up a custom domain, you'll need to have control over the DNS settings for
+that domain. The SSOReady web application will ask you to create a custom CNAME
+record pointing at an SSOReady-controlled domain. We require you to create a
+custom CNAME before you can enable a custom domain for two reasons:
+
+1. So that traffic your customers send to your custom `auth.ssoready.com` domain
+will still be served by SSOReady, and
+2. SSOReady needs to provision a TLS certificate for your custom domain, because
+communication with `auth.ssoready.com` (or its custom domain aliases) must be
+done over HTTPS. We can only do this if we first demonstrate that your custom
+domain CNAMEs requests to a domain we control.
+
+Adding a custom domain does not break any existing SAML connections or SCIM
+directories. Existing SAML connections and SCIM directories will continue to use
+`auth.ssoready.com`, but all new SAML connections or SCIM directories will use
+your custom domain.
+
+Adding a custom domain does not change the API calls you make to SSOReady. You
+do not need to change any code, such as any code that calls [Get SAML Redirect
+URL](/docs/api-reference/saml/get-saml-redirect-url) and [Redeem SAML Access
+Code](/docs/api-reference/saml/redeem-saml-access-code). Regardless of whether
+you use a custom domain, your backend's API calls to SSOReady will be directed at
+`api.ssoready.com`.
+
+# Custom Branding
+
+SAML and SCIM are both designed such that they require setup on you and your
+customer's end before they can work. To do that setup, you need to give your
+customer specific instructions, tailored to the identity provider they use.
+
+SSOReady can host a [self-serve SAML/SCIM setup
+UI](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers)
+on your behalf. To make that setup UI feel on-brand for your product, you can
+customize:
+
+1. Your company's name and logo, which appear in the navigation bar
+2. A *return URL*, which points to your application. If you configure a return
+URL, the self-serve setup UI will have a "Back to \[your company name\]" link in
+the navigation bar, which takes users back to your application.
+
+When you configure custom branding settings, the SSOReady web application will
+show you a preview of what your users will see.
