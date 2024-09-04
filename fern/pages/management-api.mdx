@@ -1,0 +1,84 @@
+---
+title: Management API
+subtitle: The SSOReady Management API lets you programmatically manage your SAML and SCIM configuration at scale.
+slug: management-api
+---
+
+<Note>
+    The management API is only available on the [Pro
+    tier](https://ssoready.com/pricing) or above when using the SSOReady's
+    cloud-hosted offering.
+
+    If you're [self-hosting SSOReady](/docs/self-hosting/self-hosting-sso-ready),
+    you can use the management API for free.
+</Note>
+
+SSOReady automates away everything most companies will ever need to support their
+enterprise SAML and SCIM plans. With SSOReady's
+[SAML](/docs/saml/saml-quickstart) and [SCIM](/docs/scim/scim-quickstart) APIs,
+you have everything you typically need.
+
+For most SSOReady users, the typical lifecycle of how you use SSOReady is:
+
+1. You sign up for the product at [app.ssoready.com](https://app.ssoready.com)
+(one-time, ~1 minute)
+2. You create a small number (often just two -- dev and prod) of
+[environments](/docs/ssoready-concepts/environments) (one-time, ~5 minutes)
+3. You implement SAML / SCIM by following the [SAML
+quickstart](/docs/saml/saml-quickstart) or [SCIM
+quickstart](/docs/scim/scim-quickstart) (one-time, ~1 day)
+4. Every time you onboard a new enterprise customer, you (or your colleague, including nontechnical colleagues):
+    * Create a new [organization](/docs/ssoready-concepts/organizations) for that customer (~5 minutes), and
+    * You give the customer a [self-serve setup
+link](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers),
+and the customer sets up their SAML and SCIM configuration (~1 minute for you, ~5 minutes for the customer)
+
+For some large-scale SSOReady users, step (4) is a problem, and they want to automate it. If you
+have so many enterprises signing up that having to log into the SSOReady webapp to create an
+organization for each of them is a concern, then you may be one such SSOReady user.
+
+With the Management API, you can automate away everything that would otherwise
+require a human to click around in the SSOReady web application. With the
+management API, the workflow for steps (4) would become:
+
+* You programmatically create an organization using the [Create
+Organization](/docs/api-reference/management/organizations/create-organization)
+endpoint.
+* You programmatically create a self-serve setup link using the
+[Create Setup URL](/docs/api-reference/management/setup-urls/create-setup-url)
+endpoint, and present that URL to your customer in your UI.
+
+# Management API Capabilities
+
+The Management API can automate almost all operations that you can achieve by
+clicking around in the SSOReady web application. In particular, you can:
+
+* Manage [Organizations](/docs/ssoready-concepts/organizations):
+    * [List Organizations](/docs/api-reference/management/organizations/list-organizations)
+    * [Create Organization](/docs/api-reference/management/organizations/create-organization)
+    * [Get Organization](/docs/api-reference/management/organizations/get-organization)
+    * [Update Organization](/docs/api-reference/management/organizations/update-organization)
+* Manage [Self-Serve Setup URLs](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers):
+    * [Create Setup URL](/docs/api-reference/management/setup-urls/create-setup-url)
+* Manage [SAML Connections](/docs/ssoready-concepts/saml-connections):
+    * [List SAML Connections](/docs/api-reference/management/saml-connections/list-saml-connections)
+    * [Create SAML Connection](/docs/api-reference/management/saml-connections/create-saml-connection)
+    * [Get SAML Connection](/docs/api-reference/management/saml-connections/get-saml-connection)
+    * [Update SAML Connection](/docs/api-reference/management/saml-connections/update-saml-connection)
+* Manage [SCIM Directories](/docs/ssoready-concepts/scim-directories):
+  * [List SCIM Directories](/docs/api-reference/management/scim-directories/list-scim-directories)
+  * [Create SCIM Directory](/docs/api-reference/management/scim-directories/create-scim-directory)
+  * [Get SCIM Directory](/docs/api-reference/management/scim-directories/get-scim-directory)
+  * [Update SCIM Directory](/docs/api-reference/management/scim-directories/update-scim-directory)
+
+# Using the Management API
+
+You can call the Management API using SSOReady's HTTP API, or using SSOReady's
+SDKs. Each endpoint's API Reference listed in [Management API
+Capabilities](#management-api-capabilities) includes examples using the SDKs
+or HTTP API.
+
+You can use the Management API using the same API keys you use when interacting
+with the SSOReady SAML and SCIM APIs. By default, API keys do not have access to
+the Management API. Creating API keys having access to the Management API is
+covered in [SSOReady concepts: Environments: "Management API"](/docs/ssoready-concepts/environments#management-api).
