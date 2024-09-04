@@ -42,6 +42,10 @@ navigation:
         path: ./pages/ssoready-concepts/scim-users.mdx
       - page: SCIM Groups
         path: ./pages/ssoready-concepts/scim-groups.mdx
+  - section: Management API
+    contents:
+      - page: Management API
+        path: ./pages/management-api.mdx
   - section: Self-Hosting
     contents:
       - page: Self-Hosting SSOReady
