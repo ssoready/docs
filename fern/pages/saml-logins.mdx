@@ -49,40 +49,12 @@ https://yourcompany.com/ssoready-callback?saml_access_code=saml_access_code_...
 Your backend then exchanges that SAML access code for details about the user
 logging in:
 
-<CodeBlocks>
+<EndpointRequestSnippet endpoint="POST /v1/saml/redeem" />
 
-```bash title="cURL"
-curl https://api.ssoready.com/v1/saml/redeem \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ssoready_sk_..." \
-  -d '{ "samlAccessCode": "saml_access_code_..." }'
-```
-
-```typescript title="TypeScript"
-const ssoready = new SSOReadyClient();
-await ssoready.saml.redeemSamlAccessCode({
-  samlAccessCode: "saml_access_code_...",
-});
-```
-
-```python title="Python"
-client = SSOReady()
-client.saml.redeem_saml_access_code(
-    saml_access_code="saml_access_code_...",
-)
-```
-
-</CodeBlocks>
 
 You'll get back details about user that look like this:
 
-```json
-{
-  "email": "john.doe@acme.com",
-  "organizationId": "org_7cu5hsy9vrbi5d2k1qvbh19lj",
-  "organizationExternalId": "my_custom_external_id"
-}
-```
+<EndpointResponseSnippet endpoint="POST /v1/saml/redeem" />
 
 The rest of this document is about where you go from here.
 
