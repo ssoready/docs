@@ -1,81 +1,82 @@
 ---
 title: 'SSOReady concepts: SCIM Users'
-description: 'Understanding SCIM Users in SSOReady'
+subtitle: 'Understanding SCIM Users in SSOReady'
 slug: ssoready-concepts/scim-users
 ---
 
-SCIM defines *Users* as a standard concept in its [specification](https://datatracker.ietf.org/doc/html/rfc7643). SSOReady uses *SCIM Users* to homogenize varying implementations of *Users* on your behalf.  
+A SCIM user is a user your customer's identity provider provisioned in a [SCIM
+directory](/docs/ssoready-concepts/scim-directories). For guidance on how you
+should sync SCIM users into your application, see ["Syncing
+Users"](/docs/scim/scim-quickstart#syncing-users) in the SCIM
+quickstart guide.
 
-# What a SCIM User looks like
+This document details how a SCIM user appears in the SSOReady web application
+that you as a developer use. This UI is meant to see that the SCIM sync is
+working, and as a debugging aid. From your application, you can programmatically
+get a SCIM user by ID using the [Get SCIM
+User](/docs/api-reference/scim/get-scim-user) API endpoint.
 
-You can navigate to view details associated with a SCIM User by clicking on its ID on the details page for its associated SCIM Directory in SSOReady. Please note that you will not create SCIM Users in SSOReady. SCIM Users come from your customer's identity provider.
-
-You will see three cards:
-1. **SCIM User**: lays out the basic properties of the SCIM User
-2. **User Details**: lays out a JSON representation of the User
-3. **SCIM Groups**: identifies any [SCIM Groups](/docs/sso-ready-concepts/scim-groups) to which the User has an association
-
-<Frame caption="An example of an SSOReady SCIM User">
-    <img src="/docs/assets/ssoready-concepts-assets/scim-user.png" />
-</Frame>
-
-
-# Properties of a SCIM User
+# Properties
 
 ## SCIM User ID
 
-Each SCIM User in SSOReady has a unique identifier. SSOReady assigns this identifier, and you will not be able to change it. This identifier will always begin with the `scim_user_` prefix. Here's a concrete example: `scim_user_e6f5dxoqpr4lmwploi8yfbhiz`.
+Every SCIM user has an ID starting with `scim_user_...`, for example:
+
+```
+scim_user_eayqn84gu63k99rg5gcffesms
+```
+
+SCIM user IDs are universally unique.
 
 ## Email
 
-Each SCIM User must have an email address. SSOReady treats email addresses as unique identifiers in its communications with your customer's identity provider. Please note that this property comes from *your customer's identity provider*. You cannot change this property directly in SSOReady.
+Every SCIM user has an `email`.
+
+SSOReady always validates these email addresses against the appropriate
+organization's [domains](/docs/ssoready-concepts/organizations#domains). If the
+identity provider sends an email address outside the list of allowed domains,
+SSOReady will refuse to create a SCIM user with that email address.
 
 ## Deleted
 
-Each SCIM User will have a boolean property indicating whether it has been deleted. Please note that this property comes from *your customer's identity provider*. You cannot change this property directly. 
+When a SCIM provider deprovisions or deletes a SCIM user, they are not deleted
+from SSOReady entirely. Instead, they are marked with `deleted` set to `true`.
 
-Please further note that SSOReady does not know about your own product's user management system; this value does not necessarily indicate whether *you* have deleted a given SCIM User.
+Deleted users appear in the list of SCIM users just like any other SCIM users
+do. It is your responsibility to decide how to handle a `deleted` user.
+SSOReady's recommendations on this are discussed in ["Deprovisioning (deleting
+or soft-deleting)
+users"](/docs/scim/scim-quickstart#deprovisioning-deleting-or-soft-deleting-users)
+in the SCIM quickstart guide.
 
-Precisely how you use this property will depend on your and your customer's needs. 
+The SCIM protocol specifies two ways in which a user may be deprovisioned. The
+identity provider may "hard-delete" the SCIM user by [sending a `DELETE`
+request](https://datatracker.ietf.org/doc/html/rfc7644#section-3.6). Or it may "soft-delete" the SCIM user by
+[modifying via `PATCH` or `PUT`](https://datatracker.ietf.org/doc/html/rfc7644#section-3.5) the
+user's
+[`active` SCIM
+attribute](https://datatracker.ietf.org/doc/html/rfc7643#section-4.1.1).
+Different identity providers default to using different approaches. SSOReady
+treats all of these as equivalent; in all cases, a hard- or soft-deleted user
+will simply have a `deleted` attribute set to `true`.
 
-# Group Details
+## Attributes
 
-Here you can find a JSON representation of the SCIM User. You may find this useful for debugging and/or initial implementation. 
+Identity providers may include arbitrary attributes on SCIM users, and SSOReady
+will store these as the `attributes` on the user.
 
-Here's an example:
+No two identity providers include the same set of `attributes`. Many customers
+will configure their identity provider differently, and have different SCIM user
+attributes. Don't expect consistency when relying on SCIM user attributes, but
+they are all there if you need them.
 
-```
-{
-    "id": "scim_user_8pbdid9s5ncjbr22b3k75sql8",
-    "scimDirectoryId": "scim_directory_385v15k7ugjuakxtbjtfm4w7m",
-    "email": "ned.oleary@ssoready.com",
-    "deleted": false,
-    "attributes": {
-        "active": true,
-        "displayName": "Ned O'Leary",
-        "emails": [
-            {
-                "primary": true,
-                "type": "work",
-                "value": "ned.oleary@ssoready.com"
-            }
-        ],
-        "externalId": "00ugzyursrfN7UZKv5d7",
-        "groups": [],
-        "locale": "en-US",
-        "name": {
-            "familyName": "O'Leary",
-            "givenName": "Ned"
-        },
-        "password": "vI5224sI",
-        "userName": "ned.oleary@ssoready.com"
-    }
-}
-```
+<Note>
+Though SCIM user `attributes` may be inconsistent, you can always rely on a SCIM
+user `email` being present.
+</Note>
 
-Please be aware that `attributes` will frequently vary. SCIM allows a lot of customization, and you should expect that some of your customers will do unique things.
+## Groups
 
-
-# SCIM Groups
-
-Here you can find a list of the SCIM Groups associated with the SCIM User. You may click on their IDs to view more detail.
+SCIM natively has the concept of [SCIM
+groups](/docs/ssoready-concepts/scim-groups). SCIM groups contain SCIM users.
+From the SSOReady app, you can view the list of groups containing the user.

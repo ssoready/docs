@@ -34,8 +34,8 @@ navigation:
         path: ./pages/ssoready-concepts/organizations.mdx
       - page: SAML Connections
         path: ./pages/ssoready-concepts/saml-connections.mdx
-      - page: Login Flows
-        path: ./pages/ssoready-concepts/login-flows.mdx
+      - page: SAML Login Flows
+        path: ./pages/ssoready-concepts/saml-login-flows.mdx
       - page: SCIM Directories
         path: ./pages/ssoready-concepts/scim-directories.mdx
       - page: SCIM Users
@@ -133,10 +133,13 @@ redirects:
   - source: "/docs/sso-ready-concepts/saml-connections"
     destination: "/docs/ssoready-concepts/saml-connections"
   - source: "/docs/sso-ready-concepts/login-flows"
-    destination: "/docs/ssoready-concepts/login-flows"
+    destination: "/docs/ssoready-concepts/saml-login-flows"
   - source: "/docs/sso-ready-concepts/scim-directories"
     destination: "/docs/ssoready-concepts/scim-directories"
   - source: "/docs/sso-ready-concepts/scim-users"
     destination: "/docs/ssoready-concepts/scim-users"
   - source: "/docs/sso-ready-concepts/scim-groups"
     destination: "/docs/ssoready-concepts/scim-groups"
+
+  - source: "/docs/ssoready-concepts/login-flows"
+    destination: "/docs/ssoready-concepts/saml-login-flows"

@@ -1,62 +1,91 @@
 ---
 title: 'SSOReady concepts: SCIM Groups'
-description: 'Understanding SCIM Groups in SSOReady'
+subtitle: 'Understanding SCIM Groups in SSOReady'
 slug: ssoready-concepts/scim-groups
 ---
 
-SCIM defines *Groups* as a standard concept in its [specification](https://datatracker.ietf.org/doc/html/rfc7643). SSOReady uses *SCIM Groups* to homogenize varying implementations of *Groups* on your behalf.
+A SCIM group is a group your customer's identity provider provisioned in a [SCIM
+directory](/docs/ssoready-concepts/scim-directories). For guidance on how you
+should sync SCIM groups into your application, see ["Syncing
+Groups"](/docs/scim/scim-quickstart#syncing-groups) in the SCIM
+quickstart guide.
 
-# What a SCIM Group looks like
+<Note>
+As noted in the SCIM quickstart: Unless you have a specific need for
+SCIM groups, you should defer implementing them. Most of the time, syncing a
+[SCIM user attribute](/docs/ssoready-concepts/scim-users#attributes) is a
+simpler solution.
 
-You can navigate to view details associated with a SCIM Group by clicking on its ID on the details page for its associated SCIM Directory in SSOReady. Please note that you will not create SCIM Groups in SSOReady. SCIM Groups come from your customer's identity provider.
+SCIM groups are implemented inconsistently between different Identity Providers.
+Some popular Identity Providers like Okta make them awkward for your customers
+to use. You're typically best off waiting for a customer to come to you with a
+specific use-case or requirement before implementing group syncing.
 
-You will see three cards:
-1. **SCIM Group**: lays out the basic properties of the SCIM Group
-2. **Group Details**: lays out a JSON representation of the Group
-3. **SCIM Users**: identifies any [SCIM Users](/docs/sso-ready-concepts/scim-groups) to which the Group has an association
+</Note>
 
-<Frame caption="An example of an SSOReady SCIM Group">
-    <img src="/docs/assets/ssoready-concepts-assets/scim-group.png" />
-</Frame>
+This document details how a SCIM groups appears in the SSOReady web application
+that you as a developer use. This UI is meant to see that the SCIM sync is
+working, and as a debugging aid. From your application, you can programmatically
+get a SCIM group by ID using the [Get SCIM
+Group](/docs/api-reference/scim/get-scim-group) API endpoint.
 
-# Properties of a SCIM Group
+# Properties
 
 ## SCIM Group ID
 
-Each SCIM Group in SSOReady has a unique identifier. SSOReady assigns this identifier, and you will not be able to change it. This identifier will always begin with the `scim_group_` prefix. Here's a concrete example: `scim_group_e6f3dxolfr4egjkadr8yfbhiz`.
+Every SCIM group has an ID starting with `scim_group_...`, for example:
+
+```
+scim_group_1b480vb5wd27avbqunvl1sa1s
+```
+
+SCIM group IDs are universally unique.
 
 ## Display Name
 
-Each SCIM Group will have a display name. For example, you might have a SCIM Group called "Admins". Please note that this property comes from *your customer's identity provider*. You cannot change this property directly in SSOReady.
+Every SCIM group has a `displayName`, which is human-readable and assigned by
+your customer.
 
 ## Deleted
 
-Each SCIM Group will have a boolean property indicating whether it has been deleted. Please note that this property comes from *your customer's identity provider*. You cannot change this property directly. Please further note that SSOReady does not know about your own product's user management system; this value does not necessarily indicate whether *you* have deleted a given SCIM Group.
+When a SCIM provider deprovisions or deletes a SCIM group, they are not deleted
+from SSOReady entirely. Instead, they are marked with `deleted` set to `true`.
 
-Precisely how you use this property will depend on your and your customer's needs. 
+Deleted groups appear in the list of SCIM groups just like any other SCIM groups
+do. It is your responsibility to decide how to handle a `deleted` group.
+SSOReady's recommendations on this are discussed in ["Deprovisioning (deleting
+or soft-deleting)
+groups"](/docs/scim/scim-quickstart#deprovisioning-deleting-or-soft-deleting-groups)
+in the SCIM quickstart guide.
 
-# Group Details
+As noted in the SCIM quickstart guide, deprovisioning groups is less important
+than [deprovisioning
+users](/docs/scim/scim-quickstart#deprovisioning-deleting-or-soft-deleting-users).
+Not all identity providers even support deprovisioning/deleting groups.
 
-Here you can find a JSON representation of the SCIM Group. You may find this useful for debugging and/or initial implementation. 
+For that reason, SSOReady does not recommend you implement group deprovisioning
+unless you have a specific use-case.
 
-Here's an example:
+## Attributes
 
-```
-{
-    "id": "scim_group_e6f3dxolfr4egjkadr8yfbhiz",
-    "scimDirectoryId": "scim_directory_6uvahkznrenvzfck3it8a2h6c",
-    "displayName": "authentik Admins",
-    "attributes": {
-        "displayName": "authentik Admins",
-        "externalId": "94e78f00-ebf3-463b-9ad1-84e7cceb0b92"
-    },
-    "deleted": false
-}
-```
+Identity providers may include arbitrary attributes on SCIM groups, and SSOReady
+will store these as the `attributes` on the groups.
 
-Please be aware that `attributes` will frequently vary. SCIM allows a lot of customization, and you should expect that some of your customers will do unique things.
+No two identity providers include the same set of `attributes`. Many customers
+will configure their identity provider differently, and have different SCIM
+group attributes. Don't expect consistency when relying on SCIM group
+attributes, but they are all there if you need them.
 
+<Note>
+    Though SCIM group `attributes` may be inconsistent, you can always rely on a
+    SCIM group `displayName` being present.
+</Note>
 
-# SCIM Users
+## Users
 
-Here you can find a list of the SCIM Users associated with the SCIM Group. You may click on their IDs to view more detail.
+From the SSOReady app, you can see a list of users within each group. A group
+may have no users in it at all. A group may contain deprovisioned users.
+
+From your application, you can get a list of users within an organization
+programmatically by calling the [List SCIM Users endpoint with a `groupId`
+parameter](/docs/api-reference/scim/list-scim-users#request.query.scimGroupId).

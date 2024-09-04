@@ -1,59 +1,109 @@
 ---
-title: 'SSOReady concepts: Organizations'
-description: 'Understanding Organizations in SSOReady'
+title: "SSOReady concepts: Organizations"
+subtitle: "Understanding Organizations in SSOReady"
 slug: ssoready-concepts/organizations
 ---
 
-In SSOReady, each [Environment](environments) has some number of *Organizations*. 
+An organization corresponds to a corporate customer of yours. If you sold your
+product to Apple, Nvidia, and Amazon,
+you'd have three organizations in SSOReady: one each for Apple, Nvidia, and
+Amazon.
 
-Each Organization should represent exactly one of your customer accounts. Your customer accounts should not have more than one corresponding Organization. 
+Organizations belong to exactly one
+[environment](/docs/ssoready-concepts/environments). You can have any number of
+organizations in an environment.
 
-You must create an Organization for a customer before you can create any [SAML Connections](#organizations-and-saml-connections) for that customer. 
+Within organizations, you can have any number of [SAML
+connections](#saml-connections) and [SCIM directories](#scim-directories).
 
-<Note> We recognize that some companies will find it messy to assign unique identifiers to customers. We **strongly** recommend that you maintain whatever convention your production application uses. If you feel unsure about your company's convention, we recommend spending the time to investigate.</Note>
+# Properties
 
-### What SSOReady Organizations look like
+## Organization ID
 
-Below, you'll find a GIF that shows a common flow users will follow:
-<ol>
-<li>Within an Environment, users press *Create organization*</li>
-<li>Users assign an *External ID* to the Organization</li>
-<li>Users assign any relevant *Domains* to the Organization</li>
-</ol>
+Every organization has an ID starting with `org_...`, for example:
 
-<figure>
-<img src="/docs/assets/ssoready-concepts-assets/organizationconfig.gif" style="border-radius: 10px"/>
-<figcaption style = "text-align:center"> [Click image to enlarge] Creating an Organization in SSOReady </figcaption>
-</figure>
+```
+org_ac4vpckpze4ugjm70lzkmtwd2
+```
 
-### Descriptive properties of Organizations
+Organization IDs are universally unique.
 
-SSOReady provides two ways to identify Organizations: *Organization ID* and *External ID*. 
+## Organization External ID
 
-SSOReady will automatically generate an Organization ID for you. You cannot change the Organization ID. The Organization ID always begins with an `org_` prefix, and it looks something like this: `org_0pu0u1j3xxxaejsn90wbjdy7h`. 
+If you're selling multi-tenant B2B software, you probably already have a concept
+that closely matches an SSOReady organization -- usually, this is something
+named a "team", "workspace", "company", or something similar.
 
-The External ID allows you to describe SSOReady Organizations using any identifier that suits your needs. Most commonly, you would enter the unique identifier that you use in your own application. 
+For your convenience, SSOReady lets you assign organizations with an
+`organizationExternalId`. These external IDs are optional. They must be unique
+within an environment.
 
-For example, you might have some `customer_id` field that increments by one for every new customer (i.e. `1` then `2` and so on). You could use those values as the External ID for Organizations in SSOReady.
+These external IDs are a convenience feature: they save you from
+having to add some sort of `ssoready_organization_id` property on your existing
+equivalent of an SSOReady organization. Instead, you can call SSOReady using the
+ID you have naturally on-hand as the `organizationExternalId` when using
+[SAML](/docs//api-reference/saml/get-saml-redirect-url) or
+[SCIM](/docs/api-reference/scim/list-scim-users) endpoints. When onboarding new
+enterprise customers, you set your ID for that customer as the External ID
+on the SSOReady organization.
 
-Why does this matter? You can use this External ID in API calls to SSOReady, using the `organizationExternalID` field as documented [here](/docs/api-reference/saml/get-saml-redirect-url). You don't need to use SSOReady's Organization ID anywhere in your code.
+## Domains
 
+Every organization must include a whitelist of domains. If you expect Apple's
+employees to log into your product with `@apple.com` and `@shazam.com` email
+addresses, then set `apple.com` and `shazam.com` as the domains for Apple's
+organization in SSOReady.
 
-### Organizations and their domains
+This whitelist of domains is used in two places:
 
-Every time you create an Organization, SSOReady will ask you to supply *Domains*. You must provide at least one such domain before SSOReady can successfully process SAML logins for you. 
+* When processing SAML logins, [the SAML user's email address must be from the
+whitelist](/docs/ssoready-concepts/saml-login-flows#email-outside-organization-domains).
+* When provisioning SCIM users, [the SCIM user's email address must be from the
+whitelist](/docs/ssoready-concepts/scim-users#email).
 
-SSOReady follows a common convention for identifying your users; it uses the email addresses it receives from IDPs. From the email address, SSOReady extracts a domain name. 
+In both cases, this is a security mechanism. Although the SAML and SCIM
+protocols ensure the authenticity of messages between the service provider (your
+application, with SSOReady acting on your behalf) and the identity provider
+(your customer's Okta/Google/Entra/etc.), neither protocol directly handles the
+possibility of a malicious customer (or their disgruntled IT admin) attempting
+to log in as a competitor within your product.
 
-SSOReady allows users to log in only when the domain on their email addresses have been added to the Organization's domains in SSOReady. This serves as an additional security precaution.
+To shield you against such cross-tenant attacks, SSOReady requires a first line
+of defense by whitelisting the domains you expect a customer to be using. You
+are free to add additional controls, but for most applications this built-in
+domain whitelisting is sufficient.
 
-Here's an example. Let's say you have a customer called AcmeCorp with the domain name `acmecorp.com`. You would include `acmecorp.com` on AcmeCorp's list of domains. If a user `john.doe@acmecorp-alternate-domain.com` then attempted a SAML login, SSOReady would not grant that user access to your application. Adding `acmecorp-alternate-domain.com` to your list of domains would cause SSOReady to allow access.
+<Note>
+    For an in-depth explainer on this type of attack, see the SSOReady blog post
+    ["Using SAML to add abraham.lincoln@whitehouse.gov to my Slack
+    workspace"](https://ssoready.com/blog/engineering/abraham-lincoln-and-the-malicious-saml-idp/).
+</Note>
 
-### Organizations and SAML Connections
+## SAML Connections
 
-Each Organization you set up in SSOReady can have one or more SAML Connections. SAML Connections in SSOReady store the configuration settings that SSOReady needs to exchange with your customers' identity providers. You can read more about SAML Connections [here](saml-connections). 
+Organizations have any number of [SAML
+connections](/docs/ssoready-concepts/saml-connections) that belong to the
+organization. You can create SAML connections in one of three ways:
 
+1. By hand, using the SSOReady web application
+2. By having your customers create them, using [customer self-serve setup](#customer-self-serve-setup)
+3. Programmatically, using the [Management API](/docs/api-reference/management)
 
-### Bulk updates
+## SCIM Directories
 
-SSOReady does not currently support bulk updates (e.g. CSV uploads) to Organizations. Similarly, SSOReady does not currently surface an public endpoint for creating Organizations. You will need to create Organizations from the web application. If you have a large volume of data to process, please get in touch at contact@ssoready.com, and we can help. 
+Organizations have any number of [SCIM
+directories](/docs/ssoready-concepts/scim-directories) that belong to the
+organization. You can create SCIM directories in one of three ways:
+
+1. By hand, using the SSOReady web application
+2. By having your customers create them, using [customer self-serve setup](#customer-self-serve-setup)
+3. Programmatically, using the [Management API](/docs/api-reference/management)
+
+# Customer Self-Serve Setup
+
+Once you've created an organization, you can give your customers one-time
+self-serve setup links. Customers can visit these links to configure their SAML
+connections and SCIM directories.
+
+You can learn more about customer self-serve setup
+[here](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers).

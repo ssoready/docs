@@ -1,45 +1,210 @@
 ---
-title: 'SSOReady concepts: SAML Connections'
-description: 'Understanding SAML Connections in SSOReady'
+title: "SSOReady concepts: SAML Connections"
+subtitle: "Understanding SAML Connections in SSOReady"
 slug: ssoready-concepts/saml-connections
 ---
 
-SAML Connections store the information that SSOReady needs in order to connect your application with your customer's identity provider.
+SAML connections store the SAML-related configuration that SSOReady needs to
+implement the SAML protocol on your behalf.
 
-In order to create a SAML Connection, you first need to create an [Environment](environments) and an [Organization](organizations). Each SAML Connection belongs to exactly one Organization, which in turn belongs to exactly one Environment.
+Every SAML connection belongs to exactly one
+[organization](/docs/ssoready-concepts/organizations). Organizations in turn
+belong to exactly one [environment](/docs/ssoready-concepts/environments). You
+can have any number of SAML connections within an organization. Up to one SAML
+connection per organization can be [primary](#primary).
 
-### What SAML Connections look like
+The SAML protocol is designed such that your customer needs to put a SAML
+connection's [service provider configuration](#service-provider-configuration)
+into their identity provider. Your customer also needs to give you settings that
+you put into the SAML connection's [identity provider
+configuration](#identity-provider-configuration). When you use SSOReady's
+[self-service SAML
+configuration](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers),
+your customer can securely do this configuration for you, without any work on
+your part.
 
-Below, you'll find a GIF that shows a common flow users will follow:
-<ol>
-<li>Within an Organization, users press *Create SAML connection*</li>
-<li>Users complete the *Service Provider Configuration* by copying data from SSOReady into the relevant identity provider (IDP)</li>
-<li>Users complete the *Identity Provider Configuration* by copying data from the IDP into SSOReady</li>
-</ol>
+# Properties
 
-<figure>
-<img src="/docs/assets/ssoready-concepts-assets/samlconnectionconfig.gif" style="border-radius: 10px"/>
-<figcaption style = "text-align:center"> [Click image to enlarge] Creating a SAML Connection in SSOReady </figcaption>
-</figure>
+## SAML Connection ID
 
-If you have not previously configured a SAML integration in SSOReady or a similar product before, you will likely need to reference one of our IDP configuration tutorials, e.g. for Okta [here](/docs/idp-configuration/okta) in order to complete a SAML Connection in SSOReady.
+Every SAML connection has an ID starting with `saml_conn_...`, for example:
 
-### SAML Connection IDs
+```
+saml_conn_56gbsrki2z8im0iejiamm9529
+```
 
-When you create a SAML Connection, SSOReady assigns it a *SAML Connection ID*. You cannot change the SAML Connection ID. It always begins with the prefix `saml_conn_`, and it looks something like this: `saml_conn_4kw33v9xa98yi8yxxx6o10exy`. 
+SAML connection IDs are universally unique.
 
-### Primary SAML Connections
+## Primary
 
-Each SAML Connection has a boolean property called *Primary*. This helps the SSOReady API resolve ambiguity when an Organization has more than one SAML Connection. 
+Up to one SAML connection within an
+[organization](/docs/ssoready-concepts/organizations) can be marked as
+"primary".
 
-Organizations may have multiple SAML Connections for any number of reasons. For example, you might find that your customer has two divisions -- one that uses Entra and another that uses PingOne. In this case, you would create one connection for Entra and another for PingOne.
+A primary SAML connection works exactly like any other SAML connection,
+but with one special behavior for your convenience: when you [initiate a SAML
+login](/docs/saml/saml-quickstart#initiating-saml-logins), you can provide an
+[`organizationExternalId`](/docs/api-reference/saml/get-saml-redirect-url#request.body.organizationExternalId)
+or
+[`organizationId`](/docs/api-reference/saml/get-saml-redirect-url#request.body.organizationId).
+When you do so, the primary SAML connection of that organization gets used to do
+the SAML login.
 
-Note in the [API reference documentation](/docs/api-reference/saml/redeem-saml-access-code) that SSOReady does not require you to identify a SAML Connection directly. Instead, you can identify an Organization, and SSOReady will infer the associated SAML Connection.
+If none of the SAML connections in an organization are marked as primary, SAML
+initiations using `organizationExternalId` or `organizationId` for that
+organization will return an error from SSOReady's API. The
+solution is to mark one of the SAML connections as primary, or to pass a
+[`samlConnectionId`](/docs/api-reference/saml/get-saml-redirect-url#request.body.samlConnectionId)
+instead.
 
-In cases where you pass SSOReady an Organization's ID *and* the Organization has multiple SAML Connections, SSOReady will default to the primary SAML Connection. To use any SAML Connection other than the Organization's primary SAML Connection, you will need to specify its SAML Connection ID in your API call.
+Most of your customers will likely have exactly one SAML connection in their
+organization, but very large organizations often use multiple identity
+providers. For example, a conglomerate may buy your product for their entire
+workforce, but their subsidiaries use different identity providers. In that
+case, that conglomerate will have multiple SAML connections. Typically, they'll
+have one SAML connection that is the "most important" one, which will be the one
+marked as primary.
 
-SSOReady does not currently use this boolean property for any other purpose.
+<Note>
+  Don't worry too much about customers having multiple identity providers.
+  SSOReady supports IDP-initiated SAML, which you can [use as an "escape hatch"
+  for complex
+  scenarios](/docs/saml/integrating-saml-into-your-login-ui#identity-provider-initiated-flows-as-an-escape-hatch).
+</Note>
 
-### SAML Connections and Login Flows
+## Service Provider Configuration
 
-Every time one of your users attempts to log in via SAML, SSOReady creates a Login Flow, which it associates with the appropriate SAML Connection. You can read more about Login Flows [here](login-flows). 
+SAML is intrinsically designed such that the connection between a "service
+provider" (your application) and an "identity provider" (your customer's
+Okta/Google/Entra/etc.) is configured ahead of time. SAML requires that the SP
+and IDP exchange some details about one another before attempting to use SAML.
+
+This exchange of details is commonly referred to as "configuring SAML", and
+happens outside of the SAML protocol. Historically, it's been done over email or
+support ticket. If you use SSOReady's [self-service SAML
+configuration](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers),
+your customer can configure SAML without any work on your part.
+
+Service provider configuration is the set of settings that SSOReady assigns on
+your behalf. These are settings that your customer ultimately needs to put into
+their identity provider for SAML to work.
+
+### Assertion Consumer Service (ACS) URL
+
+A SAML Assertion Consumer Service URL is an HTTP endpoint that a SAML identity
+provider sends SAML assertions to. A SAML assertion is essentially a
+cryptographically authenticated message that tells the service provider who
+someone is.
+
+SSOReady assigns the ACS URL on your behalf, and runs the HTTP endpoint for you.
+SSOReady handles authenticating the legitimacy of messages sent to the ACS URL
+for you. By default, the ACS URL looks something like:
+
+```
+https://auth.ssoready.com/v1/saml/saml_conn_.../acs
+```
+
+If you use a custom domain for `auth.ssoready.com`, then the ACS URL will
+instead look like:
+
+```
+https://auth.yourcompany.com/v1/saml/saml_conn_.../acs
+```
+
+Where `auth.yourcompany.com` is your custom `auth.ssoready.com` domain.
+
+### SP Entity ID
+
+A SAML service provider ("SP") entity ID is a unique identifier for the service
+provider. Identity providers include the SP entity ID in their assertions, and
+service providers check for this unique identifier to make sure the message was
+intended for them.
+
+SSOReady verifies for you that SAML assertions have the correct SP entity ID as
+a guard against SAML replay attacks, wherein an attacker sends a legitimate SAML
+assertion meant for one service provider to your application instead. By
+default, the SP Entity ID looks something like:
+
+```
+https://auth.ssoready.com/v1/saml/saml_conn_...
+```
+
+If you use a custom domain for `auth.ssoready.com`, then the ACS URL will
+instead look like:
+
+```
+https://auth.yourcompany.com/v1/saml/saml_conn_...
+```
+
+Where `auth.yourcompany.com` is your custom `auth.ssoready.com` domain.
+
+## Identity Provider Configuration
+
+Identity provider configuration is the set of settings that your customer's
+identity provider assigns. These settings need to be inputted into SSOReady.
+
+If you use SSOReady's [self-service SAML
+configuration](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers),
+your customer can securely input these details into SSOReady without any work on
+your part.
+
+### IDP Entity ID
+
+A SAML identity provider ("IDP") entity ID is a unique identifier for the
+identity provider. Identity providers include the IDP entity ID in their
+assertions, and service providers check for this unique identifier as part of
+making sure the message is sent from the appropriate identity provider.
+
+SSOReady verifies for you that SAML assertions have the correct IDP entity ID.
+
+Because the IDP entity ID is assigned by your customer's identity provider, its
+format will depend on which vendor they use.
+
+### Redirect URL
+
+A SAML redirect URL is an HTTP endpoint that a service provider sends SAML
+authentication requests to. A SAML authentication request is a way for a service
+provider to kick off a SAML login. When you use SSOReady to [initiate a SAML
+login](/docs/saml/saml-quickstart#initiating-saml-logins), SSOReady sends a SAML
+authentication request on your behalf.
+
+Because the redirect URL is assigned by your customer's identity provider, its
+format will depend on which vendor they use.
+
+### Certificate
+
+A SAML identity provider certificate is an [X.509
+certificate](https://en.wikipedia.org/wiki/X.509) that an identity provider uses
+to cryptographically sign SAML assertions they send to the [ACS
+URL](/docs/ssoready-concepts/saml-connections#assertion-consumer-service-acs-url).
+Service providers use the identity provider certificate to authenticate that the
+identity provider really sent the message.
+
+SSOReady verifies for you that the SAML assertion is correctly signed by the
+correct IDP certificate.
+
+Every SAML connection has a different IDP certificate. It is assigned by the
+identity provider. Its value is not secret or sensitive. SSOReady displays the
+IDP certificate as a
+[PEM-encoded](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail#Format)
+`CERTIFICATE` block containing a
+[DER-encoded](https://en.wikipedia.org/wiki/X.690#DER_encoding)
+[RSA public key](https://datatracker.ietf.org/doc/html/rfc3279#section-2.3.2).
+These look like:
+
+```
+-----BEGIN CERTIFICATE-----
+... a bunch of base64-encoded bytes ...
+-----END CERTIFICATE-----
+```
+
+When using the SSOReady Management API, you will need to use this format when
+[working with SAML
+connections](/docs/api-reference/management/saml-connections/create-saml-connection).
+
+Identity providers output the IDP certificate in various formats. If you use
+SSOReady's [self-service SAML
+configuration](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers),
+your customer can securely input their certificate into SSOReady in the format
+their identity provider defaults to, without any work on
+your part.
