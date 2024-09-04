@@ -55,30 +55,8 @@ to redirect your user to a URL.
 SSOReady's SDKs generate a URL for you, and then you simply forward your user to that URL using any mechanism that suits
 your tech stack.
 
-<CodeBlocks>
-
-```bash title="cURL"
-curl https://api.ssoready.com/v1/saml/redirect \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ssoready_sk_..." \
-  -d '{ "organizationExternalId": "..." }'
-```
-
-```typescript title="TypeScript"
-const ssoready = new SSOReadyClient();
-await ssoready.saml.getSamlRedirectUrl({
-  organizationExternalId: "...",
-});
-```
-
-```python title="Python"
-client = SSOReady()
-client.saml.get_saml_redirect_url(
-    organization_external_id="...",
-)
-```
-
-</CodeBlocks>
+<EndpointRequestSnippet endpoint="POST /v1/saml/redirect" />
+<EndpointResponseSnippet endpoint="POST /v1/saml/redirect" />
 
 That code sample requires an API Key (`ssoready_sk_...`) and an `organizationExternalId`. How you get those is covered
 in [Setting up SSOReady](#setting-up-ssoready) later on this page.
