@@ -102,39 +102,6 @@ Make sure to hit *Save* toward the top of the page.
   <img src="/docs/assets/idp-assets/entra/entra9.png" />
 </Frame>
 
-Once you've completed this step, Entra knows everything it needs about the SSOReady Connection. Next, you'll need to tweak an Entra setting.
-
-### Configure SAML Connection | Tweak Entra Unique Identifier
-
-You'll need to make a small change to Entra's defaults. This change simply assures that SSOReady and Entra use the same unique identifier when describing users.
-
-Start by pressing *Edit* toward the top right corner of the *Attributes & Claims* card. 
-
-<Frame caption="Pressing 'Edit' on Entra's 'Attributes & Claims' card">
-  <img src="/docs/assets/idp-assets/entra/entra12.png" />
-</Frame>
-
-Entra will send you to a new page that lists a few rows of settings. What matters here is the first row, labeled *Unique User Identifier (Name ID)* in the *Claim name* column. This will usually list `user.userprincipalname` in the *Value* column. 
-
-To edit this, click anywhere on or between the text in this row -- not on the three dots on the right side of the row.
-<Frame caption="Selecting 'Unique User Identifier (Name ID)' as the setting we'd like to change">
-  <img src="/docs/assets/idp-assets/entra/entra13.png" />
-</Frame>
-
-You'll land on a new page with a *Manage claim* header toward the top. You'll edit the *Source attribute* by clicking the dropdown to see other options.
-
-<Frame caption="Triggering the dropdown for 'Source attribute'">
-  <img src="/docs/assets/idp-assets/entra/entra14.png" />
-</Frame>
-
-From the dropdown menu, select `user.mail`.  
-
-<Frame caption="Selecting `user.mail` from the dropdown menu">
-  <img src="/docs/assets/idp-assets/entra/entra15.png" />
-</Frame>
-
-Once that's done, click the *SAML-based sign-on* link from the page's breadcrumbs, which will return you to the same SAML confuration page from before.
-
 Next, you'll enter details about Entra into SSOReady.
 
 <Frame caption="Returning to the SAML configuration page">
