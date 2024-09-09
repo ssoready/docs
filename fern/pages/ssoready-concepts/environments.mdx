@@ -114,6 +114,8 @@ For more details, see the [Management API documentation](/docs/management-api).
 
 # Custom Domains
 
+## Running auth.ssoready.com on a custom domain
+
 [SAML connections](/docs/ssoready-concepts/saml-connections) and [SCIM
 directories](/docs/ssoready-concepts/scim-directories) both require that your
 customers configure certain URLs that point at your application. Those URLs need
@@ -154,6 +156,26 @@ URL](/docs/api-reference/saml/get-saml-redirect-url) and [Redeem SAML Access
 Code](/docs/api-reference/saml/redeem-saml-access-code). Regardless of whether
 you use a custom domain, your backend's API calls to SSOReady will be directed at
 `api.ssoready.com`.
+
+## Running admin.ssoready.com on a custom domain
+
+SSOReady can host a [self-serve SAML/SCIM setup
+UI](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers)
+on your behalf. By default, that UI runs on `admin.ssoready.com`, but you can
+run it on a custom domain too.
+
+To set up a custom `admin.ssoready.com` domain, you'll need to have control over
+the DNS settings for your custom domain. The SSOReady web application will ask
+you to create a custom CNAME record pointing at an SSOReady-controlled domain.
+
+Once you enable a custom `admin.ssoready.com` domain, all new self-serve setup
+links will use it.
+
+Adding a custom `admin.ssoready.com` domain does not change the API calls you
+make to SSOReady. You do not need to change any code. If you use the [Management
+API](/docs/management-api) to [programmatically create setup
+links](/docs/api-reference/management/setup-urls/create-setup-url), the setup
+URLs will automatically pick up your custom domain.
 
 # Custom Branding
 
