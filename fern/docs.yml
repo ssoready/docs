@@ -70,6 +70,8 @@ navigation:
         path: ./pages/ssoready-concepts/scim-users.mdx
       - page: SCIM Groups
         path: ./pages/ssoready-concepts/scim-groups.mdx
+      - page: SCIM Request Logs
+        path: ./pages/ssoready-concepts/scim-request-logs.mdx
   - section: Management API
     contents:
       - page: Management API
