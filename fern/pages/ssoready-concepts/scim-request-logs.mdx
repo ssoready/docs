@@ -12,6 +12,10 @@ A SCIM request log belongs to exactly one [SCIM directory](/docs/ssoready-concep
 
 # Properties
 
+<Frame caption="A SCIM request log, as displayed in the SSOReady web app.">
+    <img src="scim-request-log.png" alt="" />
+</Frame>
+
 ## SCIM Request Log ID
 
 Every SCIM request log has an ID starting with `scim_request_...`, for example:
@@ -33,6 +37,10 @@ When a SCIM request from your customer's identity provider fails, SSOReady will
 include details about that failure on the SCIM request log.
 
 ### Bad Bearer Token
+
+<Frame caption="A SCIM request log with an invalid SCIM bearer token.">
+    <img src="scim-request-log-bad-bearer-token.png" alt="" />
+</Frame>
 
 Every SCIM directory has a secret [bearer
 token](//docs/ssoready-concepts/scim-directories#scim-authentication) associated
@@ -57,6 +65,11 @@ give your customer the new bearer token over a secure channel.
 
 ### Bad `userName`
 
+<Frame caption="A SCIM request log with an invalid SCIM userName.">
+    <img src="scim-request-log-bad-username.png" alt="" />
+</Frame>
+
+
 The SCIM specification has the concept of a
 [`userName`](https://datatracker.ietf.org/doc/html/rfc7643#section-4.1.1) on a
 user. SSOReady requires that this `userName` be formatted as an email.
@@ -68,6 +81,10 @@ To fix this error, your customer needs to configure their identity provider to
 send `userName` formatted as an email address.
 
 ### Email Outside Organization Domains
+
+<Frame caption="A SCIM request log with an email outside the organization's whitelist of domains.">
+    <img src="scim-request-log-email-outside-org-domains.png" alt="" />
+</Frame>
 
 SSOReady applies an additional layer of security on top of the traditional SCIM
 security model: before accepting a SCIM user, SSOReady verifies that the user's
