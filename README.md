@@ -1,25 +1,8 @@
-# SSOReady API and Fern Configuration
+# SSOReady docs
 
-This repository contains your Fern Configuration:
+This repo contains the source material for ssoready.com/docs. It also contains the internal API definitions and metadata that are used to generate the SSOReady SDKs:
 
-- [OpenAPI Spec](./fern/openapi/openapi.yml)
-- [Fern config](./fern/generators.yml)
+* https://github.com/ssoready/ssoready-typescript
+* https://github.com/ssoready/ssoready-python
 
-## Validating your API Definition
-
-To validate your API, run:
-
-```sh
-npm install -g fern-api # only required once
-fern check
-```
-
-## Updating your SDKs
-
-To update your SDKs, simply run the `Release Python SDK` GitHub Action with the desired version
-for the release. Under the hood, this leverages the Fern CLI:
-
-```sh
-npm install -g fern-api # only required once
-fern generate --group python-sdk
-```
+PRs are welcome!
