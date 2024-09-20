@@ -133,6 +133,63 @@ ID, then SSOReady will reject the SAML assertion.
 To fix this, you need to have your customer update their identity provider
 settings to provide the correct SP Entity ID.
 
+### Bad Signature Algorithm
+
+Every SAML assertion specifies the cryptographic algorithm used to verify its
+authenticity. This information is listed in the `<ds:SignatureMethod>` of the
+assertion.
+
+If a SAML assertion uses any signature algorithm other than RSA
+PKCS #1 v1.5 (identified in SAML as
+`http://www.w3.org/2001/04/xmldsig-more#rsa-sha256`), then SSOReady will reject
+the SAML assertion.
+
+The most common way this issue arises is when an Identity Provider is configured
+to sign messages using RSA-SHA1. SSOReady does not honor SHA1; though SHA1
+was considered acceptable when SAML was initially released, it is generally not
+considered secure enough for cryptographic signatures today.
+
+To fix this, your customer must change their identity provider settings to use
+RSA-SHA256 as the signature method.
+
+### Bad Digest Algorithm
+
+Every SAML assertion specifies the digest algorithm used to verify its
+authenticity. This information is listed in the `<ds:DigestMethod>` of the
+assertion.
+
+If a SAML assertion uses any digest algorithm other than SHA-256 (identified in
+SAML as `http://www.w3.org/2001/04/xmlenc#sha256`), then SSOReady will reject
+the SAML assertion.
+
+The most common way this issue arises is when an Identity Provider is configured
+to compute message digests using SHA1. SSOReady does not honor SHA1; though SHA1
+was considered acceptable when SAML was initially released, it is generally not
+considered secure enough for cryptographic signatures today.
+
+To fix this, your customer must change their identity provider settings to use
+SHA256 as the digest method.
+
+### Bad Certificate
+
+Every SAML assertion indicates the certificate that should be used to verify its
+authenticity. SSOReady does not ever use this end-user-provided certificate
+directly, because it's untrusted. Only the [certificate you configured on the
+SAML connection](/docs/ssoready-concepts/saml-connections#certificate) is used
+to authenticate SAML assertions.
+
+If a SAML assertion has a `<ds:X509Certificate>` that isn't identical to the
+certificate you configured on the SAML connection, then SSOReady will reject the
+SAML assertion.
+
+The most common way this issue arises is when your customer rotates the
+certificate in their identity provider. In that case, their identity provider
+will send requests with the new certificate, but SSOReady will still expect the
+old certificate.
+
+To fix this, you need to update the SAML connection's [identity provider
+certificate](/docs/ssoready-concepts/saml-connections#certificate).
+
 ### Email Outside Organization Domains
 
 SSOReady applies an additional layer of security on top of the traditional SAML
