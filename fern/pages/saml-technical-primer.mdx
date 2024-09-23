@@ -99,6 +99,83 @@ after being fired. CISOs meet those obligations using SAML.
 
 # Fitting SAML into your existing software
 
+<Info>
+    If you read [the SAML
+    specification](https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf),
+    or look at [documentation written about SAML](https://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0.html)
+    (especially if those docs were written in the early 2000s), it might seem like
+    SAML is a framework that can subsume or replace all of auth. Don't do this.
+
+    "SAML solves everything" was a hot idea in 2002, but the industry has
+    moved away from this. The contemporary consensus is that SAML isn't a great
+    protocol. Just use SAML as a way to securely find out what a corporate
+    user's email address is.
+</Info>
+
+You should think of SAML as a self-contained login method. You probably already
+let your users log into your product using things like username+password, email
+magic links, "Log in with Google", etc. Think of SAML as another login method.
+
+SAML is a protocol that lets your customer's employees securely prove to you
+what their email address is, without you having to worry about sending them
+confirmation emails, verifying they're still employed at the company, or that
+they belong to the right team at the company.
+
+Roughly speaking, only two parts of your overall system need to know about SAML:
+
+1. Your login page needs to know that SAML is a login option for a customer.
+There are a couple common UI flows for doing this. We cover these in depth in
+the [Integrating SAML with your Login
+UI](/docs/saml/integrating-saml-into-your-login-ui) guide.
+
+    Ultimately, your login page will, at a technical level, [initiate a SAML
+    login](#initiating-a-saml-login).
+
+2. Your login backend system needs to be able to [handle SAML
+assertions](#handling-a-saml-assertion). We cover this in depth in the [Handling
+SAML Logins](/docs/saml/handling-saml-logins-jit-provisioning) guide.
+
+    Ultimately your backend runs an HTTP endpoint, and your user's web browsers
+    will POST SAML payloads there. You verify those payloads, and use your
+    normal session system (the same one you use for other kinds of logins) to
+    create a session for the email you securely extracted from the SAML
+    payload.
+
+If you don't use an open-source library like SSOReady to help implement SAML,
+the lack of structure that SAML imposes on you -- as well as historical baggage
+from the early days of SAML -- can lead you astray in two common
+ways:
+
+1. SAML supports the idea of putting "metadata" on a login session,
+configuring "conditional access", and lots of other fancy functionality. It
+might seem like supporting SAML means having your entire system be able to honor
+these advanced SAML-specific features.
+
+    Without getting into too much detail on what
+that functionality was meant to achieve in 2002, suffice it to say that most
+modern software systems don't use this functionality at all.
+
+    If you treat SAML as just a way to get a user's email, you will be in line
+    with almost all other SAML-supporting software your customer is used to.
+    CISOs expect, and will be satisfied with, this kind of simple integration.
+
+2. SAML is, unfortunately, much more annoying to configure than any other login
+method you already support. The technical details of these SAML settings are
+covered later in this article [here](#saml-configuration).
+
+    You and your customer need to exchange settings about one another before a SAML
+login can even begin. But that configuration
+happens "offline" -- if you're not using SSOReady, you'll implement it by
+exchanging informal emails with your customer. If you do use SSOReady, you can
+have your customer [self-serve configure their SAML
+setup](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers).
+
+    You don't typically have to write
+any UI or backend code related to configuring SAML configuration, beyond having
+some way for your engineers to store the SAML settings you got from your
+customer. You just need to store three small pieces on your backend (two strings
+plus an X.509 certificate), and those settings change very infrequently.
+
 # SAML at a technical level
 
 ## SAML Configuration
