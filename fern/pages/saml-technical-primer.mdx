@@ -33,19 +33,69 @@ want SAML support?
 
 ## One click to login: why your users like SAML
 
-Your users probably don't know what SAML is. But they love what it gives them: a
-one-click login experience for every SaaS tool they use at work.
+Your users probably don't know what SAML is. What they do know about is their
+company's *identity provider*. The most popular one is called
+[Okta](https://www.okta.com/customer-identity/single-sign-on/); other common
+competitors to Okta include [Microsoft
+Entra](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id)
+(formerly "Azure Active Directory") and [Google
+Workspace](https://workspace.google.com/). There are dozens more vendors in this
+space (big companies often build their own internal alternatives), and they all
+use the SAML protocol.
 
-Okta is a very popular identity provider. When your user opens their computer at
-work in the morning, here's what they see:
+Even though your users don't know what SAML or what an identity provider is,
+they do love what it gives them: one-click login experience for every SaaS tool
+they use at work, a so-called *Single Sign-On* (SSO) experience.
 
-<Frame caption="A screenshot of Okta. Every app is a 'tile'. Click on a tile, and you're now logged into it.">
+For example, here's what Okta looks like for your users. When your user opens
+their computer at work in the morning, this is what they see:
+
+<Frame caption="A screenshot of Okta. Every app they use at work gets a 'tile'. Click on a tile, and you're now logged into it.">
     <img src="okta-tiles-screenshot.jpg" alt="" />
 </Frame>
 
-At work, your customers 
+At work, your users only need one password: their identity provider password.
+They don't need to set up or remember passwords anywhere. They might find
+logging into Okta itself a bit annoying, because their IT team requires
+two-factor authentication to log into Okta, but logging into everything else is
+a breeze.
 
 ## One click to fire: why your customer's CISO likes SAML
+
+<Frame caption="A screenshot of an IT admin deprovisioning an Okta user. CISOs love SAML because it lets them lock down all of an employee's accounts from a single place.">
+    <img src="okta-deprovision-screenshot.png" alt="" />
+</Frame>
+
+Your customer's
+[CISO](https://www.cisco.com/c/en/us/products/security/what-is-ciso.html) (Chief
+Information Security Officer) is in charge of making sure company data is
+secure. Concretely, the biggest things they worry about is:
+
+* Employees accidentally leaking data, because they use the same password
+everywhere and that password got breached
+* Employees intentionally leaking data, because they were fired and want revenge
+
+CISOs love vendors that support SAML because they can put those vendor's apps
+inside the corporate identity provider, e.g. Okta. From there:
+
+* Employees don't need to have a password for that vendor. They just log in
+using the identity provider. The identity provider uses the SAML protocol to
+securely log the employee into the vendor's app.
+
+* When the company fires someone, an IT admin doesn't have to manually go in and delete that employee's
+account from the vendor. Once you remove an employee from Okta, then
+Okta will stop letting that employee do SAML-based logins into *anything* (every
+identity provider works like this). The fired employee is locked out of every
+work application.
+
+But none of this works if your application doesn't implement SAML. SAML is the
+protocol that powers single-sign on, which lets identity providers like Okta log
+employees into your app without using a password.
+
+This is why many CISOs will go as far as to *require* SAML support out of all
+vendors. Many companies have regulatory, contractual, or compliance obligations
+to ensure employees don't use insecure passwords and are properly off-boarded
+after being fired. CISOs meet those obligations using SAML.
 
 # Fitting SAML into your existing software
 
