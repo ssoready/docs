@@ -4,7 +4,26 @@ subtitle: "A technical overview of SAML works, and how it fits into your product
 slug: saml/saml-technical-primer
 ---
 
-asdf
+<Note>
+    If you just want to start integrating SAML right away, check out the [SAML
+    quickstart](/docs/saml/saml-quickstart). You can get a SAML integration
+    working end-to-end within a few hours.
+
+    This article is for folks who want to understand SAML at a deeper technical
+    level, or how they could implement SAML without using an open-source library
+    like SSOReady.
+</Note>
+
+SAML is a source of a lot of confusion for developers. This article is a
+technical primer on some of the most common questions engineers and other
+technical folks have about SAML:
+
+1. [Why do businesses want their software vendors to support SAML](#what-is-the-point-of-saml)? In other
+words, how does SAML fit into my customer's business? Why do end users and C-level executives at my customer care about SAML?
+2. [How should I fit SAML into my exiting software](#fitting-saml-into-your-existing-software)? What parts of my software stack
+need to be "SAML-aware"? How lightweight can I make my integration? (The answer: quite lightweight. Only a small part of your codebase needs to know about SAML at all.)
+3. [At a technical level, how does SAML even work](#saml-at-a-technical-level)? What does the SAML protocol
+even do? What kinds of security guarantees does it give me, or what assumptions can I make about it?
 
 # What is the point of SAML?
 
@@ -12,9 +31,31 @@ You care about supporting SAML because your customer wants your product to
 support SAML. This is sound reasoning on your part. But why does your customer
 want SAML support?
 
-# Initiating a SAML Login
+## One click to login: why your users like SAML
 
-# Handling a SAML Assertion
+Your users probably don't know what SAML is. But they love what it gives them: a
+one-click login experience for every SaaS tool they use at work.
+
+Okta is a very popular identity provider. When your user opens their computer at
+work in the morning, here's what they see:
+
+<Frame caption="A screenshot of Okta. Every app is a 'tile'. Click on a tile, and you're now logged into it.">
+    <img src="okta-tiles-screenshot.jpg" alt="" />
+</Frame>
+
+At work, your customers 
+
+## One click to fire: why your customer's CISO likes SAML
+
+# Fitting SAML into your existing software
+
+# SAML at a technical level
+
+## SAML Configuration
+
+## Initiating a SAML Login
+
+## Handling a SAML Assertion
 
 Here's the same payload, base64-decoded:
 
@@ -177,7 +218,7 @@ jn3ZKSxD7x5NuHm8zEcDnxTiSXxkSs9RpZqrUg==
 </saml2p:Response>
 ```
 
-## Cryptographically authenticating a SAML assertion
+### Cryptographically authenticating a SAML assertion
 
 Before you can process a SAML assertion, you need to verify that it was really
 sent by your customer's identity provider. You **must** do this, because the
@@ -235,11 +276,11 @@ attribute, and that the signature points at it using `URI="#..."`.
 later). SAML assertions always use [Exclusive XML
 Canonicalization](https://www.w3.org/TR/xml-exc-c14n/).
 
-### Extracting the SAML assertion to canonicalize
+#### Extracting the SAML assertion to canonicalize
 
-### Canonicalizing a SAML assertion
+#### Canonicalizing a SAML assertion
 
-### Verifying the digest of the canonicalized assertion
+#### Verifying the digest of the canonicalized assertion
 
 After converting the SAML assertion into a set of canonicalized bytes, SAML
 requires that those bytes be put through a digest -- i.e. cryptographic hash
@@ -281,7 +322,7 @@ signature of the digest bytes, e.g.:
 SAML requires that the RSA-SHA256 signature be over the `SignedInfo`, an XML
 element that contains the digest:
 
-```xml SignedInfo (Pretty-Indented) {11}
+```xml title="SignedInfo (Pretty-Indented)"
 <ds:SignedInfo>
     <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
     <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
@@ -298,4 +339,36 @@ element that contains the digest:
 </ds:SignedInfo>
 ```
 
-To make matters a bit more complicated, this payload isn't what gets 
+To make matters a bit more complicated, this payload isn't what gets signed; you
+need to copy over all XML namespaces that this `SignedInfo` payload visibly
+uses, so in this case we need to define `xmlns:ds` on the `SignedInfo` before
+signing:
+
+```xml title="SignedInfo with namespaces copied in (Pretty-Indented)" {1}
+<ds:SignedInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+    <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+    <ds:Reference URI="#id23923151778251751045676989">
+        <ds:Transforms>
+            <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+            <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+        </ds:Transforms>
+        <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+        <ds:DigestValue>
+            5dyl0RFX07wyxI7u6Gw8u/GnO198XDNyj72TJY0KqLc=
+        </ds:DigestValue>
+    </ds:Reference>
+</ds:SignedInfo>
+```
+
+This is the data that you need to verify with RSA-SHA256. The correct signature
+is stored in the `<SignatureValue>` of the `<Signature>` element:
+
+```xml SignatureValue (Pretty-Indented)
+<ds:SignatureValue>
+    Pywv2l94wmFtmPgmUKSF7Q4gPPQbrWXTejp2FDHbm5g5NGBouUrYPKGcSfrysG/TUaUZevLiFc8VdkqUcThz+bPFgyt/ePomTJ1e2DfvAptK3wHjXYF88lZwk+p3JtJNohjfiq8wqEauSvM1jPpRfML3k5vOZS/diEzvrzaiB2noyupFZcCbgxSrdAdeVC6sjsUFu96FgjvHXwR41BCZftwrAanld7VZJ4P1GI30tJ6vwLh6H9ZvWx8MQ1vgMZuT2IDXifykeCLoo2GKqXyARIJGbzHzLWgRHBZqeDNskZWLg9HWjJy8eWpeye6OLs/7FuEj/GQGd/v8hMGoCL2U0A==
+</ds:SignatureValue>
+```
+
+As with the digest information, this `SignatureValue` contains base64 data. You
+verify that it is an RSA PKCS #1 v1.5 signature for the
