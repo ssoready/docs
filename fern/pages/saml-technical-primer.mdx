@@ -178,9 +178,225 @@ plus an X.509 certificate), and those settings change very infrequently.
 
 # SAML at a technical level
 
+<Tip>
+    This section gets quite technical. You don't need to understand this
+    material to understand how to use SSOReady. This section is, in a way, a
+    high-level overview of everything SSOReady abstracts away for you.
+</Tip>
+
+At the end of the day, SAML is a protocol that lets one of your users tell you
+("assert") their email address using a payload (an "assertion") that is
+self-contained. When you get a SAML payload, you can securely know:
+
+1. Which of your corporate customers sent you the payload,
+2. What email address, according to that corporate customer, this user has
+3. That the corporate customer wants you to log this user in right away
+
+The tricky part about SAML is that you need to watch out for:
+
+1. Forged SAML assertions, wherein an attacker pretends to be one of your
+corporate customers
+2. Malicious or misconfigured corporate customers sending assertions about other
+company's employees, e.g. EvilCorp (`evilcorp.com`) telling you to log someone
+in as the CEO of AcmeCorp (`ceo@acmecorp.com`).
+
+If you use SSOReady, these issues are both automatically covered by you.
+Otherwise, you'll typically need to implement (2) yourself, and you may want to
+audit your SAML
+dependency to make sure they adequately handle (1). Sadly, securely
+authenticating SAML is tricky, and many libraries [don't do it
+right](https://nvd.nist.gov/vuln/detail/CVE-2024-45409).
+
+## The SAML Flow
+
+There are three actors involved in a SAML flow:
+
+1. You are the **service provider** ("SP"). The service provider is software
+product being logged into via SAML.
+
+2. Your customer's Okta/Entra/Google/etc is the **identity provider** ("IDP").
+The identity provider is responsible for knowing whether a user is a real
+employee that wants to log into a product, and for telling service providers
+about that information using SAML.
+
+3. The **user** is mostly just along for the ride. In SAML, the SP and the IDP will
+redirect the user to each other. The user's browser is responsible for carrying
+messages back and forth between the SP and IDP.
+
+<Frame caption="A sequence diagram of a successful SAML login flow.">
+    <img src="saml-e2e-flow.png" alt="" />
+</Frame>
+
+Logging in via SAML has five high-level steps:
+
+1. You and your customer agree, offline, on some settings about how you're going
+to do SAML.
+2. When it's time to log in via SAML, you have the user POST a SAML
+`AuthnRequest` to your customer's identity provider. This is called "initiating"
+a SAML login.
+3. Your customer's identity provider handles making sure the user really has
+valid corporate credentials. This step is entirely outside your app's
+control.
+4. The identity provider has the user POST a SAML `Assertion` to your HTTP server.
+5. You authenticate that the assertion is legitimate, and then log the user into
+your product.
+
+<Tip>
+    If you're familiar with OAuth, this flow might sound familiar. The biggest
+    difference between SAML and OAuth is how you verify the user after they get
+    redirected back to your application.
+
+    In OAuth, your backend server typically takes a `code` from the user, and
+    asks the identity provider if this `code` is legitimate, and what the
+    underlying user's details are if it is.
+
+    In SAML, your backend server never talks directly to the identity provider.
+    You have to look at the assertion and use public-key cryptography to tell if
+    the identity provider cryptographically signed the message.
+</Tip>
+
+Step (1) is important conceptually, but doesn't require any code. That's covered
+in the next section: [SAML Configuration](#saml-configuration). Steps (2) and
+(5) are the ones you have to write code for. They're covered in [Initiating a
+SAML Login](#initiating-a-saml-login) and [Handling a SAML
+Assertion](#handling-a-saml-assertion).
+
+### SP- vs IDP-initiated SAML flows
+
+The discussion above illustrates the "SP-initiated" SAML flow, where your
+application (the SP) decides to kick off the SAML flow.
+
+SAML also supports "IDP-initiated" flows, where the IDP kicks off the SAML flow,
+and just directly sends the user to your ACS URL with an assertion.
+
+<Frame caption="A sequence diagram of a successful IDP-initiated flow.">
+    <img src="saml-idp-flow.png" alt="" />
+</Frame>
+
+The only difference between an SP- and an IDP-initiated flow is that
+IDP-initiated flows won't require you to [initiate
+them](#initiating-a-saml-login), and as a result don't have [a `RelayState`](#including-a-relaystate). Both
+are widely used in
+practice.
+When you use SSOReady, you get both SP- and IDP-initiated SAML support
+automatically.
+
 ## SAML Configuration
 
+For each of your customers, you will have five settings associated with the SAML
+connection you have with them. These settings are:
+
+* An **Assertion Consumer Service ("ACS") URL**. You assign this value. It's a
+URL where you run an HTTP endpoint that's ready to [handle SAML
+assertions](#handling-a-saml-assertion). When the identity provider redirects
+the user back to your application, they'll send the user to the ACS URL.
+
+* An **SP Entity ID**. You assign this value, and it must be unique for every
+customer. It's a generic string, but
+conventionally it's formatted as a URL. The identity provider will include this SP
+Entity ID in the
+assertions it sends you, and you'll use it to ensure the assertion was meant
+for *you* and not some other application.
+
+* An **IDP Redirect URL**. The IDP assigns this value. When you [initiate a SAML
+login](#initiating-a-saml-login), this is the URL you redirect the user to.
+
+* An **IDP Entity ID**. The IDP assigns this value. It's a generic string, but
+conventionally it's formatted as a URL. When you initiate a SAML
+login, you include this value so the IDP knows which application is starting
+the login. The IDP will include this IDP Entity ID in the assertions it sends
+you, and you'll use it to make sure the assertion is coming from the right
+identity provider.
+
+* An **IDP Certificate**. The IDP assigns this value. The IDP will use this certificate to
+cryptographically sign the assertions it sends you. You will use
+this certificate to authenticate that the identity provider really generated the
+assertion, and that it wasn't forged or tampered with.
+
+Once you have all of these settings in place, you can begin doing SAML logins.
+
 ## Initiating a SAML Login
+
+Initiating a SAML login concretely consists of having your user's web browser
+send a POST request with a payload that looks like this:
+
+```xml AuthnRequest.xml
+<AuthnRequest xmlns="urn:oasis:names:tc:SAML:2.0:protocol" Version="2.0" IssueInstant="2024-09-23T22:41:38.243Z">
+    <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+        https://auth.ssoready.com/v1/saml/saml_conn_5jvy8l0lgia5al1a45s9lo977
+    </Issuer>
+</AuthnRequest>
+```
+
+The `Issuer` needs to be equal to the [SP Entity ID](#saml-configuration).
+
+That POST request needs to be pointed at the [IDP Redirect
+URL](#saml-configuration). The POST request needs to be a standard HTTP form,
+with the `AuthnRequest.xml` being base64-encoded and set as a form field called
+`SAMLRequest`.
+
+You can't use a normal HTTP redirect to have your user POST a form to another
+URL. The typical workaround is to render your user a form that self-submits
+using JavaScript:
+
+```html Self-Submitting SAML Initiation Form
+<html>
+	<body>
+		<form method="POST" action="{{ IDP_REDIRECT_URL }}">
+			<input type="hidden" name="SAMLRequest" value="{{ SAML_AUTHN_REQUEST_BASE64_ENCODED }}"></input>
+		</form>
+		<script>
+			document.forms[0].submit();
+		</script>
+	</body>
+</html>
+```
+
+### Including a `RelayState`
+
+When initiating a SAML login, you can optionally include a `RelayState`
+parameter. You include this data as an additional parameter in the POST request:
+
+```html title="Self-Submitting SAML Initiation Form with a RelayState" {5}
+<html>
+	<body>
+		<form method="POST" action="{{ IDP_REDIRECT_URL }}">
+			<input type="hidden" name="SAMLRequest" value="{{ SAML_AUTHN_REQUEST_BASE64_ENCODED }}"></input>
+			<input type="hidden" name="RelayState" value="{{ RELAY_STATE }}"></input>
+		</form>
+		<script>
+			document.forms[0].submit();
+		</script>
+	</body>
+</html>
+```
+
+Whatever you put in `RelayState` will be echoed back to you when you [handle the
+SAML assertion](#handling-a-saml-assertion). The HTTP POST you receive will
+contain, alongside the usual `SAMLResponse` entry, a `RelayState` entry.
+
+The typical use-case for `RelayState` is to keep track of what page your user
+was on before forced them to log in with SAML. Then, once they're done logging
+in with SAML, you redirect the user back to the page they were previously on.
+
+<Warning>
+    You can't trust that the `RelayState` you get back from an identity provider
+    is the same as the one you chose when initiating the SAML login. An attacker
+    can always send you a request with their own `RelayState` instead.
+
+    The most common security risk associated with `RelayState` is when you store
+    a URL in that `RelayState`, but don't authenticate its legitimacy. If the
+    `RelayState` is allowed to redirect to a URL outside of your web
+    application, then you have an [open redirect
+    vulnerability](https://cwe.mitre.org/data/definitions/601.html).
+
+    The safest solution is to cryptographically sign the `RelayState` value you
+    include in your request using a secret key. When you use SSOReady, every
+    `RelayState` is cryptographically authenticated; you do not need to worry
+    about the [`state`
+    parameter](/docs/ssoready-concepts/saml-login-flows#state) being tampered
+    with.
+</Warning>
 
 ## Handling a SAML Assertion
 
