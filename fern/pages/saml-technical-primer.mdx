@@ -842,17 +842,17 @@ algorithm.
 
     You need to use a library that exposes where XML namespaces are declared
     (i.e. `xmlns:` attributes), and which lets you see what namespace prefixes
-    (i.e. the `foo` in `foo:bar`, not just what `foo` resolves to) elements and
-    attributes use. These details are often abstracted away, because they don't
-    affect message semantics.
+    (i.e. the `foo` in `foo:bar`, not just what `foo` resolves to) that elements
+    and attributes use. These details are often abstracted away, because they
+    don't affect message semantics.
 </Info>
 
 Exclusive XML Canonicalization builds on top of [Canonical
 XML](https://www.w3.org/TR/xml-c14n11/), aka "XML Canonicalization" or just "XML
 c14n".
 
-XML Canonicalization rather involved, but the basic idea is to make details that
-don't affect message semantics always resolve to the same thing:
+XML Canonicalization is rather involved, but the basic idea is to make details
+that don't affect message semantics always resolve to the same thing:
 
 * Empty elements (`<foo />`) are converted to start/end pairs (`<foo></foo>`)
 * Element attributes are sorted by resolved namespace URI, ties broken
@@ -887,7 +887,7 @@ alphabetically. Namespace declarations come first.
     </doc>
     ```
 
-    Do **not** honor this requirement. You will be vulnerable to [XML Entity
+    **Do not honor this requirement.** You will be vulnerable to [XML Entity
     Expansion
     ("XXE")](https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing)
     attacks. The specification here is simply inappropriate for systems that
@@ -961,6 +961,8 @@ supported by modern identity providers.
     use has since been formally discouraged by later revisions of the XML
     Signature specification:
     https://www.w3.org/TR/xmldsig-core1/#sec-MessageDigests
+
+    In practice, all modern identity providers support SHA256 at minimum instead.
 </Error>
 
 You will compare the SHA-256 sum of the canonicalized bytes against the
@@ -1300,8 +1302,9 @@ every SAML-using customer. Only honor SAML logins for users whose email are in
 that allowlist.
 
 Effectively, this approach makes it possible for each of your customers to "own"
-domains in your system. Unless they own a domain -- something *you* control, not
-your customer -- then they can't do SAML logins into that domain.
+domains in your system. Unless they're marked as owning a domain -- something
+*you* control, not your customer -- then they can't do SAML logins into that
+domain.
 
 <Check>
     When you use SSOReady, you have to associate a [list of domains with each of
