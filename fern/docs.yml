@@ -11,6 +11,8 @@ navigation:
     contents:
       - page: SAML Quickstart
         path: ./pages/saml-quickstart.mdx
+      - page: "SAML: A technical primer"
+        path: ./pages/saml-technical-primer.mdx
       - page: Integrating SAML with your Login UI
         path: ./pages/saml-login-ux.mdx
       - page: Handling SAML Logins + JIT Provisioning
