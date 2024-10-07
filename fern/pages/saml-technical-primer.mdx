@@ -28,9 +28,9 @@ even do? What kinds of security guarantees does it give me, or what assumptions 
 
 # What is the point of SAML?
 
-You care about supporting SAML because your customer wants your product to
-support SAML. This is sound reasoning on your part. But why does your customer
-want SAML support?
+Most likely, you'll first hear about SAML because your customer wants your
+product to support it. Customer requests are the most common initial reason
+companies add support for SAML. But why does your customer want SAML support?
 
 ## One click to login: why your users like SAML
 
@@ -70,7 +70,7 @@ a breeze.
 Your customer's
 [CISO](https://www.cisco.com/c/en/us/products/security/what-is-ciso.html) (Chief
 Information Security Officer) is in charge of making sure company data is
-secure. Concretely, the biggest things they worry about is:
+secure. Concretely, the biggest things they worry about include:
 
 * Employees accidentally leaking data, because they use the same password
 everywhere and that password got breached
@@ -85,8 +85,7 @@ securely log the employee into the vendor's app.
 
 * When the company fires someone, an IT admin doesn't have to manually go in and delete that employee's
 account from the vendor. Once you remove an employee from Okta, then
-Okta will stop letting that employee do SAML-based logins into *anything* (every
-identity provider works like this). The fired employee is locked out of every
+the identity provider will stop letting that employee do SAML-based logins into *anything*. The fired employee is locked out of every
 work application.
 
 But none of this works if your application doesn't implement SAML. SAML is the
@@ -97,6 +96,18 @@ This is why many CISOs will go as far as to *require* SAML support out of all
 vendors. Many companies have regulatory, contractual, or compliance obligations
 to ensure employees don't use insecure passwords and are properly off-boarded
 after being fired. CISOs meet those obligations using SAML.
+
+<Info>
+    The "off-board employees after being fired" objective also pushes your
+    customers toward wanting support for
+    [SCIM](https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management).
+    SAML lets your customers enforce "fired employees can't log in again", and
+    SCIM additionally lets your customers enforce "fired employees' accounts are
+    automatically deactivated".
+
+    The rest of this article is all about SAML, but [SSOReady can help you
+    implement SCIM, too.](/docs/scim/scim-quickstart).
+</Info>
 
 # Fitting SAML into your existing software
 
@@ -1270,11 +1281,43 @@ hasn't expired:
         disabled.
     </Info>
 
+* You haven't previously processed a SAML assertion with the same `ID`:
+
+  ```xml {1}
+  <saml2:Assertion ID="id23923151778251751045676989" ...>
+    ...
+  </saml2:Assertion>
+  ```
+
+  <Warning>
+      Checking that every SAML assertion's `ID` is distinct guards against
+      replay attacks.
+
+      A SAML assertion is, in essence, a bearer token. That bearer token has a
+      limited validity window (which you verified previously in this section),
+      but it also gets handled by many parties. There's a risk that one of the
+      parties accidentally leaks those assertions, and an attacker could replay
+      a leaked assertion before the validity window expires.
+
+      The SAML specification requires that every `Assertion` have an `ID`
+      attribute, and that this ID have a "negligible probability" of collision.
+      By ensuring that you never process two assertions with the same `ID`, you
+      make replay attacks much more difficult for attackers -- they must not
+      only intercept the assertion, but send it to you *faster* than the victim.
+      This is a very difficult attack to carry out in practice, because usually
+      only milliseconds pass between an IDP's issuance of an assertion and your
+      customer presenting it to you.
+
+      SSOReady always verifies assertion ID uniqueness. This functionality
+      cannot be disabled.
+  </Warning>
+
 Once you have done these checks, you have now established that:
 
 * The SAML assertion was really issued by your customer's identity provider
 * The SAML assertion was really meant to be consumed by your application
 * The SAML assertion was recently issued, and hasn't expired
+* The SAML assertion isn't being repeated by an imposter
 
 There is now only one major validation you need to worry about: what if the
 customer's identity provider is being malicious?
