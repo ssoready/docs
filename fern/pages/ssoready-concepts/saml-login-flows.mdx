@@ -101,6 +101,40 @@ and values are both guaranteed to be strings.
 When a SAML login flow fails, SSOReady will include details about the problems
 with that SAML login flow.
 
+### SAML Connection Not Fully Configured
+
+SSOReady can't securely authenticate logins for a [SAML
+connection](/docs/ssoready-concepts/saml-connections) if any of the following
+haven't been configured:
+
+* [IDP Entity ID](/docs/ssoready-concepts/saml-connections#idp-entity-id)
+* [IDP Redirect URL](/docs/ssoready-concepts/saml-connections#redirect-url)
+* [IDP Certificate](/docs/ssoready-concepts/saml-connections#certificate)
+
+If you [initiate a SAML
+login](/docs/saml/saml-quickstart#initiating-saml-logins) against a SAML
+connection that doesn't have these IDP-related settings configured, then you
+will get an error about the SAML connection not being fully configured.
+
+To fix this error, you need to configure all the IDP-related settings on the
+SAML connection.
+
+### Environment OAuth Redirect URI Not Configured
+
+This error will only ever arise if you're using
+[SAML-over-OAuth](/docs/saml-over-oauth-saml-nextauth-integration). SSOReady
+can't carry out SAML-over-OAuth if you haven't configured an [OAuth Redirect
+URI](/docs/ssoready-concepts/environments#oauth-redirect-uri).
+
+If you [initiate a SAML-over-OAuth
+login](/docs/saml-over-oauth-saml-nextauth-integration#initiating-saml-logins)
+against a [SAML connection](/docs/ssoready-concepts/saml-connections) belonging
+to an [environment](/docs/ssoready-concepts/environments) lacking an OAuth
+Redirect URI, then you will get an error.
+
+To fix this error, you need to configure an OAuth Redirect URI on the
+environment.
+
 ### Unsigned Assertion
 
 SSOReady requires that SAML assertions be cryptographically signed. Most
