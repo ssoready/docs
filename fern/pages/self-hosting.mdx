@@ -51,7 +51,7 @@ services:
       - "5432:5432"
 
   ssoready-auth:
-    image: ssoready/ssoready-auth:sha-2f1ce3d
+    image: ssoready/ssoready-auth:sha-18090f8
     environment:
       AUTH_SERVE_ADDR: ":80"
 
@@ -67,7 +67,7 @@ services:
       - "8080:80"
 
   ssoready-api:
-    image: ssoready/ssoready-api:sha-2f1ce3d
+    image: ssoready/ssoready-api:sha-18090f8
     environment:
       API_SERVE_ADDR: ":80"
 
@@ -86,7 +86,7 @@ services:
       - "8081:80"
 
   ssoready-app:
-    image: ssoready/ssoready-app:sha-2f1ce3d
+    image: ssoready/ssoready-app:sha-18090f8
     environment:
       APP_SERVE_PORT: "80"
 
@@ -110,7 +110,7 @@ services:
 Now, you'll need to set up the database tables that SSOReady requires. Do so by running:
 
 ```bash
-docker run --network=host ssoready/ssoready-migrate:sha-2f1ce3d -d 'postgres://postgres:password@localhost/postgres?sslmode=disable' up
+docker run --network=host ssoready/ssoready-migrate:sha-18090f8 -d 'postgres://postgres:password@localhost/postgres?sslmode=disable' up
 ```
 
 From here, you can visit `localhost:8082`, log in via Google, and then start using SSOReady as usual. To use the
