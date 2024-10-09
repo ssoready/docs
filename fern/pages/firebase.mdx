@@ -1,0 +1,103 @@
+---
+title: SAML for Firebase using a custom OIDC provider
+subtitle: Use SSOReady to add painless SAML support to your product
+slug: /firebase
+---
+
+[Firebase](https://firebase.google.com/) has support for SAML. That support
+works, and is secure. But many folks run into a few problems:
+
+1. Firebase makes onboarding new customers is a manual process for you and your
+customer. It's also confusing for you and your customer, because Firebase's docs
+do not explain how to onboard customers at all.
+
+   SAML intrinsically requires that you give your customer some SAML settings,
+   and then they give you some settings. [Firebase's SAML
+   docs](https://firebase.google.com/docs/auth/web/saml) don't at all explain
+   where your customer is supposed to put the settings you give them. In fact,
+   Firebase's docs don't even clarify that one of the settings -- "Your app's
+   Entity ID" -- is something *you* need to assign. The docs make no mention of
+   the "ACS URL" (which Firebase calls a "callback URL", a term your customers
+   will not understand) at all -- a setting that SAML can never work without.
+
+2. Relatedly, it's very confusing how to test or dogfood your SAML support.
+
+3. Firebase does not support IDP-initiated SAML flows, which allow your
+customers to log into your product directly from their identity provider. You'll
+have to explain to your customer that the experience they're used to -- clicking
+on your app from Okta's website to log into your product -- doesn't work.
+
+You can use SSOReady to take away these problems -- you'll find this article
+and the rest of our docs to be explicit, clear, and detailed. SSOReady's
+[self-serve setup
+UI](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers)
+automates SAML onboarding for you, and gives your customers a best-in-class
+experience. And SSOReady supports IDP-initiated flows out of the box.
+
+SSOReady integrates into Firebase as a [custom OIDC
+provider](https://firebase.google.com/docs/auth/web/openid-connect). You can add
+SAML support to your Firebase application in an afternoon.
+
+# Getting started with SSOReady
+
+This guide will take you through:
+
+1. [**Basic concepts.**](#basic-concepts) How Enterprise SSO / SAML works at a
+high level, and how SSOReady will help you implement it in your Firebase
+application.
+2. [**Code implementation.**](#code-implementation) What you'll need to build,
+and how to use SSOReady's Firebase integration.
+3. [**Onboarding customers.**](#onboarding-customers) SAML requires both you and
+your customer do setup. SSOReady automates your end of the equation, and this
+section describes what instructions you'll give to your customers.
+
+SSOReady is just an authentication middleware layer. SSOReady doesn't "own" your
+users, and it doesn't require you to use any particular tech stack, although
+this article assumes Firebase. That's on purpose -- it makes onboarding easier
+for you, and it forces us to keep earning your business in the long run, because
+churning is easier.
+
+# Basic concepts
+
+"Enterprise SSO" is mostly a synonym for a protocol called
+[SAML](https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language). It's a way for a company to easily let their
+employees log into all their software products, including your product.
+
+At smaller companies, employees use username+password or "Log in with Google" to sign into your product. At
+larger companies, employees instead expect to use services like Okta or Microsoft Entra (formerly "Azure AD") to do
+sign-in. Those sign-ins happen using the SAML protocol. SSOReady makes it way easier to implement SAML. SSOReady's
+OAuth-over-SAML functionality makes SAML fit into existing OAuth-based applications.
+
+SAML logins have two steps:
+
+1. You [**initiate a SAML login**](#initiating-saml-logins) by redirecting your
+user to their corporate Okta/Google/Microsoft.
+2. Their corporate Okta/Google/Microsoft redirects your user back to your
+Firebase application. Firebase will handle logging your user in.
+
+Before this can happen, you and your customer need to exchange settings about each other. This process is done offline;
+you'll give your customer some settings that SSOReady provides for you, and you'll email your customer asking for some
+settings in return which you'll input into SSOReady.
+
+We'll cover how to do (1) and (2) in [Code implementation](#code-implementation). We'll cover the setup work you'll need
+to do inside SSOReady's webapp in [Setting up SSOReady](#setting-up-ssoready). We'll cover the settings you'll give and
+ask for in [Onboarding customers](#onboarding-customers).
+
+# Code implementation
+
+## Initiating SAML Logins
+
+Under the hood, initiating SAML logins requires you to get your user's browser to perform an HTTP POST against their
+corporate Okta/Google/Microsoft with a specific XML message. SSOReady's SAML-over-OAuth flow abstracts this away into a
+normal OAuth "authorize" redirect endpoint.
+
+To start a SAML login, redirect your users to this `/authorize` endpoint:
+
+```text
+https://auth.ssoready.com/v1/oauth/authorize?client_id=saml_oauth_client_...&organization_external_id=...
+```
+
+That URL requires an OAuth client ID (`saml_oauth_client_...`) and an `organization_external_id`. How you get those is
+covered in [Setting up SSOReady](#setting-up-ssoready) later on this page.
+
+# Onboarding customers
