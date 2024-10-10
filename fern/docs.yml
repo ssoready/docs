@@ -80,6 +80,10 @@ navigation:
     contents:
       - page: Management API
         path: ./pages/management-api.mdx
+  - section: DummyIDP
+    contents:
+      - page: Testing SAML/SCIM with DummyIDP
+        path: ./pages/dummyidp.mdx
   - section: Self-Hosting
     contents:
       - page: Self-Hosting SSOReady
