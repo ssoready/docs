@@ -22,17 +22,12 @@ do not explain how to onboard customers at all.
 
 2. Relatedly, it's very confusing how to test or dogfood your SAML support.
 
-3. Firebase does not support IDP-initiated SAML flows, which allow your
-customers to log into your product directly from their identity provider. You'll
-have to explain to your customer that the experience they're used to -- clicking
-on your app from Okta's website to log into your product -- doesn't work.
-
-You can use SSOReady to take away these problems -- you'll find this article
-and the rest of our docs to be explicit, clear, and detailed. SSOReady's
-[self-serve setup
+You can use SSOReady to take away these problems -- you'll find this article and
+the rest of our docs to be explicit, clear, and detailed. SSOReady's [self-serve
+setup
 UI](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers)
 automates SAML onboarding for you, and gives your customers a best-in-class
-experience. And SSOReady supports IDP-initiated flows out of the box.
+experience.
 
 SSOReady integrates into Firebase as a [custom OIDC
 provider](https://firebase.google.com/docs/auth/web/openid-connect). You can add
@@ -63,41 +58,273 @@ churning is easier.
 [SAML](https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language). It's a way for a company to easily let their
 employees log into all their software products, including your product.
 
-At smaller companies, employees use username+password or "Log in with Google" to sign into your product. At
-larger companies, employees instead expect to use services like Okta or Microsoft Entra (formerly "Azure AD") to do
-sign-in. Those sign-ins happen using the SAML protocol. SSOReady makes it way easier to implement SAML. SSOReady's
-OAuth-over-SAML functionality makes SAML fit into existing OAuth-based applications.
+At smaller companies, employees use username+password or "Log in with Google" to
+sign into your product. At larger companies, employees instead expect to use
+services like Okta or Microsoft Entra (formerly "Azure AD") to do sign-in. Those
+sign-ins happen using the SAML protocol.
 
-SAML logins have two steps:
+SSOReady makes it way easier to implement SAML. SSOReady's OAuth-over-SAML
+functionality makes SAML fit into existing OAuth-based applications, so you can
+use SSOReady as a custom OIDC provider in your Firebase app. From your code's
+perspective, SSOReady will seem like an ordinary custom OIDC provider. Under the
+hood, and from your customer's perspective, it will actually be a SAML login,
+with all the benefits that brings for your customer.
 
-1. You [**initiate a SAML login**](#initiating-saml-logins) by redirecting your
-user to their corporate Okta/Google/Microsoft.
-2. Their corporate Okta/Google/Microsoft redirects your user back to your
-Firebase application. Firebase will handle logging your user in.
+We'll cover how to create a custom Firebase OIDC provider in [Setting up
+Firebase](#setting-up-firebase). We'll then see the code you need to write in
+[Code implementation](#code-implementation). We'll cover the setup work you'll
+need to do inside SSOReady's webapp in [Setting up
+SSOReady](#setting-up-ssoready). We'll cover the settings you'll give and ask
+for in [Onboarding customers](#onboarding-customers).
 
-Before this can happen, you and your customer need to exchange settings about each other. This process is done offline;
-you'll give your customer some settings that SSOReady provides for you, and you'll email your customer asking for some
-settings in return which you'll input into SSOReady.
+# Setting up Firebase
 
-We'll cover how to do (1) and (2) in [Code implementation](#code-implementation). We'll cover the setup work you'll need
-to do inside SSOReady's webapp in [Setting up SSOReady](#setting-up-ssoready). We'll cover the settings you'll give and
-ask for in [Onboarding customers](#onboarding-customers).
+SSOReady can act as a Firebase OpenID Connect ("OIDC") provider. To set up
+SSOReady's integration with Firebase, follow these steps:
+
+<Steps>
+    ### Create an SSOReady SAML OAuth Client
+
+    <Tip>
+        For more details on what you're setting up in this step, see [Creating
+    environments](#creating-environments) and [Creating SAML OAuth
+    Clients](#creating-saml-oauth-clients) in the [Setting up SSOReady
+    section](#setting-up-ssoready).
+    </Tip>
+
+    [Sign up to SSOReady](https://app.ssoready.com/login), if you haven't
+    already. It's free and anyone can sign up, even with a personal email.
+
+    Create an [environment](/docs/ssoready-concepts/environments). You can do so
+    directly from [this page](https://app.ssoready.com/environments/new). Choose
+    any name you like, and choose any Redirect URL -- `http://localhost` is
+    fine. Because we'll be using SAML-over-OAuth, this value won't be used.
+    Leave OAuth Redirect URI blank -- we'll get its correct value from Firebase
+    later.
+
+    Create a SAML OAuth Client. You can do so by going to "API Keys" from the
+    left sidebar, and then clicking on "Create SAML OAuth Client".
+
+    A popup now appears. Click on the SAML OAuth Client secret to copy it. Paste
+    that somewhere temporary, you'll need it in step (3). Click "Done". You're
+    now viewing a SAML OAuth Client's details.
+
+    We're done setting things up on the SSOReady side. Open a new tab, and go to
+    Firebase.
+
+    ### Go to your Firebase app's "Sign-in method" Settings
+
+    Go to your Firebase application in the [Firebase
+    console](https://console.firebase.google.com/), if you haven't already.
+
+    You can find these settings by clicking on "Build" in the left sidebar, then
+    Authentication. In the top navigation bar, go to the "Sign-in method" tab.
+
+    ### Add a new OpenID Connect provider
+
+    Click on "Add a new provider". Then click on "OpenID Connect". Then toggle
+    "Enable" to be on. Configure the OIDC provider as follows:
+
+    * **Grant type**: Keep this value as "Code flow", which is the default.
+
+    * **Name**: We recommend "SSOReady SAML". The provider ID becomes
+    `oidc.ssoready-saml`. If you choose a different name, you'll need to make
+    sure that you adapt the code in [Code implementation](#code-implementation)
+    to use your provider ID instead of `oidc.ssoready-saml`.
+
+    * **Client ID**: In the SSOReady tab from step (1), you're looking at the
+    SAML OAuth Client you created. Copy its ID -- it starts with
+    `saml_oauth_client_...` -- into the Client ID in Firebase.
+
+    * **Issuer URL**: Set this to `https://auth.ssoready.com/v1/oauth`.
+
+    * **Client secret**: In step (1), you copied a SAML OAuth Client secret. Its
+    value starts with `ssoready_oauth_client_secret_...`. Paste that into the
+    Client secret in Firebase.
+
+    Click "Next". Firebase now shows you a Callback URL -- it ends in
+    `/__/auth/handler`. Copy that value, and then click "Save".
+
+    ### Set the Firebase Callback URL as your SSOReady OAuth Redirect URI
+
+    Go back to your SSOReady tab. Click on "Overview" in the left sidebar, and
+    then click on "Edit" on the top right. Set the "OAuth Redirect URI" value to
+    be the Callback URL you copied from Firebase in step (3). Then click "Save".
+</Steps>
+
+With that, both Firebase and SSOReady are configured. Your next step is to add a
+bit of code to tell Firebase to do a SAML-based login using SSOReady.
 
 # Code implementation
 
-## Initiating SAML Logins
+From here, you'll use [Firebase's sign-in
+flows](https://firebase.google.com/docs/auth/web/openid-connect#handle_the_sign-in_flow_with_the_firebase_sdk)
+for OIDC connectors. You'll want to use the "Pop-up flow", because [Firebase's
+"redirect flow" doesn't work with modern
+browsers](https://firebase.google.com/docs/auth/web/redirect-best-practices).
 
-Under the hood, initiating SAML logins requires you to get your user's browser to perform an HTTP POST against their
-corporate Okta/Google/Microsoft with a specific XML message. SSOReady's SAML-over-OAuth flow abstracts this away into a
-normal OAuth "authorize" redirect endpoint.
+You need to pass an `organizationExternalId` custom OAuth parameter. How you get
+that value is covered in [Setting up SSOReady](#setting-up-ssoready) later on
+this page.
 
-To start a SAML login, redirect your users to this `/authorize` endpoint:
+Putting it all together, typically you'll write Firebase code that looks like
+this:
 
-```text
-https://auth.ssoready.com/v1/oauth/authorize?client_id=saml_oauth_client_...&organization_external_id=...
+```js
+import { getAuth, signInWithPopup, OAuthProvider } from "firebase/auth";
+
+const provider = new OAuthProvider("oidc.ssoready-saml");
+provider.setCustomParameters({
+  organizationExternalId: "..." // see "Setting up SSOReady" for what you put here
+})
+
+const auth = getAuth();
+await signInWithPopup(auth, provider)
 ```
 
-That URL requires an OAuth client ID (`saml_oauth_client_...`) and an `organization_external_id`. How you get those is
-covered in [Setting up SSOReady](#setting-up-ssoready) later on this page.
+From here, SSOReady and Firebase will automatically integrate together to log
+users into your system over SAML.
+
+If you want to get the user's SAML email address, you can get that from the
+current user like so:
+
+```js
+const auth = getAuth();
+const samlEmail = auth.currentUser.providerData
+    .find(({ providerId }) => providerId === "oidc.ssoready-saml")
+    .uid
+```
+
+# Setting up SSOReady
+
+[Setting up Firebase](#setting-up-firebase) breezed through creating something
+called an "environment" and a "SAML OAuth Client". In [Code
+implementation](#code-implementation), there was one missing detail
+(`organizationExternalId`) that you need to implement SSOReady. This section
+explains what's going on with those.
+
+1. **What is an SSOReady environment?** An [environment](#creating-environments) is how you tell SSOReady where your Firebase app lives.
+2. **What is an SSOReady SAML OAuth Client?** A [SAML OAuth Client](#creating-saml-oauth-clients) belongs to an environment. It's an adapter that makes SAML look like OAuth.
+3. **How do I get `organizationExternalId`?** You create [an organization](#creating-organizations) in an environment,
+where you can choose an external ID convenient for you.
+
+This section will step you through how you'll do all of this setup in SSOReady's webapp. As a prerequisite step, you'll
+need to [sign up to SSOReady](https://app.ssoready.com/login). It's free and anyone can sign up, even with a personal
+email.
+
+## Creating environments
+
+<Tip>
+    You can skip this step if you've already followed [Setting up
+    Firebase](#create-an-ssoready-saml-oauth-client).
+</Tip>
+
+To create an environment, go [here](https://app.ssoready.com/environments/new).
+You'll typically create one environment per Firebase project. Environments
+require a "Redirect URL", but if you only ever use SAML-over-OAuth, its value is
+never used. When you're integrating SSOReady with Firebase, what matters is the
+environment's [OAuth Redirect
+URI](/docs/ssoready-concepts/environments#oauth-redirect-uri).
+
+Firebase calls the SSOReady OAuth Redirect URI a "callback URL". Its value
+should be something like:
+
+```text
+https://your-firebase-project-name.firebaseapp.com/__/auth/handler
+```
+
+Set your environment's OAuth Redirect URI to the Firebase callback URL.
+
+## Creating SAML OAuth clients
+
+<Tip>
+    You can skip this step if you've already followed [Setting up
+    Firebase](#create-an-ssoready-saml-oauth-client).
+</Tip>
+
+SAML and OAuth are different protocols, but SSOReady's SAML OAuth Clients act as
+bridge between the two. They look to the outside world like a normal OAuth
+client, but under the hood they wrap SAML to carry out an OAuth flow.
+
+SAML OAuth Clients are scoped to an environment. When viewing an environment in
+the app, click "API Keys" on the left navbar. Then click "Create SAML OAuth
+Client". A popup will show you your new SAML OAuth client's secret (it starts
+with `ssoready_oauth_client_secret_...`). That's the "Client secret" you'll
+[input into Firebase](#add-a-new-openid-connect-provider)
+
+After clicking "View SAML OAuth Client" on that popup, you'll
+also see the client's ID (it starts with `saml_oauth_client_...`). That's the
+"Client ID" you'll input into Firebase.
+
+## Creating organizations
+
+An organization corresponds to a corporate customer of yours. If you sold your product to Apple, Nvidia, and Amazon,
+you'd have three organizations in SSOReady: one each for Apple, Nvidia, and Amazon.
+
+Organizations belong to an environment. When viewing an environment in the app, the "Create organization" button creates
+a new organization. Organizations have two properties worth highlighting:
+
+* An optional *external ID*, which you can assign. If you're selling multi-tenant B2B software, you probably already
+have a concept that closely matches an SSOReady organization -- usually, this is something named a "team", "workspace",
+"company", or something similar. When creating an SSOReady organization, use your product's counterpart to an
+organization ID as the external ID.
+
+  You'll provide the external ID as the `organizationExternalId` in your [code
+implementation](#code-implementation).
+
+* A set of *domains*. If you expect Apple's employees will log in to your product from `@apple.com` and `@shazam.com`
+email addresses, then put `apple.com` and `shazam.com` here. SSOReady will enforce that users' SAML logins come from
+these domains.
+
+## Creating SAML connections
+
+A SAML connection holds onto SAML-related settings. In ["Onboarding customers"](#onboarding-customers), you'll be
+providing and asking for settings. Those settings all live on an SSOReady SAML connection.
+
+SAML connections belong to an organization. When viewing an organization in the app, the "Create SAML connection" button
+creates a new SAML connection. Beyond the SAML-related settings covered in ["Onboarding
+customers"](#onboarding-customers), SAML connections have one setting of note: whether they are *primary*.
+
+Each organization has up to one primary SAML connection. In your [code
+implementation](#code-implementation), you provide an `organizationExternalId`.
+SSOReady will use that organization's primary SAML connection to initiate the
+login.
 
 # Onboarding customers
+
+In [Basic concepts](#basic-concepts), we mentioned that you and your customer
+need to exchange details about each other
+before you can do SAML logins. This process happens offline -- there's no coding
+involved.
+
+You have to go through this process each time a new company wants to set up
+SAML. It's inherent to how SAML was designed.
+
+With SSOReady, you have two options for onboarding customers onto SAML -- that
+is, exchanging SAML-related settings with them. You can:
+
+1. Use SSOReady's [self-serve setup
+links](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers).
+You give your customers a link, where they can set up SAML on their own. It's a
+slick experience for your customers, and they'll get set up in minutes. **We
+recommend this approach.**
+2. Give your customers instructions yourself, over email/slack/Zoom/etc.
+
+If you go with option (2), be advised that SAML identity providers (e.g. Okta,
+Microsoft Entra, Google Workspace, etc.) don't use the same
+terminology for these identical details. To deal with that, we've prepared a
+separate set of documentation for you to
+follow depending on what identity provider your customer uses:
+
+- [Okta](/docs/idp-configuration/guides-for-common-identity-providers/okta/saml-with-okta)
+- [Google Workspace](/docs/idp-configuration/guides-for-common-identity-providers/google/saml-with-google)
+- [Microsoft Entra](/docs/idp-configuration/guides-for-common-identity-providers/entra-formerly-azure-ad/saml-with-entra) (aka Microsoft Azure Active Directory, Microsoft Azure AD)
+- [JumpCloud](/docs/idp-configuration/guides-for-common-identity-providers/jumpcloud/saml-with-jumpcloud)
+- [Ping Identity](/docs/idp-configuration/guides-for-common-identity-providers/ping-identity/saml-with-ping-identity)
+
+In all cases, you're ultimately going to:
+
+1. Give your customers an "SP Entity ID" and "SP ACS URL". SSOReady's webapp gives you both.
+2. Ask your customers for an "IDP Entity ID", "IDP Redirect URL", and "IDP Certificate" which you input into SSOReady.
+
+Once you have all those details, you'll be ready to accept SAML logins!
