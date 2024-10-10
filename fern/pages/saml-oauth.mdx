@@ -333,16 +333,35 @@ login.
 
 # Onboarding customers
 
-In [Basic concepts](#basic-concepts), we mentioned that you and your customer need to exchange details about each other
-before you can do SAML logins. This process happens offline -- there's no coding involved.
+In [Basic concepts](#basic-concepts), we mentioned that you and your customer
+need to exchange details about each other
+before you can do SAML logins. This process happens offline -- there's no coding
+involved.
 
-Unfortunately, SAML identity providers (e.g. Okta, Microsoft Entra, Google Workspace, etc.) don't use the same
-terminology for these identical details. To deal with that, we've prepared a separate set of documentation for you to
+You have to go through this process each time a new company wants to set up
+SAML. It's inherent to how SAML was designed.
+
+With SSOReady, you have two options for onboarding customers onto SAML -- that
+is, exchanging SAML-related settings with them. You can:
+
+1. Use SSOReady's [self-serve setup
+links](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers).
+You give your customers a link, where they can set up SAML on their own. It's a
+slick experience for your customers, and they'll get set up in minutes. **We
+recommend this approach.**
+2. Give your customers instructions yourself, over email/slack/Zoom/etc.
+
+If you go with option (2), be advised that SAML identity providers (e.g. Okta,
+Microsoft Entra, Google Workspace, etc.) don't use the same
+terminology for these identical details. To deal with that, we've prepared a
+separate set of documentation for you to
 follow depending on what identity provider your customer uses:
 
-* [Okta](/docs/idp-configuration/guides-for-common-identity-providers/okta)
-* [Google Workspace](/docs/idp-configuration/guides-for-common-identity-providers/google)
-* [Microsoft Entra](/docs/idp-configuration/guides-for-common-identity-providers/entra-formerly-azure-ad) (aka Microsoft Azure Active Directory, Microsoft Azure AD)
+- [Okta](/docs/idp-configuration/guides-for-common-identity-providers/okta/saml-with-okta)
+- [Google Workspace](/docs/idp-configuration/guides-for-common-identity-providers/google/saml-with-google)
+- [Microsoft Entra](/docs/idp-configuration/guides-for-common-identity-providers/entra-formerly-azure-ad/saml-with-entra) (aka Microsoft Azure Active Directory, Microsoft Azure AD)
+- [JumpCloud](/docs/idp-configuration/guides-for-common-identity-providers/jumpcloud/saml-with-jumpcloud)
+- [Ping Identity](/docs/idp-configuration/guides-for-common-identity-providers/ping-identity/saml-with-ping-identity)
 
 In all cases, you're ultimately going to:
 

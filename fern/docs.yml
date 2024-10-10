@@ -21,11 +21,13 @@ navigation:
     contents:
       - page: SCIM Quickstart
         path: ./pages/scim-quickstart.mdx
-  - section: OAuth / NextAuth.js
+  - section: SAML-over-OAuth
     slug: oauth-nextauth
     contents:
       - page: SAML over OAuth (SAML NextAuth.js integration)
         path: ./pages/saml-oauth.mdx
+      - page: SAML for Firebase
+        path: ./pages/firebase.mdx
   - section: IDP configuration
     contents:
       - page: Enabling self-service configuration for your customers
