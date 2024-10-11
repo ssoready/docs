@@ -1,10 +1,10 @@
 ---
 title: "Self-Hosting SSOReady"
-subtitle: "How to manage SAML entirely in your cloud or your customer's cloud"
-noindex: false
+subtitle: "How to manage SAML and SCIM entirely in your cloud or your customer's cloud"
+slug: /self-hosting-ssoready
 ---
 
-SSOReady is a free, MIT-licensed way to add SAML support to your app. A free hosted version of SSOReady is available
+SSOReady is a free, MIT-licensed way to add SAML and SCIM support to your app. A free hosted version of SSOReady is available
 online at [app.ssoready.com](https://app.ssoready.com). This article explains how to run SSOReady on your own machines,
 instead of using the public, free version of SSOReady at [app.ssoready.com](https://app.ssoready.com).
 
@@ -24,7 +24,7 @@ SSOReady requires four essential components:
 
 * `ssoready-app` is the webapp for SSOReady. In the free hosted version, this lives at https://app.ssoready.com.
 * `ssoready-api` is what `ssoready-app` and your code (either directly, or using the SSOReady SDKs) talks to. In the free hosted version, this lives at https://api.ssoready.com.
-* `ssoready-auth` is proxy for SAML interactions. In the free hosted version, this lives at https://auth.ssoready.com.
+* `ssoready-auth` is proxy for SAML and SCIM interactions. In the free hosted version, this lives at https://auth.ssoready.com.
 * `ssoready-db` is a PostgreSQL database that `ssoready-api` and `ssoready-auth` talk to. This is where SSOReady keeps state.
 
 An additional fifth component is optional:
@@ -35,7 +35,7 @@ To that end, SSOReady maintains four Docker containers you can use to self-host:
 
 * `ssoready/ssoready-app` runs the webapp
 * `ssoready/ssoready-api` runs the SSOReady API
-* `ssoready/ssoready-auth` runs the public-facing SSOReady SAML proxy
+* `ssoready/ssoready-auth` runs the public-facing SSOReady SAML and SCIM proxy
 * `ssoready/ssoready-migrate` runs SSOReady's database migrations against a Postgres database
 * `ssoready/ssoready-admin` runs the public-facing self-serve setup UI
 
