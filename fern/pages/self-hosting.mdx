@@ -17,7 +17,7 @@ need to follow these instructions for each customer.
 # SSOReady Components
 
 <Frame caption="Diagram of components involved in an SSOReady deployment">
-    <img src="self-hosting-diagram.png" />
+    <img src="self-hosting-diagram.svg" />
 </Frame>
 
 SSOReady requires four essential components:
@@ -27,12 +27,17 @@ SSOReady requires four essential components:
 * `ssoready-auth` is proxy for SAML interactions. In the free hosted version, this lives at https://auth.ssoready.com.
 * `ssoready-db` is a PostgreSQL database that `ssoready-api` and `ssoready-auth` talk to. This is where SSOReady keeps state.
 
+An additional fifth component is optional:
+
+* `ssoready-admin` is the webapp that powers the [self-serve setup UI](/docs/idp-configuration/enabling-self-service-configuration-for-your-customers). In the free hosted version, this lives at https://admin.ssoready.com.
+
 To that end, SSOReady maintains four Docker containers you can use to self-host:
 
 * `ssoready/ssoready-app` runs the webapp
 * `ssoready/ssoready-api` runs the SSOReady API
 * `ssoready/ssoready-auth` runs the public-facing SSOReady SAML proxy
 * `ssoready/ssoready-migrate` runs SSOReady's database migrations against a Postgres database
+* `ssoready/ssoready-admin` runs the public-facing self-serve setup UI
 
 # Example docker-compose setup
 
@@ -77,6 +82,11 @@ services:
       # Have this point at where the ssoready-auth service will be accessible from the public internet.
       API_DEFAULT_AUTH_URL: "http://localhost:8080"
 
+      # (Optional -- skip if you're not using ssoready-admin)
+      #
+      # Have this point at where the ssoready-admin service will be accessible from the public internet, followed by "/setup".
+      API_DEFAULT_ADMIN_SETUP_URL: "http://localhost:8083/setup"
+
       # See "Supporting Login Methods" below.
       API_GOOGLE_OAUTH_CLIENT_ID: "171906208332-m8dg2p6av2f0aa7lliaj6oo0grct57p1.apps.googleusercontent.com"
 
@@ -103,9 +113,21 @@ services:
       APP_GOOGLE_OAUTH_CLIENT_ID: "171906208332-m8dg2p6av2f0aa7lliaj6oo0grct57p1.apps.googleusercontent.com"
     ports:
       - "8082:80"
+
+  # Optional. If you don't need the self-serve setup UI for configuring SAML and
+  # SCIM, you can skip ssoready-admin.
+  ssoready-admin:
+    image: ssoready/ssoready-admin:sha-18090f8
+    environment:
+      ADMIN_SERVE_PORT: "80"
+
+      # Have this point at APP_PUBLIC_API_URL, followed by "/internal/connect".
+      ADMIN_API_URL: "http://localhost:8081/internal/connect"
+    ports:
+      - "8083:80"
 ```
 
-(The example above requires localhost ports 5432, 8080, 8081, and 8082.)
+(The example above requires localhost ports 5432, 8080, 8081, 8082, and 8083.)
 
 Now, you'll need to set up the database tables that SSOReady requires. Do so by running:
 
