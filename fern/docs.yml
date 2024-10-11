@@ -154,6 +154,7 @@ redirects:
     destination: "/docs/ssoready-concepts/scim-users"
   - source: "/docs/sso-ready-concepts/scim-groups"
     destination: "/docs/ssoready-concepts/scim-groups"
-
   - source: "/docs/ssoready-concepts/login-flows"
     destination: "/docs/ssoready-concepts/saml-login-flows"
+  - source: "/docs/self-hosting/self-hosting-sso-ready"
+    destination: "/docs/self-hosting-ssoready"
