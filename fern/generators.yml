@@ -37,6 +37,51 @@ groups:
           skipResponseValidation: true
           includeApiReference: true
         smart-casing: true
+        
+  go-sdk:
+    generators:
+      - name: fernapi/fern-go-sdk
+        version: 0.26.0
+        github:
+          repository: ssoready/ssoready-go
+          mode: pull-request
+          license: MIT
+        config:
+          packageName: ssoready
+          union: v1
+        smart-casing: true
+        
+  java-sdk:
+    generators:
+      - name: fernapi/fern-java-sdk
+        version: 2.1.0
+        output:
+          location: maven
+          coordinate: com.ssoready:ssoready-java-sdk
+          # username: ${MAVEN_USERNAME}
+          # password: ${MAVEN_PASSWORD}
+        github:
+          repository: ssoready/ssoready-java
+          mode: pull-request
+          license: MIT
+        config:
+          base-exception-class-name: SSOReadyException
+
+  csharp-sdk:
+    generators:
+      - name: fernapi/fern-csharp-sdk
+        version: 1.7.0
+        github:
+          repository: ssoready/ssoready-csharp
+          mode: pull-request
+          license: MIT
+        output:
+          location: nuget
+          package-name: SSOReady.Client
+          # api-key: ${NUGET_TOKEN}
+        config:
+          namespace: SSOReady.Client
+          client-class-name: SSOReady
 
   local:
     generators:
