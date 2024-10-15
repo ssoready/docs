@@ -57,7 +57,7 @@ groups:
         version: 2.1.0
         output:
           location: maven
-          coordinate: dev.ssoready:ssoready-java-sdk
+          coordinate: com.ssoready:ssoready-java-sdk
           # username: ${MAVEN_USERNAME}
           # password: ${MAVEN_PASSWORD}
         github:
