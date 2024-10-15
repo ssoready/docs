@@ -62,7 +62,7 @@ groups:
           password: ${MAVEN_PASSWORD}
           signature:
             keyId: ${MAVEN_CENTRAL_SECRET_KEY_KEY_ID}
-            password: ${MAVEN_CENTRAL_SECRET_KEY_PASSWORD}
+            password: ""
             secretKey: ${MAVEN_CENTRAL_SECRET_KEY}
         github:
           repository: ssoready/ssoready-java
