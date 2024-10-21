@@ -90,7 +90,7 @@ groups:
   local:
     generators:
       - name: fernapi/fern-python-sdk
-        version: 2.5.2
+        version: 2.16.0
         config:
           client_class_name: SSOReady
           package_name: ssoready
