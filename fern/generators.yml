@@ -78,13 +78,12 @@ groups:
         github:
           repository: ssoready/ssoready-csharp
           mode: pull-request
-        #          license: MIT
         output:
           location: nuget
-          package-name: SSOReady.Client
+          package-name: SSOReady
           api-key: ${NUGET_TOKEN}
         config:
-          namespace: SSOReady.Client
+          namespace: SSOReady
           client-class-name: SSOReady
 
   local:
