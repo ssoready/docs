@@ -37,11 +37,11 @@ groups:
           skipResponseValidation: true
           includeApiReference: true
         smart-casing: true
-        
+
   go-sdk:
     generators:
       - name: fernapi/fern-go-sdk
-        version: 0.26.0
+        version: 0.27.0
         github:
           repository: ssoready/ssoready-go
           mode: pull-request
@@ -50,7 +50,7 @@ groups:
           packageName: ssoready
           union: v1
         smart-casing: true
-        
+
   java-sdk:
     generators:
       - name: fernapi/fern-java-sdk
@@ -78,7 +78,7 @@ groups:
         github:
           repository: ssoready/ssoready-csharp
           mode: pull-request
-#          license: MIT
+        #          license: MIT
         output:
           location: nuget
           package-name: SSOReady.Client
