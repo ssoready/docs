@@ -78,7 +78,7 @@ groups:
         github:
           repository: ssoready/ssoready-csharp
           mode: pull-request
-        #          license: MIT
+          license: MIT
         output:
           location: nuget
           package-name: SSOReady.Client
