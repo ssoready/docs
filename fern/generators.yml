@@ -87,6 +87,21 @@ groups:
           namespace: SSOReady.Client
           client-class-name: SSOReady
 
+  ruby-sdk:
+    generators:
+      - name: fernapi/fern-ruby-sdk
+        version: 0.6.3
+        github:
+          repository: ssoready/ssoready-ruby
+          mode: pull-request
+        output:
+          location: rubygems
+          package-name: ssoready
+          api-key: ${RUBYGEMS_API_KEY}
+        config:
+          clientClassName: SSOReady
+        smart-casing: true
+
   local:
     generators:
       - name: fernapi/fern-python-sdk
