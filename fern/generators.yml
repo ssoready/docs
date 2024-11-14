@@ -41,7 +41,7 @@ groups:
   go-sdk:
     generators:
       - name: fernapi/fern-go-sdk
-        version: 0.28.0
+        version: 0.30.0
         github:
           repository: ssoready/ssoready-go
           mode: pull-request
