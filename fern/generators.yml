@@ -74,7 +74,7 @@ groups:
   csharp-sdk:
     generators:
       - name: fernapi/fern-csharp-sdk
-        version: 1.8.2
+        version: 1.9.7
         github:
           repository: ssoready/ssoready-csharp
           mode: pull-request
