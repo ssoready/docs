@@ -108,6 +108,8 @@ groups:
         version: 0.2.0
         github:
           repository: ssoready/ssoready-php
+        config:
+          namespace: SSOReady
         smart-casing: true
 
   local:
