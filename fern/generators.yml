@@ -102,6 +102,14 @@ groups:
           clientClassName: SSOReady
         smart-casing: true
 
+  php-sdk:
+    generators:
+      - name: fernapi/fern-php-sdk
+        version: 0.2.0
+        github:
+          repository: ssoready/ssoready-php
+        smart-casing: true
+
   local:
     generators:
       - name: fernapi/fern-python-sdk
