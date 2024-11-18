@@ -109,7 +109,7 @@ groups:
         github:
           repository: ssoready/ssoready-php
         smart-casing: true
-        namespace: 
+        config: 
           client-class-name: SSOReadyClient
           namespace: SSOReady
 
