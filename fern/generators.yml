@@ -110,6 +110,7 @@ groups:
           repository: ssoready/ssoready-php
         config:
           namespace: SSOReady
+          client-class-name: SSOReadyClient
         smart-casing: true
 
   local:
