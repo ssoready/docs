@@ -92,6 +92,7 @@ navigation:
     snippets:
       python: ssoready
       typescript: ssoready
+      go: https://github.com/ssoready/ssoready-go
     layout:
       - saml
       - scim:
