@@ -109,6 +109,7 @@ groups:
         github:
           repository: ssoready/ssoready-php
           mode: pull-request
+          license: MIT
         config:
           namespace: SSOReady
           client-class-name: SSOReadyClient
