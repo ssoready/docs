@@ -21,6 +21,26 @@ navigation:
     contents:
       - page: SCIM Quickstart
         path: ./pages/scim-quickstart.mdx
+  - section: SDKs
+    contents:
+      - link: TypeScript SDK
+        icon: fa-brands fa-js
+        href: https://github.com/ssoready/ssoready-typescript
+      - link: Python SDK
+        icon: fa-brands fa-python
+        href: https://github.com/ssoready/ssoready-python
+      - link: Go SDK
+        icon: fa-brands fa-golang
+        href: https://github.com/ssoready/ssoready-go
+      - link: C# SDK
+        icon: fa-brands fa-microsoft
+        href: https://github.com/ssoready/ssoready-csharp
+      - link: Ruby SDK
+        icon: fa-solid fa-gem
+        href: https://github.com/ssoready/ssoready-ruby
+      - link: PHP SDK
+        icon: fa-brands fa-php
+        href: https://github.com/ssoready/ssoready-php
   - section: SAML-over-OAuth
     slug: oauth-nextauth
     contents:
