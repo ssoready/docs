@@ -54,7 +54,21 @@ groups:
   java-sdk:
     generators:
       - name: fernapi/fern-java-sdk
-        version: 2.2.0
+        version: 2.3.0
+        publish-metadata:
+          author: "SSOReady"
+          email: "founders@ssoready.com"
+          package-description: "The official Java library for SSOReady"
+          reference-url: "https://ssoready.com/docs"
+        output:
+          location: maven
+          coordinate: com.cohere:cohere-java
+          username: ${MAVEN_USERNAME}
+          password: ${MAVEN_PASSWORD}
+          signature:
+            keyId: ${MAVEN_CENTRAL_SECRET_KEY_KEY_ID}
+            password: ${MAVEN_CENTRAL_SECRET_KEY_PASSWORD}
+            secretKey: ${MAVEN_CENTRAL_SECRET_KEY}
         output:
           location: maven
           coordinate: com.ssoready:ssoready-java-sdk
