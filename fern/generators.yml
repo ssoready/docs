@@ -75,6 +75,7 @@ groups:
           license: MIT
         config:
           base-exception-class-name: SSOReadyException
+          client-class-name: SSOReady
 
   csharp-sdk:
     generators:
