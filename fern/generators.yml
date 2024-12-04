@@ -62,7 +62,7 @@ groups:
           reference-url: "https://ssoready.com/docs"
         output:
           location: maven
-          coordinate: com.cohere:cohere-java
+          coordinate: com.ssoready:ssoready-java
           username: ${MAVEN_USERNAME}
           password: ${MAVEN_PASSWORD}
           signature:
