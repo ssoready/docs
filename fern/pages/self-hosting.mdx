@@ -9,9 +9,9 @@ online at [app.ssoready.com](https://app.ssoready.com). This article explains ho
 instead of using the public, free version of SSOReady at [app.ssoready.com](https://app.ssoready.com).
 
 <Tip>
-This article focuses on running SSOReady in your own cloud. You can also run SSOReady in your customer's cloud, so that
-SSOReady becomes a component of your larger on-premises offering to your customers; the only difference is that you'll
-need to follow these instructions for each customer.
+    This article focuses on running SSOReady in your own cloud. You can also run SSOReady in your customer's cloud, so that
+    SSOReady becomes a component of your larger on-premises offering to your customers; the only difference is that you'll
+    need to follow these instructions for each customer.
 </Tip>
 
 # SSOReady Components
@@ -166,7 +166,7 @@ by using a new random, 64-digit hex number.
 ## `id_token` Signing Key
 
 <Note>
-This section is only required if you use [SAML-over-OAuth](/docs/saml-over-oauth-saml-nextauth-integration).
+    This section is only required if you use [SAML-over-OAuth](/docs/saml-over-oauth-saml-nextauth-integration).
 </Note>
 
 SSOReady's SAML-over-OAuth integration has `ssoready-auth` act as an OIDC-compliant server. Such servers need to issue
@@ -256,6 +256,34 @@ for creating an OAuth app](https://learn.microsoft.com/en-us/entra/identity-plat
 * The app's "Application (Client) ID", a UUID, is what you use for `API_MICROSOFT_OAUTH_CLIENT_ID` and `APP_MICROSOFT_OAUTH_CLIENT_ID`.
 * Create a "client secret" credential (Microsoft documents this [here](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app?tabs=client-secret#add-credentials) under the "Add a client secret" tab). The secret's value is what you put in `API_MICROSOFT_OAUTH_CLIENT_SECRET`.
 
+## Enabling the Management API
+
+The [SSOReady Management API](/docs/management-api) lets you programmatically
+automate everything that would otherwise require a human to click around in the
+SSOReady web application. If you don't need the Management API, skip this
+section.
+
+To enable the Management API in a self-hosted instance of SSOReady, you must
+first log into the SSOReady web application a first time. That will create a
+`app_organizations` row in the SSOReady database, upon which you can enable the
+Management API.
+
+Once you have logged into SSOReady, you can next connect to your your SSOReady
+database (using `psql` or any other tool you're comfortable with), and run:
+
+```sql
+update app_organizations set entitled_management_api = true where id = '...';
+```
+
+To determine the appropriate `id` to run in the SQL command above, you may run:
+
+```sql
+select * from app_organizations;
+```
+
+In the common case where nobody else has logged into the SSOReady web
+application, there will only be one `app_organizations` row to choose from.
+
 # Configuring SDKs to talk to self-hosted SSOReady instances
 
 By default, the SSOReady SDKs expect to talk to `https://api.ssoready.com`. When you're running SSOReady self-hosted,
@@ -263,25 +291,25 @@ you need to point it to your own instance of `ssoready-api`. Here's how you do t
 at `localhost:8081` like in the example above:
 
 <CodeBlocks>
-```typescript title="TypeScript"
-import { SSOReadyClient } from "ssoready";
+    ```typescript title="TypeScript"
+    import { SSOReadyClient } from "ssoready";
 
-const ssoready = new SSOReadyClient({
+    const ssoready = new SSOReadyClient({
     // add this new `environment` parameter
     environment: "http://localhost:8081",
     apiKey: "ssoready_sk_...",
 });
-```
+    ```
 
-```python title="Python"
-from ssoready.client import SSOReady
+    ```python title="Python"
+    from ssoready.client import SSOReady
 
-client = SSOReady(
+    client = SSOReady(
     # add this new `base_url` parameter
     base_url="http://localhost:8081",
     api_key="ssoready_sk_..."
-)
-```
+    )
+    ```
 </CodeBlocks>
 
 # Running migrations on `ssoready-db`
