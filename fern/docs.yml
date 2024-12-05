@@ -32,6 +32,9 @@ navigation:
       - link: Go SDK
         icon: fa-brands fa-golang
         href: https://github.com/ssoready/ssoready-go
+      - link: Java SDK
+        icon: fa-brands fa-java
+        href: https://github.com/ssoready/ssoready-java
       - link: C# SDK
         icon: fa-brands fa-microsoft
         href: https://github.com/ssoready/ssoready-csharp
