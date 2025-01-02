@@ -66,6 +66,9 @@ services:
       # Have this point at where this service will be accessible from the public internet.
       AUTH_BASE_URL: "http://localhost:8080"
 
+      # Have this point at where the ssoready-admin service will be accessible from the public internet, followed by "/test-mode".
+      AUTH_DEFAULT_ADMIN_TEST_MODE_URL: "http://localhost:8083/test-mode"
+
       # See "SAML State Signing Key" below. For initial testing, this default value is fine.
       AUTH_SAML_STATE_SIGNING_KEY: "0000000000000000000000000000000000000000000000000000000000000000"
     ports:
