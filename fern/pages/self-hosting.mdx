@@ -95,6 +95,9 @@ services:
 
       # See "SAML State Signing Key" below. For initial testing, this default value is fine.
       API_SAML_STATE_SIGNING_KEY: "0000000000000000000000000000000000000000000000000000000000000000"
+
+      # This should be the s3 bucket used to store admin logos.
+      API_ADMIN_LOGOS_S3_BUCKET_NAME: "s3-bucket-name"
     ports:
       - "8081:80"
 
