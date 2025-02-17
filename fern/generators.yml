@@ -111,7 +111,7 @@ groups:
   php-sdk:
     generators:
       - name: fernapi/fern-php-sdk
-        version: 0.2.0
+        version: 0.3.1
         github:
           repository: ssoready/ssoready-php
           mode: pull-request
