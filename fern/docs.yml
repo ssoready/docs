@@ -61,6 +61,8 @@ navigation:
             contents:
               - page: SAML with Entra
                 path: ./pages/idp-config-tutorials/entra/entra_sso.mdx
+              - page: SCIM with Entra
+                path: ./pages/idp-config-tutorials/entra/entra_scim.mdx
           - section: Okta
             contents:
               - page: SAML with Okta
