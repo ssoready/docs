@@ -54,7 +54,7 @@ groups:
   java-sdk:
     generators:
       - name: fernapi/fern-java-sdk
-        version: 2.3.1
+        version: 2.12.1
         publish-metadata:
           author: "SSOReady"
           email: "founders@ssoready.com"
