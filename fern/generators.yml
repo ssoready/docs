@@ -1,6 +1,7 @@
 api:
-  path: openapi.yml
-  overrides: openapi-overrides.yml
+  specs:
+    - openapi: openapi.yml
+      overrides: openapi-overrides.yml
 groups:
   python-sdk:
     generators:
