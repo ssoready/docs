@@ -1,6 +1,7 @@
 api:
-  path: openapi.yml
-  overrides: openapi-overrides.yml
+  specs:
+    - openapi: openapi.yml
+      overrides: openapi-overrides.yml
 groups:
   python-sdk:
     generators:
@@ -22,7 +23,7 @@ groups:
   ts-sdk:
     generators:
       - name: fernapi/fern-typescript-node-sdk
-        version: 0.19.0
+        version: 0.51.7
         output:
           location: npm
           package-name: ssoready
