@@ -22,7 +22,7 @@ groups:
   ts-sdk:
     generators:
       - name: fernapi/fern-typescript-node-sdk
-        version: 0.19.0
+        version: 0.51.7
         output:
           location: npm
           package-name: ssoready
